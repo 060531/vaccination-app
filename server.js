@@ -7,10 +7,16 @@ require('dotenv').config();
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
+app.use(express.static('public'));
 
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false }
+});
+
+// Serve HTML at root
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/vaccination_app.html');
 });
 
 // Health Check
@@ -75,5 +81,4 @@ app.post('/api/vaccinations', async (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`✅ Server: http://localhost:${PORT}`);
-    console.log(`🔌 Health: GET http://localhost:${PORT}/api/health`);
 });
