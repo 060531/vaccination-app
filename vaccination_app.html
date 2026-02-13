@@ -1,0 +1,1722 @@
+<!DOCTYPE html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ระบบบันทึกวัคซีนเด็ก | Vaccination Tracking System</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --primary-color: #0066cc;
+        --primary-dark: #004a99;
+        --success-color: #28a745;
+        --warning-color: #ffc107;
+        --danger-color: #dc3545;
+        --info-color: #17a2b8;
+        --pending-color: #6c757d;
+        --light-bg: #f8f9fa;
+        --white: #ffffff;
+        --text-dark: #212529;
+        --text-light: #6c757d;
+        --border-color: #dee2e6;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 0;
+        color: var(--text-dark);
+      }
+
+      .app-container {
+        max-width: 1600px;
+        margin: 0 auto;
+        background: var(--white);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+        min-height: 100vh;
+        overflow: hidden;
+      }
+
+      .header {
+        background: linear-gradient(
+          135deg,
+          var(--primary-dark) 0%,
+          #00438a 100%
+        );
+        color: var(--white);
+        padding: 25px;
+        text-align: center;
+        border-bottom: 4px solid var(--warning-color);
+      }
+
+      .header h1 {
+        font-size: 2.2em;
+        margin-bottom: 8px;
+        font-weight: 700;
+      }
+
+      .header p {
+        font-size: 0.95em;
+        opacity: 0.95;
+        margin-bottom: 15px;
+      }
+
+      .header-info {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        font-size: 0.85em;
+        opacity: 0.9;
+        flex-wrap: wrap;
+      }
+
+      .tabs {
+        display: flex;
+        background: var(--light-bg);
+        border-bottom: 2px solid var(--border-color);
+        overflow-x: auto;
+      }
+
+      .tab-button {
+        flex: 1;
+        padding: 15px 20px;
+        border: none;
+        background: none;
+        cursor: pointer;
+        font-size: 0.95em;
+        font-weight: 600;
+        color: var(--text-light);
+        transition: all 0.3s ease;
+        border-bottom: 3px solid transparent;
+        white-space: nowrap;
+        min-width: 120px;
+      }
+
+      .tab-button:hover {
+        color: var(--primary-color);
+        background: rgba(0, 102, 204, 0.05);
+      }
+
+      .tab-button.active {
+        color: var(--primary-color);
+        border-bottom-color: var(--primary-color);
+        background: var(--white);
+      }
+
+      .main-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        padding: 25px;
+        min-height: calc(100vh - 200px);
+      }
+
+      .tab-content {
+        display: none;
+      }
+
+      .tab-content.active {
+        display: contents;
+      }
+
+      .panel {
+        background: var(--light-bg);
+        border-radius: 10px;
+        padding: 22px;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      }
+
+      .panel h2 {
+        color: var(--primary-color);
+        font-size: 1.4em;
+        margin-bottom: 18px;
+        padding-bottom: 12px;
+        border-bottom: 3px solid var(--primary-color);
+      }
+
+      .panel h3 {
+        color: var(--text-dark);
+        font-size: 1.1em;
+        margin-top: 18px;
+        margin-bottom: 12px;
+      }
+
+      .form-group {
+        margin-bottom: 16px;
+      }
+
+      .form-group label {
+        display: block;
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 7px;
+        font-size: 0.9em;
+      }
+
+      .form-group input,
+      .form-group select,
+      .form-group textarea {
+        width: 100%;
+        padding: 11px;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        font-size: 0.95em;
+        font-family: inherit;
+        transition: all 0.3s ease;
+      }
+
+      .form-group input:focus,
+      .form-group select:focus,
+      .form-group textarea:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+      }
+
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+
+      .button-group {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-top: 20px;
+      }
+
+      button {
+        padding: 11px 18px;
+        border: none;
+        border-radius: 6px;
+        font-size: 0.95em;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .btn-primary {
+        background: var(--primary-color);
+        color: var(--white);
+        grid-column: 1 / -1;
+      }
+
+      .btn-primary:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 102, 204, 0.3);
+      }
+
+      .btn-success {
+        background: var(--success-color);
+        color: var(--white);
+        padding: 7px 12px;
+        font-size: 0.85em;
+      }
+
+      .btn-success:hover {
+        background: #218838;
+      }
+
+      .btn-danger {
+        background: var(--danger-color);
+        color: var(--white);
+        padding: 7px 12px;
+        font-size: 0.85em;
+      }
+
+      .btn-danger:hover {
+        background: #c82333;
+      }
+
+      .btn-secondary {
+        background: var(--pending-color);
+        color: var(--white);
+      }
+
+      .btn-secondary:hover {
+        background: #5a6268;
+      }
+
+      .btn-small {
+        padding: 6px 10px;
+        font-size: 0.8em;
+        margin: 2px;
+      }
+
+      .alert {
+        padding: 13px;
+        border-radius: 6px;
+        margin-bottom: 15px;
+        display: none;
+        border-left: 4px solid;
+      }
+
+      .alert-success {
+        background: #d4edda;
+        color: #155724;
+        border-color: #28a745;
+        display: block;
+      }
+
+      .alert-error {
+        background: #f8d7da;
+        color: #721c24;
+        border-color: #dc3545;
+        display: block;
+      }
+
+      .alert-info {
+        background: #d1ecf1;
+        color: #0c5460;
+        border-color: #17a2b8;
+        display: block;
+      }
+
+      .vaccine-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 12px;
+        background: var(--white);
+        border-radius: 8px;
+        overflow: hidden;
+        font-size: 0.9em;
+      }
+
+      .vaccine-table thead {
+        background: var(--primary-color);
+        color: var(--white);
+      }
+
+      .vaccine-table th {
+        padding: 12px;
+        text-align: left;
+        font-weight: 600;
+      }
+
+      .vaccine-table td {
+        padding: 10px 12px;
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      .vaccine-table tbody tr:hover {
+        background: #f0f6ff;
+      }
+
+      .vaccine-category {
+        display: inline-block;
+        padding: 3px 8px;
+        border-radius: 15px;
+        font-size: 0.75em;
+        font-weight: 600;
+      }
+
+      .category-basic {
+        background: #d4edda;
+        color: #155724;
+      }
+
+      .category-optional {
+        background: #d1ecf1;
+        color: #0c5460;
+      }
+
+      .status-badge {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 15px;
+        font-size: 0.8em;
+        font-weight: 600;
+        text-align: center;
+      }
+
+      .status-given {
+        background: #d4edda;
+        color: #155724;
+      }
+
+      .status-not-given {
+        background: #f8d7da;
+        color: #721c24;
+      }
+
+      .status-pending {
+        background: #fff3cd;
+        color: #856404;
+      }
+
+      .child-info {
+        background: var(--white);
+        padding: 15px;
+        border-radius: 8px;
+        border: 2px solid var(--primary-color);
+        margin-bottom: 15px;
+      }
+
+      .child-info-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 10px;
+      }
+
+      .child-info-field {
+        padding: 10px;
+        background: var(--light-bg);
+        border-radius: 6px;
+      }
+
+      .child-info-field strong {
+        color: var(--primary-color);
+        display: block;
+        font-size: 0.85em;
+        margin-bottom: 3px;
+      }
+
+      .child-info-field span {
+        font-size: 1em;
+        color: var(--text-dark);
+        font-weight: 500;
+      }
+
+      .stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 15px;
+      }
+
+      .stat-card {
+        background: var(--white);
+        padding: 12px;
+        border-radius: 8px;
+        text-align: center;
+        border: 1px solid var(--border-color);
+      }
+
+      .stat-card h4 {
+        color: var(--primary-color);
+        margin-bottom: 6px;
+        font-size: 0.8em;
+      }
+
+      .stat-card .number {
+        font-size: 1.8em;
+        font-weight: 700;
+        color: var(--text-dark);
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 30px 15px;
+        color: var(--text-light);
+      }
+
+      .empty-state-icon {
+        font-size: 2.5em;
+        margin-bottom: 10px;
+      }
+
+      .search-box {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 15px;
+      }
+
+      .search-box input {
+        flex: 1;
+      }
+
+      .search-box button {
+        padding: 11px 15px;
+      }
+
+      .documentation {
+        grid-column: 1 / -1;
+        background: var(--white);
+        padding: 20px;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+      }
+
+      .documentation h3 {
+        color: var(--primary-color);
+        margin-top: 15px;
+        margin-bottom: 10px;
+        font-size: 1.1em;
+      }
+
+      .documentation pre {
+        background: var(--light-bg);
+        padding: 12px;
+        border-radius: 6px;
+        overflow-x: auto;
+        font-size: 0.85em;
+        margin: 10px 0;
+      }
+
+      .documentation code {
+        font-family: "Courier New", monospace;
+      }
+
+      .documentation ul,
+      .documentation ol {
+        margin-left: 20px;
+        margin-bottom: 10px;
+      }
+
+      .documentation li {
+        margin-bottom: 5px;
+      }
+
+      .section-divider {
+        height: 1px;
+        background: var(--border-color);
+        margin: 20px 0;
+      }
+
+      .vaccine-full-section {
+        grid-column: 1 / -1;
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 5px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .child-list {
+        max-height: 400px;
+        overflow-y: auto;
+        background: var(--white);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+      }
+
+      .child-item {
+        padding: 12px;
+        border-bottom: 1px solid var(--border-color);
+        cursor: pointer;
+        transition: background 0.3s ease;
+      }
+
+      .child-item:hover {
+        background: var(--light-bg);
+      }
+
+      .child-item.selected {
+        background: rgba(0, 102, 204, 0.1);
+        border-left: 3px solid var(--primary-color);
+      }
+
+      .child-item-name {
+        font-weight: 600;
+        color: var(--primary-color);
+      }
+
+      .child-item-info {
+        font-size: 0.85em;
+        color: var(--text-light);
+        margin-top: 4px;
+      }
+
+      .export-buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+        flex-wrap: wrap;
+      }
+
+      .export-buttons button {
+        flex: 1;
+        min-width: 120px;
+      }
+
+      @media (max-width: 1024px) {
+        .main-content {
+          grid-template-columns: 1fr;
+        }
+
+        .stats {
+          grid-template-columns: 1fr 1fr;
+        }
+
+        .vaccine-full-section {
+          grid-column: 1;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .header h1 {
+          font-size: 1.6em;
+        }
+
+        .form-row {
+          grid-template-columns: 1fr;
+        }
+
+        .button-group {
+          grid-template-columns: 1fr;
+        }
+
+        .vaccine-table {
+          font-size: 0.8em;
+        }
+
+        .vaccine-table th,
+        .vaccine-table td {
+          padding: 8px 6px;
+        }
+
+        .stats {
+          grid-template-columns: 1fr;
+        }
+
+        .child-info-row {
+          grid-template-columns: 1fr;
+        }
+
+        .tabs {
+          flex-wrap: wrap;
+        }
+
+        .tab-button {
+          flex: 0 1 auto;
+          min-width: 100px;
+        }
+      }
+
+      .print-hidden {
+        display: none;
+      }
+
+      @media print {
+        body {
+          background: var(--white);
+        }
+
+        .print-hidden {
+          display: none !important;
+        }
+
+        .vaccine-table {
+          page-break-inside: avoid;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-container">
+      <!-- Header -->
+      <div class="header">
+        <h1>🏥 ระบบบันทึกวัคซีนเด็ก</h1>
+        <p>
+          Vaccination Tracking System <br />
+          ศูนย์พัฒนาเด็กปฐมวัย คณะพยาบาลศาสตร์ มหาวิทยาลัยสงขลานครินทร์
+        </p>
+        <div class="header-info">
+          <span>📅 แผนสุขภาพไทย พ.ศ. 2568</span>
+          <span>💉 วัคซีน 18+ ชนิด</span>
+          <span>👶 สำหรับเด็ก 0-4 ปี</span>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab-button active" onclick="switchTab('app')">
+          📱 แอปพลิเคชัน
+        </button>
+        <button class="tab-button" onclick="switchTab('history')">
+          📋 ประวัติการใช้งาน
+        </button>
+        <button class="tab-button" onclick="switchTab('docs')">
+          📖 เอกสาร & คำแนะนำ
+        </button>
+      </div>
+
+      <!-- Main Content -->
+      <div class="main-content">
+        <!-- TAB 1: APPLICATION -->
+        <div id="app" class="tab-content active">
+          <!-- Left Panel: Input Form -->
+          <div class="panel">
+            <h2>📝 ข้อมูลเด็ก</h2>
+
+            <div id="alert" class="alert"></div>
+
+            <form id="childForm">
+              <div class="form-group">
+                <label for="fullName">ชื่อจริง-นามสกุล *</label>
+                <input
+                  type="text"
+                  id="fullName"
+                  required
+                  placeholder="เช่น สมหญิง สมควร"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="nickname">ชื่อเล่น</label>
+                <input type="text" id="nickname" placeholder="เช่น แก้ว" />
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="dob">วัน/เดือน/ปีเกิด *</label>
+                  <input type="date" id="dob" required />
+                </div>
+                <div class="form-group">
+                  <label for="gender">เพศ</label>
+                  <select id="gender">
+                    <option value="">เลือก...</option>
+                    <option value="M">ชาย</option>
+                    <option value="F">หญิง</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="motherName">ชื่อแม่</label>
+                <input
+                  type="text"
+                  id="motherName"
+                  placeholder="ชื่อจริง-นามสกุล"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="hospitalId">รหัสผู้ป่วยในโรงพยาบาล</label>
+                <input type="text" id="hospitalId" placeholder="Hospital ID" />
+              </div>
+
+              <div class="button-group">
+                <button type="submit" class="btn-primary">
+                  💾 บันทึกข้อมูล
+                </button>
+                <button type="reset" class="btn-secondary">🔄 ล้างฟอร์ม</button>
+              </div>
+            </form>
+
+            <h3>📚 เด็กที่บันทึกแล้ว</h3>
+            <div id="childList" class="child-list">
+              <div class="empty-state">
+                <div class="empty-state-icon">👶</div>
+                <p>ยังไม่มีข้อมูลเด็ก</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Panel: Info & Stats -->
+          <div class="panel">
+            <h2>👶 สรุปข้อมูล</h2>
+
+            <div id="childInfoContainer" class="empty-state">
+              <div class="empty-state-icon">📋</div>
+              <p>กรุณากรอกข้อมูลเด็กและคลิก "บันทึกข้อมูล"</p>
+            </div>
+
+            <div id="childInfo" style="display: none">
+              <div class="child-info">
+                <div class="child-info-row">
+                  <div class="child-info-field">
+                    <strong>ชื่อจริง-นามสกุล</strong>
+                    <span id="displayFullName"></span>
+                  </div>
+                  <div class="child-info-field">
+                    <strong>ชื่อเล่น</strong>
+                    <span id="displayNickname">-</span>
+                  </div>
+                </div>
+                <div class="child-info-row">
+                  <div class="child-info-field">
+                    <strong>วัน/เดือน/ปีเกิด</strong>
+                    <span id="displayDOB"></span>
+                  </div>
+                  <div class="child-info-field">
+                    <strong>อายุปัจจุบัน</strong>
+                    <span id="displayAge"></span>
+                  </div>
+                </div>
+                <div class="child-info-row">
+                  <div class="child-info-field">
+                    <strong>เพศ</strong>
+                    <span id="displayGender">-</span>
+                  </div>
+                  <div class="child-info-field">
+                    <strong>รหัสผู้ป่วย</strong>
+                    <span id="displayHospitalId">-</span>
+                  </div>
+                </div>
+              </div>
+
+              <h3>สถิติวัคซีน</h3>
+              <div class="stats">
+                <div class="stat-card">
+                  <h4>ได้รับวัคซีน</h4>
+                  <div class="number" id="statGiven">0</div>
+                </div>
+                <div class="stat-card">
+                  <h4>ยังไม่ได้</h4>
+                  <div class="number" id="statNotGiven">0</div>
+                </div>
+                <div class="stat-card">
+                  <h4>รอการติดตาม</h4>
+                  <div class="number" id="statPending">0</div>
+                </div>
+                <div class="stat-card">
+                  <h4>รวม</h4>
+                  <div class="number" id="statTotal">0</div>
+                </div>
+              </div>
+
+              <div class="export-buttons">
+                <button
+                  onclick="printVaccineRecord()"
+                  class="btn-secondary btn-small"
+                >
+                  🖨️ พิมพ์
+                </button>
+                <button onclick="exportToCSV()" class="btn-secondary btn-small">
+                  📊 ส่งออก CSV
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Vaccine Table (Full Width) -->
+          <div class="panel vaccine-full-section">
+            <h2>💉 แผนการให้วัคซีน</h2>
+
+            <div id="vaccineTableContainer" class="empty-state">
+              <div class="empty-state-icon">🧑‍⚕️</div>
+              <p>กรุณากรอกข้อมูลเด็ก เพื่อดูแผนการให้วัคซีน</p>
+            </div>
+
+            <table
+              id="vaccineTable"
+              class="vaccine-table"
+              style="display: none"
+            >
+              <thead>
+                <tr>
+                  <th>ชื่อวัคซีน</th>
+                  <th>ประเภท</th>
+                  <th>อายุควรให้</th>
+                  <th>สถานะ</th>
+                  <th>การดำเนินการ</th>
+                </tr>
+              </thead>
+              <tbody id="vaccineTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- TAB 2: HISTORY -->
+        <div id="history" class="tab-content">
+          <div class="panel vaccine-full-section">
+            <h2>📋 ประวัติการใช้งาน</h2>
+
+            <div class="search-box">
+              <input
+                type="text"
+                id="searchChild"
+                placeholder="ค้นหาชื่อเด็ก..."
+              />
+              <button onclick="searchChildren()" class="btn-primary">
+                🔍 ค้นหา
+              </button>
+            </div>
+
+            <div id="historyContent">
+              <div class="empty-state">
+                <div class="empty-state-icon">📝</div>
+                <p>ยังไม่มีประวัติการใช้งาน</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 3: DOCUMENTATION -->
+        <div id="docs" class="tab-content">
+          <div class="documentation vaccine-full-section">
+            <h1>📖 เอกสาร และ คำแนะนำ</h1>
+
+            <h3>🎯 วัตถุประสงค์ของระบบ</h3>
+            <p>
+              ระบบบันทึกวัคซีนเด็ก (Vaccination Tracking System)
+              เป็นเครื่องมือดิจิทัลสำหรับ:
+            </p>
+            <ul>
+              <li>
+                ✅ บันทึกข้อมูลเด็กอย่างเป็นระบบ (ชื่อ, วัน/เดือน/ปีเกิด, อายุ)
+              </li>
+              <li>✅ ติดตามการได้รับวัคซีนตามแผนสุขภาพไทย พ.ศ. 2568</li>
+              <li>✅ บันทึกสถานะวัคซีน (ได้รับแล้ว / ยังไม่ได้ / รอติดตาม)</li>
+              <li>✅ สร้างรายงานการต่อเชื่อมวัคซีน</li>
+              <li>✅ ลดข้อผิดพลาดในการบันทึกข้อมูล</li>
+            </ul>
+
+            <h3>💊 รายชื่อวัคซีน (18 ชนิด)</h3>
+            <h4>วัคซีนพื้นฐาน (Basic Vaccination)</h4>
+            <ol>
+              <li><strong>BCG (วัคซีนวัณโรค)</strong> - แรกเกิด</li>
+              <li><strong>HB1 (ไข้หวัดใหญ่ B โดสที่ 1)</strong> - แรกเกิด</li>
+              <li><strong>HB2 (ไข้หวัดใหญ่ B โดสที่ 2)</strong> - 1 เดือน</li>
+              <li><strong>DTwP-HB-IPV-Hib-1</strong> - 1 เดือน</li>
+              <li><strong>DTwP-HB-IPV-Hib-2</strong> - 2 เดือน</li>
+              <li><strong>DTwP-HB-IPV-Hib-3</strong> - 4 เดือน</li>
+              <li><strong>DTwP-HB-IPV-Hib (โดสเสริม)</strong> - 6 เดือน</li>
+              <li><strong>JE1 (มือเท้าปาก โดสที่ 1)</strong> - 9 เดือน</li>
+              <li>
+                <strong>MMR (หัด หัดเยอรมัน ไข้หวัดใหญ่)</strong> - 9 เดือน
+              </li>
+              <li><strong>JE2 (มือเท้าปาก โดสที่ 2)</strong> - 18 เดือน</li>
+              <li><strong>OPV (โปลิโอปกติ)</strong> - 4 ปี</li>
+              <li><strong>Td (ไขว้วัณโรค)</strong> - 11-12 ปี</li>
+            </ol>
+
+            <h4>วัคซีนทางเลือก (Optional Vaccination)</h4>
+            <ol start="13">
+              <li><strong>Influenza (ไข้หวัดใหญ่)</strong> - ทุกไตรมาส</li>
+              <li><strong>Varicella (หนองนา)</strong> - 1-3 ปี</li>
+              <li><strong>PCV (ปอดแข็ง)</strong> - 2-5 ปี</li>
+              <li><strong>HAV (ฟิลิปปินส์)</strong> - 1 ปี</li>
+              <li><strong>Yellow Fever (ไข้เหลือง)</strong> - ตามความจำเป็น</li>
+              <li><strong>HPV (บ้านไก่)</strong> - 6-12 ปี</li>
+            </ol>
+
+            <h3>🖥️ วิธีใช้งานแอปพลิเคชัน</h3>
+            <ol>
+              <li>
+                <strong>บันทึกข้อมูลเด็ก:</strong>
+                <ul>
+                  <li>กรอกชื่อจริง-นามสกุล (จำเป็น)</li>
+                  <li>กรอกชื่อเล่น (ไม่บังคับ)</li>
+                  <li>เลือกวัน/เดือน/ปีเกิด (จำเป็น)</li>
+                  <li>เลือกเพศ</li>
+                  <li>กรอกชื่อแม่</li>
+                  <li>กรอกรหัสผู้ป่วยในโรงพยาบาล</li>
+                  <li>คลิก "💾 บันทึกข้อมูล"</li>
+                </ul>
+              </li>
+              <li>
+                <strong>ดูแผนการให้วัคซีน:</strong>
+                <ul>
+                  <li>เลือกเด็กจากรายการ</li>
+                  <li>ระบบจะแสดงตารางแผนการให้วัคซีน</li>
+                  <li>แต่ละวัคซีนแสดงประเภท (พื้นฐาน/ทางเลือก)</li>
+                  <li>แสดงอายุที่ควรให้วัคซีน</li>
+                </ul>
+              </li>
+              <li>
+                <strong>บันทึกสถานะวัคซีน:</strong>
+                <ul>
+                  <li>คลิก "✓ ได้" หากเด็กได้รับวัคซีนแล้ว</li>
+                  <li>คลิก "✗ ไม่ได้" หากเด็กยังไม่ได้รับวัคซีน</li>
+                  <li>สถานะจะเปลี่ยนสีเพื่อให้ง่ายต่อการติดตาม</li>
+                </ul>
+              </li>
+              <li>
+                <strong>ดูสถิติ:</strong>
+                <ul>
+                  <li>แสดงจำนวนวัคซีนที่ได้รับ</li>
+                  <li>แสดงจำนวนวัคซีนที่ยังไม่ได้รับ</li>
+                  <li>แสดงจำนวนวัคซีนที่รอติดตาม</li>
+                  <li>แสดงอัตราการได้รับวัคซีน</li>
+                </ul>
+              </li>
+            </ol>
+
+            <h3>🔑 ข้อมูลที่จำเป็นต้องบันทึก</h3>
+            <table class="vaccine-table">
+              <thead>
+                <tr>
+                  <th>ข้อมูล</th>
+                  <th>คำอธิบาย</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>ชื่อจริง-นามสกุล</strong></td>
+                  <td>ชื่อของเด็กตามใบเกิด</td>
+                </tr>
+                <tr>
+                  <td><strong>ชื่อเล่น</strong></td>
+                  <td>ชื่อที่เรียกแต่วันนั้น (ไม่บังคับ)</td>
+                </tr>
+                <tr>
+                  <td><strong>วัน/เดือน/ปีเกิด</strong></td>
+                  <td>วันที่เกิดของเด็ก (ใช้คำนวนอายุ)</td>
+                </tr>
+                <tr>
+                  <td><strong>เพศ</strong></td>
+                  <td>ชาย (M) หรือ หญิง (F)</td>
+                </tr>
+                <tr>
+                  <td><strong>ชื่อแม่</strong></td>
+                  <td>ชื่อของแม่เด็ก (เพื่อติดต่อ)</td>
+                </tr>
+                <tr>
+                  <td><strong>รหัสผู้ป่วย</strong></td>
+                  <td>รหัสในระบบสารสนเทศโรงพยาบาล</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <h3>📊 สถานะวัคซีน</h3>
+            <table class="vaccine-table">
+              <thead>
+                <tr>
+                  <th>สถานะ</th>
+                  <th>ความหมาย</th>
+                  <th>สี</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <span class="status-badge status-given">ได้รับแล้ว</span>
+                  </td>
+                  <td>เด็กได้รับวัคซีนแล้ว</td>
+                  <td>เขียว</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="status-badge status-not-given">ยังไม่ได้</span>
+                  </td>
+                  <td>เด็กยังไม่ได้รับวัคซีน</td>
+                  <td>แดง</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="status-badge status-pending">รอติดตาม</span>
+                  </td>
+                  <td>รอตรวจสอบสถานะ</td>
+                  <td>เหลือง</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <h3>⚠️ ข้อควรระวัง</h3>
+            <ul>
+              <li>💾 ข้อมูลจะบันทึกใน Browser ของคุณ (localStorage)</li>
+              <li>🔄 ถ้า Clear Browser Cache ข้อมูลจะหายไป</li>
+              <li>📱 ระบบนี้เหมาะสำหรับใช้งานเบื้องต้น</li>
+              <li>🔐 สำหรับใช้งานจริง ควรมี Backend Server ที่ปลอดภัย</li>
+              <li>⚕️ ตรวจสอบข้อมูลอีกครั้งก่อนบันทึกประจำการ</li>
+            </ul>
+
+            <h3>📞 สำหรับส่วนราชการ</h3>
+            <p><strong>การพัฒนาต่อจากนี้:</strong></p>
+            <ul>
+              <li>🖥️ ต้องมี Backend Server (Node.js, PHP, Python)</li>
+              <li>🗄️ ต้องมี Database (MySQL, PostgreSQL)</li>
+              <li>🔐 ต้องมี Authentication & Security</li>
+              <li>📱 ต้องพัฒนา Mobile App</li>
+              <li>🔔 ต้องมี Notification System</li>
+              <li>📊 ต้องมี Report & Analytics</li>
+            </ul>
+
+            <h3>📝 Database Schema Reference</h3>
+            <p><strong>ตาราง: children (ข้อมูลเด็ก)</strong></p>
+            <pre><code>child_id INT PRIMARY KEY
+full_name VARCHAR(255)
+nickname VARCHAR(100)
+date_of_birth DATE
+gender ENUM('M', 'F')
+mother_name VARCHAR(255)
+hospital_id VARCHAR(50)
+created_at TIMESTAMP</code></pre>
+
+            <p><strong>ตาราง: vaccination_records (บันทึกวัคซีน)</strong></p>
+            <pre><code>record_id INT PRIMARY KEY
+child_id INT (FK to children)
+vaccine_id INT (FK to vaccines)
+vaccination_date DATE
+status ENUM('Given','Not Given','Pending','Deferred')
+nurse_name VARCHAR(255)
+batch_number VARCHAR(50)
+notes TEXT
+created_at TIMESTAMP</code></pre>
+
+            <div class="section-divider"></div>
+
+            <h3>✅ การใช้งาน: Checklist</h3>
+            <ul>
+              <li>☐ ตรวจสอบข้อมูลเด็กอีกครั้ง</li>
+              <li>☐ บันทึกวัคซีนแต่ละครั้งทันทีหลังการให้วัคซีน</li>
+              <li>☐ อัปเดตสถานะวัคซีนเป็นประจำ</li>
+              <li>☐ ดูรายงานการติดตามเป็นประจำ</li>
+              <li>☐ ติดตามเด็กที่เกินกำหนดการให้วัคซีน</li>
+              <li>☐ เตรียม Backup ข้อมูลเป็นประจำ</li>
+            </ul>
+
+            <p
+              style="
+                margin-top: 30px;
+                padding-top: 20px;
+                border-top: 1px solid var(--border-color);
+                color: var(--text-light);
+                font-size: 0.9em;
+              "
+            >
+              <strong>ระบบนี้พัฒนาขึ้นสำหรับ:</strong> Nursing Informatics
+              Thesis | NICU Songkhla Hospital<br />
+              <strong>เวอร์ชัน:</strong> 1.0.0 |
+              <strong>สถานะ:</strong> Production Ready<br />
+              <strong>ช่องทาง Backend:</strong> Node.js/Express, PHP Laravel,
+              Python Django
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // ============================
+      // DATA & CONFIGURATION
+      // ============================
+
+      const vaccineData = [
+        {
+          id: 1,
+          name: "วัคซีนวัณโรค (BCG)",
+          category: "Basic",
+          age: "แรกเกิด",
+        },
+        {
+          id: 2,
+          name: "วัคซีนไข้หวัดใหญ่ B โดสที่ 1 (HB1)",
+          category: "Basic",
+          age: "แรกเกิด",
+        },
+        {
+          id: 3,
+          name: "วัคซีนไข้หวัดใหญ่ B โดสที่ 2 (HB2)",
+          category: "Basic",
+          age: "1 เดือน",
+        },
+        {
+          id: 4,
+          name: "วัคซีนหมาป่า โปลิโอ ทีดีพี โดสที่ 1 (DTwP-HB-IPV-Hib-1)",
+          category: "Basic",
+          age: "1 เดือน",
+        },
+        {
+          id: 5,
+          name: "วัคซีนหมาป่า โปลิโอ ทีดีพี โดสที่ 2 (DTwP-HB-IPV-Hib-2)",
+          category: "Basic",
+          age: "2 เดือน",
+        },
+        {
+          id: 6,
+          name: "วัคซีนหมาป่า โปลิโอ ทีดีพี โดสที่ 3 (DTwP-HB-IPV-Hib-3)",
+          category: "Basic",
+          age: "4 เดือน",
+        },
+        {
+          id: 7,
+          name: "วัคซีนหมาป่า โปลิโอ ทีดีพี โดสเสริม (DTwP-HB-IPV-Hib)",
+          category: "Basic",
+          age: "6 เดือน",
+        },
+        {
+          id: 8,
+          name: "วัคซีนมือเท้าปาก โดสที่ 1 (JE1)",
+          category: "Basic",
+          age: "9 เดือน",
+        },
+        {
+          id: 9,
+          name: "วัคซีนหัด หัดเยอรมัน ไข้หวัดใหญ่ (MMR)",
+          category: "Basic",
+          age: "9 เดือน",
+        },
+        {
+          id: 10,
+          name: "วัคซีนมือเท้าปาก โดสที่ 2 (JE2)",
+          category: "Basic",
+          age: "18 เดือน",
+        },
+        {
+          id: 11,
+          name: "วัคซีนโปลิโอปกติ (OPV)",
+          category: "Basic",
+          age: "4 ปี",
+        },
+        {
+          id: 12,
+          name: "วัคซีนไขว้วัณโรค (Td)",
+          category: "Basic",
+          age: "11-12 ปี",
+        },
+        {
+          id: 13,
+          name: "วัคซีนไข้หวัดใหญ่ (Influenza)",
+          category: "Optional",
+          age: "ทุกไตรมาส",
+        },
+        {
+          id: 14,
+          name: "วัคซีนหนองนา (Varicella)",
+          category: "Optional",
+          age: "1-3 ปี",
+        },
+        {
+          id: 15,
+          name: "วัคซีนปอดแข็ง (PCV13)",
+          category: "Optional",
+          age: "2-5 ปี",
+        },
+        {
+          id: 16,
+          name: "วัคซีนฟิลิปปินส์ (HAV)",
+          category: "Optional",
+          age: "1 ปี",
+        },
+        {
+          id: 17,
+          name: "วัคซีนไข้เหลือง (Yellow Fever)",
+          category: "Optional",
+          age: "ตามความจำเป็น",
+        },
+        {
+          id: 18,
+          name: "วัคซีนบ้านไก่ (HPV)",
+          category: "Optional",
+          age: "6-12 ปี",
+        },
+      ];
+
+      // ============================
+      // STATE MANAGEMENT
+      // ============================
+
+      let currentChild = null;
+      let allChildren = [];
+      let vaccinationRecords = {};
+
+      // ============================
+      // UTILITY FUNCTIONS
+      // ============================
+
+      function calculateAge(dob) {
+        const today = new Date();
+        const birthDate = new Date(dob);
+
+        const years = today.getFullYear() - birthDate.getFullYear();
+        const months = today.getMonth() - birthDate.getMonth();
+        const days = today.getDate() - birthDate.getDate();
+
+        let ageText = "";
+        if (years > 0) {
+          ageText = `${years} ปี`;
+          if (months > 0) ageText += ` ${months} เดือน`;
+        } else if (months > 0) {
+          ageText = `${months} เดือน`;
+          if (days > 0) ageText += ` ${days} วัน`;
+        } else {
+          ageText = `${days} วัน`;
+        }
+
+        return ageText;
+      }
+
+      function formatDate(dateStr) {
+        const options = { year: "numeric", month: "long", day: "numeric" };
+        return new Date(dateStr).toLocaleDateString("th-TH", options);
+      }
+
+      function showAlert(message, type = "success") {
+        const alertEl = document.getElementById("alert");
+        alertEl.textContent = message;
+        alertEl.className = `alert alert-${type}`;
+
+        setTimeout(() => {
+          alertEl.className = "alert";
+        }, 3000);
+      }
+
+      // ============================
+      // TAB SWITCHING
+      // ============================
+
+      function switchTab(tabName) {
+        // Hide all content
+        document.querySelectorAll(".tab-content").forEach((el) => {
+          el.classList.remove("active");
+        });
+
+        // Remove active class from all buttons
+        document.querySelectorAll(".tab-button").forEach((btn) => {
+          btn.classList.remove("active");
+        });
+
+        // Show selected tab
+        document.getElementById(tabName).classList.add("active");
+
+        // Mark button as active
+        event.target.classList.add("active");
+      }
+
+      // ============================
+      // FORM HANDLING
+      // ============================
+
+document.getElementById("childForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    
+    const fullName = document.getElementById("fullName").value.trim();
+    if (!fullName) {
+        showAlert("❌ กรุณากรอกชื่อเด็ก", "error");
+        return;
+    }
+
+    const childData = {
+        full_name: fullName,
+        nickname: document.getElementById("nickname").value || "",
+        date_of_birth: document.getElementById("dob").value,
+        gender: document.getElementById("gender").value || "",
+        mother_name: document.getElementById("motherName").value || "",
+        hospital_id: document.getElementById("hospitalId").value || ""
+    };
+
+    // ส่งไป Server
+    fetch(`${API_BASE}/children`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(childData)
+    })
+    .then(r => r.json())
+    .then(d => {
+        if (d.status === 'success') {
+            currentChild = {
+                id: d.data.child_id,
+                ...childData,
+                nickname: childData.nickname || '-',
+                gender: childData.gender || '-'
+            };
+            
+            allChildren.push(currentChild);
+            vaccinationRecords = {};
+            
+            displayChildInfo();
+            displayVaccineTable();
+            displayChildList();
+            
+            showAlert("✅ บันทึกข้อมูลเด็กสำเร็จแล้ว!", "success");
+            document.getElementById("childForm").reset();
+        }
+    })
+    .catch(e => showAlert("❌ เกิดข้อผิดพลาด: " + e.message, "error"));
+});
+
+      // ============================
+      // DISPLAY FUNCTIONS
+      // ============================
+
+      function displayChildList() {
+        const listEl = document.getElementById("childList");
+
+        if (allChildren.length === 0) {
+          listEl.innerHTML =
+            '<div class="empty-state"><div class="empty-state-icon">👶</div><p>ยังไม่มีข้อมูลเด็ก</p></div>';
+          return;
+        }
+
+        listEl.innerHTML = allChildren
+          .map(
+            (child, idx) => `
+                <div class="child-item ${
+                  currentChild && currentChild.id === child.id ? "selected" : ""
+                }" onclick="selectChild(${idx})">
+                    <div class="child-item-name">👶 ${child.fullName}</div>
+                    <div class="child-item-info">
+                        ${
+                          child.nickname !== "-"
+                            ? `ชื่อเล่น: ${child.nickname} | `
+                            : ""
+                        }
+                        วัน/เดือน/ปี: ${formatDate(child.dob)}
+                    </div>
+                </div>
+            `
+          )
+          .join("");
+      }
+
+function selectChild(index) {
+    currentChild = allChildren[index];
+    
+    // ดึงวัคซีนจาก Server
+    fetch(`${API_BASE}/vaccinations/child/${currentChild.id}`)
+        .then(r => r.json())
+        .then(d => {
+            vaccinationRecords = {};
+            if (d.status === 'success' && d.data) {
+                d.data.forEach(rec => {
+                    vaccinationRecords[rec.vaccine_id] = rec.status;
+                });
+            }
+            displayChildInfo();
+            displayVaccineTable();
+            displayChildList();
+        })
+        .catch(e => console.error('Load vac error:', e));
+}
+      function displayChildInfo() {
+        const container = document.getElementById("childInfo");
+        const emptyState = document.getElementById("childInfoContainer");
+
+        if (!currentChild) {
+          container.style.display = "none";
+          emptyState.style.display = "block";
+          return;
+        }
+
+        document.getElementById("displayFullName").textContent =
+          currentChild.fullName;
+        document.getElementById("displayNickname").textContent =
+          currentChild.nickname;
+        document.getElementById("displayDOB").textContent = formatDate(
+          currentChild.dob
+        );
+        document.getElementById("displayAge").textContent = calculateAge(
+          currentChild.dob
+        );
+        document.getElementById("displayGender").textContent =
+          currentChild.gender === "M"
+            ? "ชาย"
+            : currentChild.gender === "F"
+            ? "หญิง"
+            : "-";
+        document.getElementById("displayHospitalId").textContent =
+          currentChild.hospitalId;
+
+        container.style.display = "block";
+        emptyState.style.display = "none";
+
+        updateVaccineStats();
+      }
+
+      function displayVaccineTable() {
+        if (!currentChild) {
+          document.getElementById("vaccineTable").style.display = "none";
+          document.getElementById("vaccineTableContainer").style.display =
+            "block";
+          return;
+        }
+
+        document.getElementById("vaccineTable").style.display = "table";
+        document.getElementById("vaccineTableContainer").style.display = "none";
+
+        const tbody = document.getElementById("vaccineTableBody");
+        tbody.innerHTML = "";
+
+        vaccineData.forEach((vaccine) => {
+          const status = vaccinationRecords[vaccine.id] || "Pending";
+
+          const row = document.createElement("tr");
+          row.innerHTML = `
+                    <td><strong>${vaccine.name}</strong></td>
+                    <td><span class="vaccine-category category-${vaccine.category.toLowerCase()}">${
+            vaccine.category === "Basic" ? "พื้นฐาน" : "ทางเลือก"
+          }</span></td>
+                    <td>${vaccine.age}</td>
+                    <td><span class="status-badge status-${status.toLowerCase()}">${getStatusText(
+            status
+          )}</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-success btn-small" onclick="markVaccine(${
+                              vaccine.id
+                            }, 'Given')">✓ ได้</button>
+                            <button class="btn-danger btn-small" onclick="markVaccine(${
+                              vaccine.id
+                            }, 'Not Given')">✗ ไม่ได้</button>
+                        </div>
+                    </td>
+                `;
+          tbody.appendChild(row);
+        });
+      }
+
+function markVaccine(vaccineId, status) {
+    if (!currentChild) return;
+
+    vaccinationRecords[vaccineId] = status;
+    
+    // ส่งไป Server ทันที
+    fetch(`${API_BASE}/vaccinations`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            child_id: currentChild.id,
+            vaccine_id: vaccineId,
+            status: status
+        })
+    }).then(r => r.json()).then(d => {
+        displayVaccineTable();
+        updateVaccineStats();
+        showAlert(
+            `📌 อัปเดตสถานะวัคซีน: ${
+                status === 'Given' ? 'ได้รับแล้ว ✅' : 'ยังไม่ได้ ❌'
+            }`,
+            'success'
+        );
+    }).catch(e => showAlert('❌ เกิดข้อผิดพลาด', 'error'));
+}
+
+      function updateVaccineStats() {
+        if (!currentChild) return;
+
+        let given = 0,
+          notGiven = 0,
+          pending = 0;
+
+        vaccineData.forEach((vaccine) => {
+          const status = vaccinationRecords[vaccine.id] || "Pending";
+          if (status === "Given") given++;
+          else if (status === "Not Given") notGiven++;
+          else pending++;
+        });
+
+        document.getElementById("statGiven").textContent = given;
+        document.getElementById("statNotGiven").textContent = notGiven;
+        document.getElementById("statPending").textContent = pending;
+        document.getElementById("statTotal").textContent = vaccineData.length;
+      }
+
+      function getStatusText(status) {
+        const statusMap = {
+          Given: "ได้รับแล้ว",
+          "Not Given": "ยังไม่ได้",
+          Pending: "รอติดตาม",
+          Deferred: "ชะลอการให้",
+        };
+        return statusMap[status] || status;
+      }
+
+      // ============================
+      // HISTORY & EXPORT
+      // ============================
+
+      function displayHistory() {
+        const historyEl = document.getElementById("historyContent");
+
+        if (allChildren.length === 0) {
+          historyEl.innerHTML =
+            '<div class="empty-state"><div class="empty-state-icon">📝</div><p>ยังไม่มีประวัติการใช้งาน</p></div>';
+          return;
+        }
+
+        historyEl.innerHTML =
+          '<table class="vaccine-table"><thead><tr><th>เด็ก</th><th>วัน/เดือน/ปีเกิด</th><th>อายุ</th><th>วัคซีนที่ได้รับ</th><th>ของกำหนดแล้ว</th></tr></thead><tbody>' +
+          allChildren
+            .map((child) => {
+              const recs = JSON.parse(
+                localStorage.getItem(`records_${child.id}`) || "{}"
+              );
+              const given = Object.values(recs).filter(
+                (s) => s === "Given"
+              ).length;
+              return `
+                    <tr>
+                        <td><strong>${child.fullName}</strong></td>
+                        <td>${formatDate(child.dob)}</td>
+                        <td>${calculateAge(child.dob)}</td>
+                        <td>${given}</td>
+                        <td><button class="btn-secondary btn-small" onclick="viewChild('${
+                          child.id
+                        }')">ดูรายละเอียด</button></td>
+                    </tr>
+                `;
+            })
+            .join("") +
+          "</tbody></table>";
+      }
+
+      function viewChild(childId) {
+        const child = allChildren.find((c) => c.id == childId);
+        if (child) {
+          selectChild(allChildren.indexOf(child));
+          switchTab("app");
+        }
+      }
+
+      function searchChildren() {
+        const searchTerm = document
+          .getElementById("searchChild")
+          .value.toLowerCase();
+        const historyEl = document.getElementById("historyContent");
+
+        const filtered = allChildren.filter(
+          (child) =>
+            child.fullName.toLowerCase().includes(searchTerm) ||
+            child.nickname.toLowerCase().includes(searchTerm)
+        );
+
+        if (filtered.length === 0) {
+          historyEl.innerHTML =
+            '<div class="empty-state"><div class="empty-state-icon">🔍</div><p>ไม่พบข้อมูลที่ค้นหา</p></div>';
+          return;
+        }
+
+        historyEl.innerHTML =
+          '<table class="vaccine-table"><thead><tr><th>เด็ก</th><th>วัน/เดือน/ปีเกิด</th><th>อายุ</th><th>วัคซีนที่ได้รับ</th><th>การดำเนินการ</th></tr></thead><tbody>' +
+          filtered
+            .map((child) => {
+              const recs = JSON.parse(
+                localStorage.getItem(`records_${child.id}`) || "{}"
+              );
+              const given = Object.values(recs).filter(
+                (s) => s === "Given"
+              ).length;
+              return `
+                    <tr>
+                        <td><strong>${child.fullName}</strong></td>
+                        <td>${formatDate(child.dob)}</td>
+                        <td>${calculateAge(child.dob)}</td>
+                        <td>${given}</td>
+                        <td><button class="btn-secondary btn-small" onclick="viewChild('${
+                          child.id
+                        }')">ดู</button></td>
+                    </tr>
+                `;
+            })
+            .join("") +
+          "</tbody></table>";
+      }
+
+      // ============================
+      // EXPORT FUNCTIONS
+      // ============================
+
+      function exportToCSV() {
+        if (!currentChild) {
+          showAlert("❌ กรุณาเลือกเด็ก", "error");
+          return;
+        }
+
+        let csv = "ชื่อเด็ก,วัคซีน,สถานะ,อายุควรให้\n";
+
+        vaccineData.forEach((vaccine) => {
+          const status = vaccinationRecords[vaccine.id] || "Pending";
+          const statusText = getStatusText(status);
+          csv += `${currentChild.fullName},"${vaccine.name}",${statusText},${vaccine.age}\n`;
+        });
+
+        const element = document.createElement("a");
+        element.setAttribute(
+          "href",
+          "data:text/csv;charset=utf-8," + encodeURIComponent(csv)
+        );
+        element.setAttribute(
+          "download",
+          `vaccination_${currentChild.fullName}_${new Date().getTime()}.csv`
+        );
+        element.style.display = "none";
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
+
+        showAlert("✅ ส่งออก CSV สำเร็จ", "success");
+      }
+
+      function printVaccineRecord() {
+        if (!currentChild) {
+          showAlert("❌ กรุณาเลือกเด็ก", "error");
+          return;
+        }
+
+        window.print();
+      }
+// ============================
+// DATA PERSISTENCE WITH API
+// ============================
+
+const API_BASE = 'http://localhost:3000/api';
+
+function saveData() {
+    if (!currentChild) return;
+    
+    // บันทึกเด็กไป Server
+    fetch(`${API_BASE}/children`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            full_name: currentChild.fullName,
+            nickname: currentChild.nickname,
+            date_of_birth: currentChild.dob,
+            gender: currentChild.gender,
+            mother_name: currentChild.motherName
+        })
+    }).then(r => r.json()).then(d => {
+        if (d.status === 'success') {
+            currentChild.id = d.data.child_id || currentChild.id;
+            saveVaccinations();
+        }
+    }).catch(e => console.error('Save error:', e));
+}
+
+function saveVaccinations() {
+    if (!currentChild) return;
+    
+    // บันทึกวัคซีนทั้งหมด
+    Object.entries(vaccinationRecords).forEach(([vaccineId, status]) => {
+        fetch(`${API_BASE}/vaccinations`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                child_id: currentChild.id,
+                vaccine_id: parseInt(vaccineId),
+                status: status
+            })
+        }).catch(e => console.error('Vac save error:', e));
+    });
+}
+
+function loadData() {
+    fetch(`${API_BASE}/children`)
+        .then(r => r.json())
+        .then(d => {
+            if (d.status === 'success' && d.data) {
+                allChildren = d.data.map(child => ({
+                    id: child.child_id,
+                    fullName: child.full_name,
+                    nickname: child.nickname || '-',
+                    dob: child.date_of_birth,
+                    gender: child.gender || '-',
+                    motherName: child.mother_name || '',
+                    hospitalId: child.hospital_id || '-'
+                }));
+                displayChildList();
+                displayHistory();
+            }
+        })
+        .catch(e => console.error('Load error:', e));
+}
+      // ============================
+      // INITIALIZATION
+      // ============================
+
+      window.addEventListener("load", function () {
+        loadData();
+      });
+
+      // Set max date to today
+      document.getElementById("dob").max = new Date()
+        .toISOString()
+        .split("T")[0];
+    </script>
+  </body>
+</html>
