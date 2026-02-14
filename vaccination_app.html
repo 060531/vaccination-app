@@ -202,9 +202,68 @@ async function updateChild(e){e.preventDefault();if(!current)return;try{const r=
 
 async function deleteChild(){if(!current||!confirm("ลบเด็ก?"))return;try{const r=await fetch(`${API}/children/${current.id}`,{method:"DELETE"});const d=await r.json();if(d.status==="success"){children=children.filter(c=>c.id!==current.id);current=null;refresh();alert("ลบแล้ว");}else alert("เกิดข้อผิดพลาด","error");}catch(err){alert("เกิดข้อผิดพลาด","error");}}
 
-function refresh(){if(!current){document.getElementById("info").style.display="none";document.getElementById("summary").style.display="block";document.getElementById("vaccineTable").style.display="none";document.getElementById("vaccineEmpty").style.display="block";}else{document.getElementById("info").style.display="block";document.getElementById("summary").style.display="none";document.getElementById("displayName").textContent=current.name;document.getElementById("displayAge").textContent=calcAge(current.dob);document.getElementById("displayGender").textContent=current.gender==="M"?"ชาย":current.gender==="F"?"หญิง":"-";document.getElementById("displayRoom").textContent=current.room;let given=0,notGiven=0,pending=0;vaccines.forEach(v=>{const s=records[v.id]||"Pending";if(s==="Given")given++;else if(s==="Not Given")notGiven++;else pending++;});document.getElementById("given").textContent=given;document.getElementById("notGiven").textContent=notGiven;document.getElementById("pending").textContent=pending;document.getElementById("total").textContent=vaccines.length;const tbody=document.getElementById("vaccineBody");tbody.innerHTML="";vaccines.forEach(v=>{const s=records[v.id]||"Pending",statusText=s==="Given"?"ได้รับแล้ว":s==="Not Given"?"ยังไม่ได้":"รอติดตาม",badge=s==="Given"?"badge-green":s==="Not Given"?"badge-red":"badge-yellow",tr=document.createElement("tr");tr.innerHTML=`<td>${v.name}</td><td>${v.cat}</td><td>${v.age}</td><td><span class="badge ${badge}">${statusText}</span></td><td><button class="btn btn-success" onclick="markVaccine(${v.id},'Given')">✓</button><button class="btn btn-danger" onclick="markVaccine(${v.id},'Not Given')">✗</button></td>`;tbody.appendChild(tr);});document.getElementById("vaccineTable").style.display="block";document.getElementById("vaccineEmpty").style.display="none";}document.getElementById("childList").innerHTML=children.length===0?'<div class="empty">ยังไม่มี</div>':children.map((c,i)=>`<div class="child-item ${current&&current.id===c.id?"active":""}" onclick="selectChild(${i})"><strong>${c.name}</strong><br><small>${fmt(c.dob)} | ห้อง: ${c.room}</small><br><button class="btn btn-secondary" style="width:48%;margin-right:2%;margin-top:5px;" onclick="openEdit(); return false;">แก้ไข</button><button class="btn btn-danger" style="width:48%;margin-top:5px;" onclick="deleteChild(); return false;">ลบ</button></div>`).join("");document.getElementById("histBody").innerHTML=children.length===0?'<tr><td colspan="4">ยังไม่มี</td></tr>':children.map(c=>`<tr><td><strong>${c.name}</strong></td><td>${fmt(c.dob)}</td><td>${calcAge(c.dob)}</td><td>${c.room}</td></tr>`).join("");}
+function refresh(){
+  if(!current){
+    document.getElementById("info").style.display="none";
+    document.getElementById("summary").style.display="block";
+    document.getElementById("vaccineTable").style.display="none";
+    document.getElementById("vaccineEmpty").style.display="block";
+  } else {
+    document.getElementById("info").style.display="block";
+    document.getElementById("summary").style.display="none";
+    document.getElementById("displayName").textContent=current.name;
+    document.getElementById("displayAge").textContent=calcAge(current.dob);
+    document.getElementById("displayGender").textContent=current.gender==="M"?"ชาย":current.gender==="F"?"หญิง":"-";
+    document.getElementById("displayRoom").textContent=current.room;
+    
+    let given=0,notGiven=0,pending=0;
+    vaccines.forEach(v=>{
+      const s=records[v.id]||"Pending";
+      if(s==="Given")given++;
+      else if(s==="Not Given")notGiven++;
+      else pending++;
+    });
+    
+    document.getElementById("given").textContent=given;
+    document.getElementById("notGiven").textContent=notGiven;
+    document.getElementById("pending").textContent=pending;
+    document.getElementById("total").textContent=vaccines.length;
+    
+    const tbody=document.getElementById("vaccineBody");
+    tbody.innerHTML="";
+    vaccines.forEach(v=>{
+      const s=records[v.id]||"Pending";
+      const statusText=s==="Given"?"ได้รับแล้ว":s==="Not Given"?"ยังไม่ได้":"รอติดตาม";
+      const badge=s==="Given"?"badge-green":s==="Not Given"?"badge-red":"badge-yellow";
+      
+      const tr=document.createElement("tr");
+      tr.innerHTML=`<td>${v.name}</td><td>${v.cat}</td><td>${v.age}</td><td><span class="badge ${badge}">${statusText}</span></td><td></td>`;
+      
+      const btn1=document.createElement("button");
+      btn1.className="btn btn-success";
+      btn1.innerHTML="✓";
+      btn1.onclick=()=>markVaccine(v.id,'Given');
+      
+      const btn2=document.createElement("button");
+      btn2.className="btn btn-danger";
+      btn2.innerHTML="✗";
+      btn2.onclick=()=>markVaccine(v.id,'Not Given');
+      
+      tr.lastChild.appendChild(btn1);
+      tr.lastChild.appendChild(btn2);
+      tbody.appendChild(tr);
+    });
+    
+    document.getElementById("vaccineTable").style.display="block";
+    document.getElementById("vaccineEmpty").style.display="none";
+  }
+  
+  document.getElementById("childList").innerHTML=children.length===0?'<div class="empty">ยังไม่มี</div>':children.map((c,i)=>`<div class="child-item ${current&&current.id===c.id?"active":""}" onclick="selectChild(${i})"><strong>${c.name}</strong><br><small>${fmt(c.dob)} | ห้อง: ${c.room}</small><br><button class="btn btn-secondary" style="width:48%;margin-right:2%;margin-top:5px;" onclick="openEdit(); return false;">แก้ไข</button><button class="btn btn-danger" style="width:48%;margin-top:5px;" onclick="deleteChild(); return false;">ลบ</button></div>`).join("");
+  
+  document.getElementById("histBody").innerHTML=children.length===0?'<tr><td colspan="4">ยังไม่มี</td></tr>':children.map(c=>`<tr><td><strong>${c.name}</strong></td><td>${fmt(c.dob)}</td><td>${calcAge(c.dob)}</td><td>${c.room}</td></tr>`).join("");
+}
 
-async function loadDash(){try{const r=await fetch(`${API}/dashboard`);const d=await r.json();if(d.status==="success"&&d.data){const stats=d.data.vaccineStats||{given:0,not_given:0,pending:0};if(chart){chart.data.datasets[0].data=[stats.given||0,stats.not_given||0,stats.pending||0];chart.update();}else{const ctx=document.getElementById("chart").getContext("2d");chart=new Chart(ctx,{type:"doughnut",data:{labels:["ได้รับ","ไม่ได้","รอ"],datasets:[{data:[stats.given||0,stats.not_given||0,stats.pending||0],backgroundColor:["#28a745","#dc3545","#ffc107"]}]},options:{responsive:true,maintainAspectRatio:false}});}const rooms=d.data.byRoom||[];document.getElementById("roomStats").innerHTML=rooms.length===0?'<div style="padding:15px;color:#999;text-align:center;">ยังไม่มี</div>':rooms.map(rm=>`<div class="room-item">ห้อง ${rm.room}: ${rm.count} คน</div>`).join("");}}catch(e){console.error("Dashboard:",e);}}
+async function loadDash(){try{const r=await fetch(`${API}/dashboard`);if(!r.ok)throw new Error(`HTTP error status: ${r.status}`);const d=await r.json();console.log("Dashboard data:",d);if(d.status==="success"&&d.data){const stats=d.data.vaccineStats||{given:0,not_given:0,pending:0};if(chart){chart.data.datasets[0].data=[stats.given||0,stats.not_given||0,stats.pending||0];chart.update();}else{const ctx=document.getElementById("chart").getContext("2d");chart=new Chart(ctx,{type:"doughnut",data:{labels:["ได้รับ","ไม่ได้","รอ"],datasets:[{data:[stats.given||0,stats.not_given||0,stats.pending||0],backgroundColor:["#28a745","#dc3545","#ffc107"]}]},options:{responsive:true,maintainAspectRatio:false}});}const rooms=d.data.byRoom||[];document.getElementById("roomStats").innerHTML=rooms.length===0?'<div style="padding:15px;color:#999;text-align:center;">ยังไม่มี</div>':rooms.map(rm=>`<div class="room-item">ห้อง ${rm.room}: ${rm.count} คน</div>`).join("");}}catch(e){console.error("Dashboard:",e);}}
 
 async function load(){try{const r=await fetch(`${API}/children`);const d=await r.json();if(d.data){children=d.data.map(c=>({id:c.child_id,name:c.full_name,nickname:c.nickname||"-",dob:c.date_of_birth,gender:c.gender||"-",mother:c.mother_name||"",room:c.room||"-"}));refresh();}}catch(e){console.log(e);}}
 
