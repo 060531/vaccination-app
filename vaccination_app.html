@@ -865,34 +865,49 @@
               <li>✅ ลดข้อผิดพลาดในการบันทึกข้อมูล</li>
             </ul>
 
-            <h3>💊 รายชื่อวัคซีน (18 ชนิด)</h3>
+            <h3>💊 รายชื่อวัคซีน (27 รายการ)</h3>
+
             <h4>วัคซีนพื้นฐาน (Basic Vaccination)</h4>
             <ol>
-              <li><strong>BCG (วัคซีนวัณโรค)</strong> - แรกเกิด</li>
-              <li><strong>HB1 (ไข้หวัดใหญ่ B โดสที่ 1)</strong> - แรกเกิด</li>
-              <li><strong>HB2 (ไข้หวัดใหญ่ B โดสที่ 2)</strong> - 1 เดือน</li>
-              <li><strong>DTwP-HB-IPV-Hib-1</strong> - 1 เดือน</li>
-              <li><strong>DTwP-HB-IPV-Hib-2</strong> - 2 เดือน</li>
-              <li><strong>DTwP-HB-IPV-Hib-3</strong> - 4 เดือน</li>
-              <li><strong>DTwP-HB-IPV-Hib (โดสเสริม)</strong> - 6 เดือน</li>
-              <li><strong>JE1 (มือเท้าปาก โดสที่ 1)</strong> - 9 เดือน</li>
-              <li>
-                <strong>MMR (หัด หัดเยอรมัน ไข้หวัดใหญ่)</strong> - 9 เดือน
-              </li>
-              <li><strong>JE2 (มือเท้าปาก โดสที่ 2)</strong> - 18 เดือน</li>
-              <li><strong>OPV (โปลิโอปกติ)</strong> - 4 ปี</li>
-              <li><strong>Td (ไขว้วัณโรค)</strong> - 11-12 ปี</li>
+            <li><strong>BCG1</strong> - BCG1 (แรกเกิด)</li>
+            <li><strong>HB1</strong> - HB1 (แรกเกิด)</li>
+            <li><strong>HB2</strong> - HB2 (1 เดือน)</li>
+
+            <li><strong>DTP1</strong> - DTP-HB-Hib1 (2 เดือน)</li>
+            <li><strong>OPV1</strong> - OPV1 (2 เดือน)</li>
+            <li><strong>IPV1</strong> - IPV1 (2 เดือน)</li>
+            <li><strong>ROTA1</strong> - Rotavirus1 (2 เดือน)</li>
+
+            <li><strong>DTP2</strong> - DTP-HB-Hib2 (4 เดือน)</li>
+            <li><strong>OPV2</strong> - OPV2 (4 เดือน)</li>
+            <li><strong>IPV2</strong> - IPV2 (4 เดือน)</li>
+            <li><strong>ROTA2</strong> - Rotavirus2 (4 เดือน)</li>
+
+            <li><strong>HB3</strong> - HB3 (6 เดือน)</li>
+            <li><strong>DTP3</strong> - DTP-HB-Hib3 (6 เดือน)</li>
+            <li><strong>OPV3</strong> - OPV3 (6 เดือน)</li>
+            <li><strong>IPV3</strong> - IPV3 (6 เดือน)</li>
+            <li><strong>ROTA3</strong> - Rotavirus3 (6 เดือน) *ถ้าสูตร 3 เข็ม</li>
+            <li><strong>FLU1</strong> - Influenza1 (เริ่มได้ ≥6 เดือน)</li>
+            <li><strong>FLU2</strong> - Influenza2 (เข็มที่ 2 ห่าง 4 สัปดาห์ กรณีเริ่มครั้งแรก)</li>
+
+            <li><strong>JE1</strong> - JE1 (9–12 เดือน)</li>
+            <li><strong>MMR1</strong> - MMR1 (9–12 เดือน)</li>
+
+            <li><strong>DTP4</strong> - DTP4 (18 เดือน)</li>
+            <li><strong>OPV4</strong> - OPV4 (18 เดือน)</li>
+            <li><strong>MMR2</strong> - MMR2 (18 เดือน)</li>
+
+            <li><strong>DTP5</strong> - DTP5 (4–6 ปี)</li>
+            <li><strong>OPV5</strong> - OPV5 (4–6 ปี)</li>
             </ol>
 
-            <h4>วัคซีนทางเลือก (Optional Vaccination)</h4>
-            <ol start="13">
-              <li><strong>Influenza (ไข้หวัดใหญ่)</strong> - ทุกไตรมาส</li>
-              <li><strong>Varicella (หนองนา)</strong> - 1-3 ปี</li>
-              <li><strong>PCV (ปอดแข็ง)</strong> - 2-5 ปี</li>
-              <li><strong>HAV (ฟิลิปปินส์)</strong> - 1 ปี</li>
-              <li><strong>Yellow Fever (ไข้เหลือง)</strong> - ตามความจำเป็น</li>
-              <li><strong>HPV (บ้านไก่)</strong> - 6-12 ปี</li>
+            <h4>วัคซีนอื่น ๆ (ทั่วไป) / Optional</h4>
+            <ol start="26">
+            <li><strong>COVID</strong> - COVID-19 (ตามคำแนะนำ)</li>
+            <li><strong>HPV</strong> - HPV (ตามช่วงอายุ)</li>
             </ol>
+
 
             <h3>🖥️ วิธีใช้งานแอปพลิเคชัน</h3>
             <ol>
@@ -1086,116 +1101,43 @@ created_at TIMESTAMP</code></pre>
       // DATA & CONFIGURATION
       // ============================
 
-      const vaccineData = [
-        {
-          id: 1,
-          name: "วัคซีนวัณโรค (BCG)",
-          category: "Basic",
-          age: "แรกเกิด",
-        },
-        {
-          id: 2,
-          name: "วัคซีนไข้หวัดใหญ่ B โดสที่ 1 (HB1)",
-          category: "Basic",
-          age: "แรกเกิด",
-        },
-        {
-          id: 3,
-          name: "วัคซีนไข้หวัดใหญ่ B โดสที่ 2 (HB2)",
-          category: "Basic",
-          age: "1 เดือน",
-        },
-        {
-          id: 4,
-          name: "วัคซีนหมาป่า โปลิโอ ทีดีพี โดสที่ 1 (DTwP-HB-IPV-Hib-1)",
-          category: "Basic",
-          age: "1 เดือน",
-        },
-        {
-          id: 5,
-          name: "วัคซีนหมาป่า โปลิโอ ทีดีพี โดสที่ 2 (DTwP-HB-IPV-Hib-2)",
-          category: "Basic",
-          age: "2 เดือน",
-        },
-        {
-          id: 6,
-          name: "วัคซีนหมาป่า โปลิโอ ทีดีพี โดสที่ 3 (DTwP-HB-IPV-Hib-3)",
-          category: "Basic",
-          age: "4 เดือน",
-        },
-        {
-          id: 7,
-          name: "วัคซีนหมาป่า โปลิโอ ทีดีพี โดสเสริม (DTwP-HB-IPV-Hib)",
-          category: "Basic",
-          age: "6 เดือน",
-        },
-        {
-          id: 8,
-          name: "วัคซีนมือเท้าปาก โดสที่ 1 (JE1)",
-          category: "Basic",
-          age: "9 เดือน",
-        },
-        {
-          id: 9,
-          name: "วัคซีนหัด หัดเยอรมัน ไข้หวัดใหญ่ (MMR)",
-          category: "Basic",
-          age: "9 เดือน",
-        },
-        {
-          id: 10,
-          name: "วัคซีนมือเท้าปาก โดสที่ 2 (JE2)",
-          category: "Basic",
-          age: "18 เดือน",
-        },
-        {
-          id: 11,
-          name: "วัคซีนโปลิโอปกติ (OPV)",
-          category: "Basic",
-          age: "4 ปี",
-        },
-        {
-          id: 12,
-          name: "วัคซีนไขว้วัณโรค (Td)",
-          category: "Basic",
-          age: "11-12 ปี",
-        },
-        {
-          id: 13,
-          name: "วัคซีนไข้หวัดใหญ่ (Influenza)",
-          category: "Optional",
-          age: "ทุกไตรมาส",
-        },
-        {
-          id: 14,
-          name: "วัคซีนหนองนา (Varicella)",
-          category: "Optional",
-          age: "1-3 ปี",
-        },
-        {
-          id: 15,
-          name: "วัคซีนปอดแข็ง (PCV13)",
-          category: "Optional",
-          age: "2-5 ปี",
-        },
-        {
-          id: 16,
-          name: "วัคซีนฟิลิปปินส์ (HAV)",
-          category: "Optional",
-          age: "1 ปี",
-        },
-        {
-          id: 17,
-          name: "วัคซีนไข้เหลือง (Yellow Fever)",
-          category: "Optional",
-          age: "ตามความจำเป็น",
-        },
-        {
-          id: 18,
-          name: "วัคซีนบ้านไก่ (HPV)",
-          category: "Optional",
-          age: "6-12 ปี",
-        },
-      ];
+const vaccineData = [
+  { id: 1,  code: "BCG1",  name: "BCG1 (แรกเกิด)", category: "Basic",    age: "แรกเกิด" },
+  { id: 2,  code: "HB1",   name: "HB1 (แรกเกิด)",  category: "Basic",    age: "แรกเกิด" },
+
+  { id: 3,  code: "HB2",   name: "HB2 (1 เดือน)",  category: "Basic",    age: "1 เดือน" },
+
+  { id: 4,  code: "DTP1",  name: "DTP-HB-Hib1 (2 เดือน)", category: "Basic", age: "2 เดือน" },
+  { id: 5,  code: "OPV1",  name: "OPV1 (2 เดือน)",        category: "Basic", age: "2 เดือน" },
+  { id: 6,  code: "IPV1",  name: "IPV1 (2 เดือน)",        category: "Basic", age: "2 เดือน" },
+  { id: 7,  code: "ROTA1", name: "Rotavirus1 (2 เดือน)",  category: "Basic", age: "2 เดือน" },
+
+  { id: 8,  code: "DTP2",  name: "DTP-HB-Hib2 (4 เดือน)", category: "Basic", age: "4 เดือน" },
+  { id: 9,  code: "OPV2",  name: "OPV2 (4 เดือน)",        category: "Basic", age: "4 เดือน" },
+  { id: 10, code: "IPV2",  name: "IPV2 (4 เดือน)",        category: "Basic", age: "4 เดือน" },
+  { id: 11, code: "ROTA2", name: "Rotavirus2 (4 เดือน)",  category: "Basic", age: "4 เดือน" },
+
+  { id: 12, code: "HB3",   name: "HB3 (6 เดือน)",         category: "Basic", age: "6 เดือน" },
+  { id: 13, code: "DTP3",  name: "DTP-HB-Hib3 (6 เดือน)", category: "Basic", age: "6 เดือน" },
+  { id: 14, code: "OPV3",  name: "OPV3 (6 เดือน)",        category: "Basic", age: "6 เดือน" },
+  { id: 15, code: "IPV3",  name: "IPV3 (6 เดือน)",        category: "Basic", age: "6 เดือน" },
+  { id: 16, code: "ROTA3", name: "Rotavirus3 (6 เดือน) *ถ้าสูตร 3 เข็ม", category: "Basic", age: "6 เดือน" },
+  { id: 17, code: "FLU1",  name: "Influenza1 (เริ่มได้ ≥6 เดือน)", category: "Basic", age: "6 เดือน" },
+  { id: 18, code: "FLU2",  name: "Influenza2 (เข็มที่ 2 ห่าง 4 สัปดาห์ กรณีเริ่มครั้งแรก)", category: "Basic", age: "6 เดือน" },
+
+  { id: 19, code: "JE1",   name: "JE1 (9–12 เดือน)",  category: "Basic", age: "9–12 เดือน" },
+  { id: 20, code: "MMR1",  name: "MMR1 (9–12 เดือน)", category: "Basic", age: "9–12 เดือน" },
+
+  { id: 21, code: "DTP4",  name: "DTP4 (18 เดือน)", category: "Basic", age: "18 เดือน" },
+  { id: 22, code: "OPV4",  name: "OPV4 (18 เดือน)", category: "Basic", age: "18 เดือน" },
+  { id: 23, code: "MMR2",  name: "MMR2 (18 เดือน)", category: "Basic", age: "18 เดือน" },
+
+  { id: 24, code: "DTP5",  name: "DTP5 (4–6 ปี)", category: "Basic", age: "4–6 ปี" },
+  { id: 25, code: "OPV5",  name: "OPV5 (4–6 ปี)", category: "Basic", age: "4–6 ปี" },
+
+  { id: 26, code: "COVID", name: "COVID-19 (ตามคำแนะนำ)", category: "Optional", age: "วัคซีนอื่น ๆ (ทั่วไป)" },
+  { id: 27, code: "HPV",   name: "HPV (ตามช่วงอายุ)",     category: "Optional", age: "วัคซีนอื่น ๆ (ทั่วไป)" },
+];
 
       // ============================
       // STATE MANAGEMENT
@@ -1644,7 +1586,7 @@ function markVaccine(vaccineId, status) {
 // DATA PERSISTENCE WITH API
 // ============================
 
-const API_BASE = 'https://vaccination-app-postgres.render.app/api';
+const API_BASE = 'https://vaccination-app-ag53.onrender.app/api';
 
 function saveData() {
     if (!currentChild) return;
