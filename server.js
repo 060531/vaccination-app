@@ -7,7 +7,6 @@ require('dotenv').config();
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static('public'));
 
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
@@ -30,12 +29,16 @@ app.get('/api/children', async (req, res) => {
 app.post('/api/children', async (req, res) => {
     try {
         const { full_name, nickname, date_of_birth, gender, mother_name, room } = req.body;
+        console.log('Received:', { full_name, room });
+        
         const result = await pool.query(
-            'INSERT INTO children (full_name, nickname, date_of_birth, gender, mother_name, room) VALUES ($1, $2, $3, $4, $5, $6) RETURNING child_id',
-            [full_name, nickname, date_of_birth, gender, mother_name, room]
+            'INSERT INTO children (full_name, nickname, date_of_birth, gender, mother_name, room) VALUES ($1, $2, $3, $4, $5, $6) RETURNING child_id, full_name, room',
+            [full_name, nickname || null, date_of_birth, gender || null, mother_name || null, room || null]
         );
+        
         res.json({ status: 'success', data: { child_id: result.rows[0].child_id } });
     } catch (error) {
+        console.error('Error:', error);
         res.json({ status: 'error', message: error.message });
     }
 });
@@ -55,8 +58,8 @@ app.get('/api/vaccinations/child/:id', async (req, res) => {
 app.post('/api/vaccinations', async (req, res) => {
     try {
         const { child_id, vaccine_id, status } = req.body;
+        console.log('Vaccine:', { child_id, vaccine_id, status });
         
-        // UPSERT: ลบ record เก่า แล้ว insert record ใหม่
         await pool.query(
             'DELETE FROM vaccination_records WHERE child_id = $1 AND vaccine_id = $2',
             [child_id, vaccine_id]
@@ -69,11 +72,11 @@ app.post('/api/vaccinations', async (req, res) => {
         
         res.json({ status: 'success' });
     } catch (error) {
+        console.error('Error:', error);
         res.json({ status: 'error', message: error.message });
     }
 });
 
-// Dashboard API
 app.get('/api/dashboard', async (req, res) => {
     try {
         const children = await pool.query('SELECT COUNT(*) FROM children');
@@ -82,7 +85,7 @@ app.get('/api/dashboard', async (req, res) => {
             ['Given']
         );
         const byRoom = await pool.query(
-            'SELECT room, COUNT(*) as count FROM children GROUP BY room ORDER BY room'
+            'SELECT room, COUNT(*) as count FROM children WHERE room IS NOT NULL GROUP BY room ORDER BY room'
         );
         
         res.json({
