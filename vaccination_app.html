@@ -114,6 +114,19 @@
       .vaccine-brand { color: var(--text-light); font-size: 0.9em; margin-top: 3px; }
       .vaccine-date { color: var(--success-color); font-weight: 600; }
       .vaccine-notes { margin-top: 10px; padding: 10px; background: var(--light-bg); border-radius: 4px; font-size: 0.9em; color: var(--text-dark); }
+      .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); }
+      .modal-content { background-color: var(--white); margin: 5% auto; padding: 30px; border-radius: 12px; width: 90%; max-width: 600px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); }
+      .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid var(--border-color); }
+      .modal-header h2 { color: var(--primary-color); margin: 0; }
+      .close { color: var(--text-light); font-size: 28px; font-weight: bold; cursor: pointer; transition: color 0.3s; }
+      .close:hover { color: var(--danger-color); }
+      .action-btn-group { display: flex; gap: 5px; }
+      .btn-edit { background: var(--warning-color); color: var(--text-dark); padding: 5px 10px; font-size: 0.8em; }
+      .btn-delete { background: var(--danger-color); color: var(--white); padding: 5px 10px; font-size: 0.8em; }
+      .btn-edit:hover, .btn-delete:hover { opacity: 0.8; }
+      .hidden { display: none; }
+      .modal-buttons { display: flex; gap: 10px; margin-top: 20px; }
+      .modal-buttons button { flex: 1; }
     </style>
 </head>
 <body>
@@ -215,9 +228,29 @@
                                 <input type="text" id="motherName" />
                             </div>
                             <div class="form-group">
-                                <label for="room">ห้อง</label>
-                                <input type="text" id="room" />
+                                <label for="room">ห้อง *</label>
+                                <select id="room" required onchange="toggleCustomRoom()">
+                                    <option value="">-- เลือกห้อง --</option>
+                                    <option value="1/1">1/1</option>
+                                    <option value="1/2">1/2</option>
+                                    <option value="1/3">1/3</option>
+                                    <option value="2/1">2/1</option>
+                                    <option value="2/2">2/2</option>
+                                    <option value="2/3">2/3</option>
+                                    <option value="3/1">3/1</option>
+                                    <option value="3/2">3/2</option>
+                                    <option value="3/3">3/3</option>
+                                    <option value="4/1">4/1</option>
+                                    <option value="4/2">4/2</option>
+                                    <option value="4/3">4/3</option>
+                                    <option value="อื่นๆ">อื่นๆ (กรุณาระบุ)</option>
+                                </select>
                             </div>
+                        </div>
+
+                        <div class="form-group hidden" id="customRoomGroup">
+                            <label for="customRoom">ระบุห้อง *</label>
+                            <input type="text" id="customRoom" placeholder="กรุณาระบุห้อง" />
                         </div>
 
                         <button type="submit" class="btn-primary">💾 บันทึกข้อมูล</button>
@@ -324,6 +357,141 @@
                     <div id="historyContent"></div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Modal แก้ไขข้อมูลเด็ก -->
+    <div id="editChildModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>✏️ แก้ไขข้อมูลเด็ก</h2>
+                <span class="close" onclick="closeEditChildModal()">&times;</span>
+            </div>
+            <form id="editChildForm">
+                <input type="hidden" id="editChildId" />
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editFullName">ชื่อจริง-นามสกุล *</label>
+                        <input type="text" id="editFullName" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="editNickname">ชื่อเล่น</label>
+                        <input type="text" id="editNickname" />
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editDob">วัน/เดือน/ปีเกิด *</label>
+                        <input type="date" id="editDob" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="editGender">เพศ</label>
+                        <select id="editGender">
+                            <option value="M">ชาย</option>
+                            <option value="F">หญิง</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editMotherName">ชื่อแม่</label>
+                        <input type="text" id="editMotherName" />
+                    </div>
+                    <div class="form-group">
+                        <label for="editRoom">ห้อง *</label>
+                        <select id="editRoom" required onchange="toggleCustomRoomEdit()">
+                            <option value="">-- เลือกห้อง --</option>
+                            <option value="1/1">1/1</option>
+                            <option value="1/2">1/2</option>
+                            <option value="1/3">1/3</option>
+                            <option value="2/1">2/1</option>
+                            <option value="2/2">2/2</option>
+                            <option value="2/3">2/3</option>
+                            <option value="3/1">3/1</option>
+                            <option value="3/2">3/2</option>
+                            <option value="3/3">3/3</option>
+                            <option value="4/1">4/1</option>
+                            <option value="4/2">4/2</option>
+                            <option value="4/3">4/3</option>
+                            <option value="อื่นๆ">อื่นๆ (กรุณาระบุ)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group hidden" id="customRoomGroupEdit">
+                    <label for="editCustomRoom">ระบุห้อง *</label>
+                    <input type="text" id="editCustomRoom" placeholder="กรุณาระบุห้อง" />
+                </div>
+
+                <div class="modal-buttons">
+                    <button type="button" class="btn-secondary" onclick="closeEditChildModal()">ยกเลิก</button>
+                    <button type="submit" class="btn-primary">💾 บันทึกการแก้ไข</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal แก้ไขข้อมูลวัคซีน -->
+    <div id="editVaccineModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>✏️ แก้ไขข้อมูลวัคซีน</h2>
+                <span class="close" onclick="closeEditVaccineModal()">&times;</span>
+            </div>
+            <form id="editVaccineForm">
+                <input type="hidden" id="editVaccineRecordId" />
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editVaccineType">ประเภทวัคซีน *</label>
+                        <select id="editVaccineType" required onchange="updateEditVaccineOptions()">
+                            <option value="">-- เลือกประเภท --</option>
+                            <option value="basic">วัคซีนพื้นฐาน</option>
+                            <option value="optional">วัคซีนเสริม</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editVaccineName">ชื่อวัคซีน *</label>
+                        <select id="editVaccineName" required onchange="updateEditBrandOptions()">
+                            <option value="">-- เลือกวัคซีน --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editVaccineBrand">ชนิดวัคซีน (ถ้ามี)</label>
+                        <select id="editVaccineBrand">
+                            <option value="">-- เลือกชนิดวัคซีน --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editVaccineDate">วันที่ให้วัคซีน *</label>
+                        <input type="date" id="editVaccineDate" required />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="editVaccineNotes">หมายเหตุ</label>
+                    <textarea id="editVaccineNotes" rows="3" placeholder="ระบุหมายเหตุ (ถ้ามี)"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="editVaccineStatus">สถานะ *</label>
+                    <select id="editVaccineStatus" required>
+                        <option value="Given">ได้รับแล้ว</option>
+                        <option value="Not Given">ยังไม่ได้รับ</option>
+                        <option value="Deferred">ชะลอการให้</option>
+                    </select>
+                </div>
+
+                <div class="modal-buttons">
+                    <button type="button" class="btn-secondary" onclick="closeEditVaccineModal()">ยกเลิก</button>
+                    <button type="submit" class="btn-primary">💾 บันทึกการแก้ไข</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -628,9 +796,61 @@ function showAlert(message, type, elementId = 'alertRegister') {
   setTimeout(() => { alert.style.display = 'none'; }, 3000);
 }
 
+function toggleCustomRoom() {
+  const room = document.getElementById('room').value;
+  const customRoomGroup = document.getElementById('customRoomGroup');
+  const customRoom = document.getElementById('customRoom');
+  
+  if (room === 'อื่นๆ') {
+    customRoomGroup.classList.remove('hidden');
+    customRoom.required = true;
+  } else {
+    customRoomGroup.classList.add('hidden');
+    customRoom.required = false;
+    customRoom.value = '';
+  }
+}
+
+function toggleCustomRoomEdit() {
+  const room = document.getElementById('editRoom').value;
+  const customRoomGroup = document.getElementById('customRoomGroupEdit');
+  const customRoom = document.getElementById('editCustomRoom');
+  
+  if (room === 'อื่นๆ') {
+    customRoomGroup.classList.remove('hidden');
+    customRoom.required = true;
+  } else {
+    customRoomGroup.classList.add('hidden');
+    customRoom.required = false;
+    customRoom.value = '';
+  }
+}
+
+function getRoomValue() {
+  const roomSelect = document.getElementById('room').value;
+  if (roomSelect === 'อื่นๆ') {
+    return document.getElementById('customRoom').value;
+  }
+  return roomSelect;
+}
+
+function getRoomValueEdit() {
+  const roomSelect = document.getElementById('editRoom').value;
+  if (roomSelect === 'อื่นๆ') {
+    return document.getElementById('editCustomRoom').value;
+  }
+  return roomSelect;
+}
+
 // Child Registration
 document.getElementById('childForm').addEventListener('submit', function(e) {
   e.preventDefault();
+  
+  const roomValue = getRoomValue();
+  if (!roomValue) {
+    showAlert('❌ กรุณาระบุห้อง', 'error');
+    return;
+  }
   
   const childData = {
     fullName: document.getElementById('fullName').value,
@@ -638,7 +858,7 @@ document.getElementById('childForm').addEventListener('submit', function(e) {
     dob: document.getElementById('dob').value,
     gender: document.getElementById('gender').value,
     motherName: document.getElementById('motherName').value || '',
-    room: document.getElementById('room').value || '-'
+    room: roomValue
   };
 
   // Add to local storage
@@ -649,9 +869,110 @@ document.getElementById('childForm').addEventListener('submit', function(e) {
 
   showAlert('✅ บันทึกข้อมูลเด็กสำเร็จ', 'success');
   this.reset();
+  document.getElementById('customRoomGroup').classList.add('hidden');
   loadChildren();
   updateDashboard();
 });
+
+// Edit Child Functions
+function openEditChildModal(childId) {
+  const children = JSON.parse(localStorage.getItem('children') || '[]');
+  const child = children.find(c => c.id === childId);
+  
+  if (!child) {
+    showAlert('❌ ไม่พบข้อมูลเด็ก', 'error');
+    return;
+  }
+  
+  document.getElementById('editChildId').value = child.id;
+  document.getElementById('editFullName').value = child.fullName;
+  document.getElementById('editNickname').value = child.nickname === '-' ? '' : child.nickname;
+  document.getElementById('editDob').value = child.dob;
+  document.getElementById('editGender').value = child.gender;
+  document.getElementById('editMotherName').value = child.motherName;
+  
+  // Set room
+  const roomOptions = ['1/1', '1/2', '1/3', '2/1', '2/2', '2/3', '3/1', '3/2', '3/3', '4/1', '4/2', '4/3'];
+  if (roomOptions.includes(child.room)) {
+    document.getElementById('editRoom').value = child.room;
+  } else {
+    document.getElementById('editRoom').value = 'อื่นๆ';
+    document.getElementById('editCustomRoom').value = child.room;
+    document.getElementById('customRoomGroupEdit').classList.remove('hidden');
+  }
+  
+  document.getElementById('editChildModal').style.display = 'block';
+}
+
+function closeEditChildModal() {
+  document.getElementById('editChildModal').style.display = 'none';
+  document.getElementById('editChildForm').reset();
+  document.getElementById('customRoomGroupEdit').classList.add('hidden');
+}
+
+document.getElementById('editChildForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  
+  const childId = parseInt(document.getElementById('editChildId').value);
+  const roomValue = getRoomValueEdit();
+  
+  if (!roomValue) {
+    showAlert('❌ กรุณาระบุห้อง', 'error');
+    return;
+  }
+  
+  const children = JSON.parse(localStorage.getItem('children') || '[]');
+  const index = children.findIndex(c => c.id === childId);
+  
+  if (index !== -1) {
+    children[index] = {
+      ...children[index],
+      fullName: document.getElementById('editFullName').value,
+      nickname: document.getElementById('editNickname').value || '-',
+      dob: document.getElementById('editDob').value,
+      gender: document.getElementById('editGender').value,
+      motherName: document.getElementById('editMotherName').value || '',
+      room: roomValue
+    };
+    
+    localStorage.setItem('children', JSON.stringify(children));
+    
+    showAlert('✅ แก้ไขข้อมูลเด็กสำเร็จ', 'success');
+    closeEditChildModal();
+    loadChildren();
+    updateDashboard();
+    
+    // Refresh current child if editing current one
+    if (currentChild && currentChild.id === childId) {
+      currentChild = children[index];
+    }
+  }
+});
+
+function deleteChild(childId) {
+  if (!confirm('⚠️ คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูลเด็กนี้?\n\nการลบจะลบข้อมูลวัคซีนทั้งหมดของเด็กด้วย')) {
+    return;
+  }
+  
+  let children = JSON.parse(localStorage.getItem('children') || '[]');
+  children = children.filter(c => c.id !== childId);
+  localStorage.setItem('children', JSON.stringify(children));
+  
+  // Delete related vaccine records
+  let records = JSON.parse(localStorage.getItem('vaccineRecords') || '[]');
+  records = records.filter(r => r.childId !== childId);
+  localStorage.setItem('vaccineRecords', JSON.stringify(records));
+  
+  showAlert('✅ ลบข้อมูลเด็กสำเร็จ', 'success');
+  
+  // Clear current child if deleted
+  if (currentChild && currentChild.id === childId) {
+    currentChild = null;
+  }
+  
+  loadChildren();
+  updateDashboard();
+}
 
 // Vaccine Recording
 document.getElementById('vaccineForm').addEventListener('submit', function(e) {
@@ -684,6 +1005,129 @@ document.getElementById('vaccineForm').addEventListener('submit', function(e) {
   document.getElementById('vaccineType').value = '';
   loadVaccineRecords();
 });
+
+// Edit Vaccine Functions
+function openEditVaccineModal(recordId) {
+  const records = JSON.parse(localStorage.getItem('vaccineRecords') || '[]');
+  const record = records.find(r => r.recordId === recordId);
+  
+  if (!record) {
+    showAlert('❌ ไม่พบข้อมูลวัคซีน', 'error', 'alertVaccine');
+    return;
+  }
+  
+  document.getElementById('editVaccineRecordId').value = record.recordId;
+  document.getElementById('editVaccineType').value = record.type;
+  
+  // Populate vaccine name options
+  updateEditVaccineOptions();
+  
+  // Set vaccine name and brand
+  setTimeout(() => {
+    document.getElementById('editVaccineName').value = record.name;
+    updateEditBrandOptions();
+    
+    setTimeout(() => {
+      if (record.brand !== '-') {
+        document.getElementById('editVaccineBrand').value = record.brand;
+      }
+    }, 100);
+  }, 100);
+  
+  document.getElementById('editVaccineDate').value = record.date;
+  document.getElementById('editVaccineNotes').value = record.notes;
+  document.getElementById('editVaccineStatus').value = record.status;
+  
+  document.getElementById('editVaccineModal').style.display = 'block';
+}
+
+function closeEditVaccineModal() {
+  document.getElementById('editVaccineModal').style.display = 'none';
+  document.getElementById('editVaccineForm').reset();
+}
+
+function updateEditVaccineOptions() {
+  const type = document.getElementById('editVaccineType').value;
+  const nameSelect = document.getElementById('editVaccineName');
+  nameSelect.innerHTML = '<option value="">-- เลือกวัคซีน --</option>';
+
+  if (type === 'basic') {
+    Object.keys(vaccineDatabase.basic).forEach(ageGroup => {
+      vaccineDatabase.basic[ageGroup].forEach(vaccine => {
+        const option = document.createElement('option');
+        option.value = vaccine.code;
+        option.textContent = vaccine.name;
+        option.dataset.brands = JSON.stringify(vaccine.brands || []);
+        nameSelect.appendChild(option);
+      });
+    });
+  } else if (type === 'optional') {
+    Object.keys(vaccineDatabase.optional).forEach(category => {
+      vaccineDatabase.optional[category].forEach(vaccine => {
+        const option = document.createElement('option');
+        option.value = vaccine.code;
+        option.textContent = vaccine.name;
+        option.dataset.brands = JSON.stringify(vaccine.brands || []);
+        nameSelect.appendChild(option);
+      });
+    });
+  }
+}
+
+function updateEditBrandOptions() {
+  const selectedOption = document.getElementById('editVaccineName').selectedOptions[0];
+  const brandSelect = document.getElementById('editVaccineBrand');
+  brandSelect.innerHTML = '<option value="">-- เลือกชนิดวัคซีน --</option>';
+
+  if (selectedOption && selectedOption.dataset.brands) {
+    const brands = JSON.parse(selectedOption.dataset.brands);
+    brands.forEach(brand => {
+      const option = document.createElement('option');
+      option.value = brand;
+      option.textContent = brand;
+      brandSelect.appendChild(option);
+    });
+  }
+}
+
+document.getElementById('editVaccineForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  
+  const recordId = parseInt(document.getElementById('editVaccineRecordId').value);
+  const records = JSON.parse(localStorage.getItem('vaccineRecords') || '[]');
+  const index = records.findIndex(r => r.recordId === recordId);
+  
+  if (index !== -1) {
+    records[index] = {
+      ...records[index],
+      type: document.getElementById('editVaccineType').value,
+      name: document.getElementById('editVaccineName').value,
+      brand: document.getElementById('editVaccineBrand').value || '-',
+      date: document.getElementById('editVaccineDate').value,
+      notes: document.getElementById('editVaccineNotes').value || '',
+      status: document.getElementById('editVaccineStatus').value
+    };
+    
+    localStorage.setItem('vaccineRecords', JSON.stringify(records));
+    
+    showAlert('✅ แก้ไขข้อมูลวัคซีนสำเร็จ', 'success', 'alertVaccine');
+    closeEditVaccineModal();
+    loadVaccineRecords();
+  }
+});
+
+function deleteVaccine(recordId) {
+  if (!confirm('⚠️ คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูลวัคซีนนี้?')) {
+    return;
+  }
+  
+  let records = JSON.parse(localStorage.getItem('vaccineRecords') || '[]');
+  records = records.filter(r => r.recordId !== recordId);
+  localStorage.setItem('vaccineRecords', JSON.stringify(records));
+  
+  showAlert('✅ ลบข้อมูลวัคซีนสำเร็จ', 'success', 'alertVaccine');
+  loadVaccineRecords();
+}
 
 function updateVaccineOptions() {
   const type = document.getElementById('vaccineType').value;
@@ -800,7 +1244,13 @@ function loadVaccineRecords() {
           <div class="vaccine-name">${getVaccineName(record.name)}</div>
           ${record.brand !== '-' ? `<div class="vaccine-brand">ชนิด: ${record.brand}</div>` : ''}
         </div>
-        <div class="vaccine-date">📅 ${formatDate(record.date)}</div>
+        <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 5px;">
+          <div class="vaccine-date">📅 ${formatDate(record.date)}</div>
+          <div class="action-btn-group">
+            <button class="btn-edit" onclick="openEditVaccineModal(${record.recordId})">✏️ แก้ไข</button>
+            <button class="btn-delete" onclick="deleteVaccine(${record.recordId})">🗑️ ลบ</button>
+          </div>
+        </div>
       </div>
       <div><span class="status-badge status-${record.status.toLowerCase().replace(' ', '-')}">${getStatusText(record.status)}</span></div>
       ${record.notes ? `<div class="vaccine-notes">📝 หมายเหตุ: ${record.notes}</div>` : ''}
@@ -953,11 +1403,15 @@ function updateDashboard() {
       const childRecords = records.filter(r => r.childId === child.id);
       return `
         <div class="child-item">
-          <div>
+          <div style="flex: 1;">
             <div class="child-item-name">👶 ${child.fullName}</div>
             <div class="child-item-info">
-              วัน/เดือน/ปีเกิด: ${formatDate(child.dob)} | อายุ: ${calculateAge(child.dob)} | วัคซีน: ${childRecords.length} เข็ม
+              วัน/เดือน/ปีเกิด: ${formatDate(child.dob)} | อายุ: ${calculateAge(child.dob)} | ห้อง: ${child.room} | วัคซีน: ${childRecords.length} เข็ม
             </div>
+          </div>
+          <div class="action-btn-group">
+            <button class="btn-edit" onclick="openEditChildModal(${child.id})">✏️ แก้ไข</button>
+            <button class="btn-delete" onclick="deleteChild(${child.id})">🗑️ ลบ</button>
           </div>
         </div>
       `;
@@ -1049,11 +1503,26 @@ window.addEventListener('load', function() {
   displayVaccinePlan();
   
   // Set max date for DOB to today
-  document.getElementById('dob').max = new Date().toISOString().split('T')[0];
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('dob').max = today;
+  document.getElementById('editDob').max = today;
   
   // Set default vaccine date to today
   document.getElementById('vaccineDate').valueAsDate = new Date();
 });
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+  const editChildModal = document.getElementById('editChildModal');
+  const editVaccineModal = document.getElementById('editVaccineModal');
+  
+  if (event.target === editChildModal) {
+    closeEditChildModal();
+  }
+  if (event.target === editVaccineModal) {
+    closeEditVaccineModal();
+  }
+}
     </script>
 </body>
 </html>
