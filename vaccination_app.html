@@ -23,7 +23,7 @@ body { font-family: "Segoe UI", sans-serif; background: linear-gradient(135deg, 
 .form-group { margin-bottom: 15px; }
 .form-group label { display: block; font-weight: 600; margin-bottom: 5px; }
 .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; }
-.btn { padding: 10px 15px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; }
+.btn { padding: 10px 15px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; margin-right: 5px; }
 .btn-primary { background: var(--primary); color: var(--white); width: 100%; margin-top: 10px; }
 .btn-success { background: var(--success); color: var(--white); padding: 6px 10px; font-size: 12px; }
 .btn-danger { background: var(--danger); color: var(--white); padding: 6px 10px; font-size: 12px; }
@@ -169,103 +169,33 @@ body { font-family: "Segoe UI", sans-serif; background: linear-gradient(135deg, 
 
 <script>
 const API="https://vaccination-app-ag53.onrender.com/api";
-const vaccines=[
-{id:1,name:"BCG1",cat:"Basic",age:"แรกเกิด"},{id:2,name:"HB1",cat:"Basic",age:"แรกเกิด"},{id:3,name:"HB2",cat:"Basic",age:"1 เดือน"},
-{id:4,name:"DTP1",cat:"Basic",age:"2 เดือน"},{id:5,name:"OPV1",cat:"Basic",age:"2 เดือน"},{id:6,name:"IPV1",cat:"Basic",age:"2 เดือน"},
-{id:7,name:"ROTA1",cat:"Basic",age:"2 เดือน"},{id:8,name:"DTP2",cat:"Basic",age:"4 เดือน"},{id:9,name:"OPV2",cat:"Basic",age:"4 เดือน"},
-{id:10,name:"IPV2",cat:"Basic",age:"4 เดือน"},{id:11,name:"ROTA2",cat:"Basic",age:"4 เดือน"},{id:12,name:"HB3",cat:"Basic",age:"6 เดือน"},
-{id:13,name:"DTP3",cat:"Basic",age:"6 เดือน"},{id:14,name:"OPV3",cat:"Basic",age:"6 เดือน"},{id:15,name:"IPV3",cat:"Basic",age:"6 เดือน"},
-{id:16,name:"ROTA3",cat:"Basic",age:"6 เดือน"},{id:17,name:"FLU1",cat:"Basic",age:"6 เดือน"},{id:18,name:"FLU2",cat:"Basic",age:"6 เดือน"},
-{id:19,name:"JE1",cat:"Basic",age:"9-12 เดือน"},{id:20,name:"MMR1",cat:"Basic",age:"9-12 เดือน"},{id:21,name:"DTP4",cat:"Basic",age:"18 เดือน"},
-{id:22,name:"OPV4",cat:"Basic",age:"18 เดือน"},{id:23,name:"MMR2",cat:"Basic",age:"18 เดือน"},{id:24,name:"DTP5",cat:"Basic",age:"4-6 ปี"},
-{id:25,name:"OPV5",cat:"Basic",age:"4-6 ปี"},{id:26,name:"COVID-19",cat:"Optional",age:"ตามคำแนะนำ"},{id:27,name:"HPV",cat:"Optional",age:"ตามช่วง"}
-];
+const vaccines=[{id:1,name:"BCG1",cat:"Basic",age:"แรกเกิด"},{id:2,name:"HB1",cat:"Basic",age:"แรกเกิด"},{id:3,name:"HB2",cat:"Basic",age:"1 เดือน"},{id:4,name:"DTP1",cat:"Basic",age:"2 เดือน"},{id:5,name:"OPV1",cat:"Basic",age:"2 เดือน"},{id:6,name:"IPV1",cat:"Basic",age:"2 เดือน"},{id:7,name:"ROTA1",cat:"Basic",age:"2 เดือน"},{id:8,name:"DTP2",cat:"Basic",age:"4 เดือน"},{id:9,name:"OPV2",cat:"Basic",age:"4 เดือน"},{id:10,name:"IPV2",cat:"Basic",age:"4 เดือน"},{id:11,name:"ROTA2",cat:"Basic",age:"4 เดือน"},{id:12,name:"HB3",cat:"Basic",age:"6 เดือน"},{id:13,name:"DTP3",cat:"Basic",age:"6 เดือน"},{id:14,name:"OPV3",cat:"Basic",age:"6 เดือน"},{id:15,name:"IPV3",cat:"Basic",age:"6 เดือน"},{id:16,name:"ROTA3",cat:"Basic",age:"6 เดือน"},{id:17,name:"FLU1",cat:"Basic",age:"6 เดือน"},{id:18,name:"FLU2",cat:"Basic",age:"6 เดือน"},{id:19,name:"JE1",cat:"Basic",age:"9-12 เดือน"},{id:20,name:"MMR1",cat:"Basic",age:"9-12 เดือน"},{id:21,name:"DTP4",cat:"Basic",age:"18 เดือน"},{id:22,name:"OPV4",cat:"Basic",age:"18 เดือน"},{id:23,name:"MMR2",cat:"Basic",age:"18 เดือน"},{id:24,name:"DTP5",cat:"Basic",age:"4-6 ปี"},{id:25,name:"OPV5",cat:"Basic",age:"4-6 ปี"},{id:26,name:"COVID-19",cat:"Optional",age:"ตามคำแนะนำ"},{id:27,name:"HPV",cat:"Optional",age:"ตามช่วง"}];
 
 let current=null,children=[],records={},chart=null;
 
 function alert(msg,type="success"){document.getElementById("alert").innerHTML=`<div class="alert alert-${type}">${msg}</div>`;setTimeout(()=>{document.getElementById("alert").innerHTML=""},3000);}
-function switchTab(t){document.querySelectorAll(".tab-content").forEach(e=>e.classList.remove("active"));document.querySelectorAll(".tab-btn").forEach(e=>e.classList.remove("active"));document.getElementById(t).classList.add("active");event.target.classList.add("active");if(t==="dash")loadDash();}
+function switchTab(t){document.querySelectorAll(".tab-content").forEach(e=>e.classList.remove("active"));document.querySelectorAll(".tab-btn").forEach(e=>e.classList.remove("active"));document.getElementById(t).classList.add("active");event.target.classList.add("active");if(t==="dash")setTimeout(loadDash,100);}
 function calcAge(dob){const now=new Date(),birth=new Date(dob),y=now.getFullYear()-birth.getFullYear(),m=now.getMonth()-birth.getMonth(),d=now.getDate()-birth.getDate();let yy=y,mm=m,dd=d;if(mm<0){yy--;mm+=12;}if(dd<0){mm--;dd+=30;}return `${yy} ปี ${mm} เดือน ${dd} วัน`;}
 function fmt(d){return new Date(d).toLocaleDateString("th-TH",{year:"numeric",month:"long",day:"numeric"});}
 
 async function addChild(e){e.preventDefault();const name=document.getElementById("fullName").value.trim();if(!name){alert("กรุณากรอกชื่อ","error");return;}try{const r=await fetch(`${API}/children`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({full_name:name,nickname:document.getElementById("nickname").value||"",date_of_birth:document.getElementById("dob").value,gender:document.getElementById("gender").value||"",mother_name:document.getElementById("motherName").value||"",room:document.getElementById("room").value||""})});const d=await r.json();if(d.status==="success"){current={id:d.data.child_id,name,nickname:document.getElementById("nickname").value||"-",dob:document.getElementById("dob").value,gender:document.getElementById("gender").value||"-",mother:document.getElementById("motherName").value||"",room:document.getElementById("room").value||"-"};children.push(current);records={};refresh();alert("บันทึกสำเร็จ");document.getElementById("form").reset();}}catch(err){alert("เกิดข้อผิดพลาด","error");}}
 
-async function selectChild(i){current=children[i];try{const r=await fetch(`${API}/vaccinations/child/${current.id}`);const d=await r.json();records={};if(d.data)d.data.forEach(x=>{records[x.vaccine_id]=x.status;});refresh();}catch(err){console.log(err);}}
+async function selectChild(i){current=children[i];try{const r=await fetch(`${API}/vaccinations/child/${current.id}`);const d=await r.json();records={};if(d.data)d.data.forEach(x=>{records[x.vaccine_id]=x.status;});refresh();}catch(err){}}
 
-async function markVaccine(vid,status){if(!current)return;records[vid]=status;try{const r=await fetch(`${API}/vaccinations`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({child_id:current.id,vaccine_id:vid,status:status})});const d=await r.json();if(d.status==="success"){refresh();alert("บันทึก");}else alert("เกิดข้อผิดพลาด","error");}catch(err){alert("เกิดข้อผิดพลาด","error");}}
+window.markVaccine=async function(vid,status){if(!current)return;records[vid]=status;try{const r=await fetch(`${API}/vaccinations`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({child_id:current.id,vaccine_id:vid,status:status})});const d=await r.json();if(d.status==="success"){refresh();alert("บันทึก");}else alert("เกิดข้อผิดพลาด","error");}catch(err){alert("เกิดข้อผิดพลาด","error");}};
 
 function openEdit(){if(!current){alert("เลือกเด็กก่อน","error");return;}document.getElementById("editName").value=current.name;document.getElementById("editNickname").value=current.nickname||"";document.getElementById("editDob").value=current.dob;document.getElementById("editGender").value=current.gender||"";document.getElementById("editMother").value=current.mother||"";document.getElementById("editRoom").value=current.room||"";document.getElementById("editModal").classList.add("active");}
-
 function closeEdit(){document.getElementById("editModal").classList.remove("active");}
 
 async function updateChild(e){e.preventDefault();if(!current)return;try{const r=await fetch(`${API}/children/${current.id}`,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify({full_name:document.getElementById("editName").value,nickname:document.getElementById("editNickname").value||"",date_of_birth:document.getElementById("editDob").value,gender:document.getElementById("editGender").value||"",mother_name:document.getElementById("editMother").value||"",room:document.getElementById("editRoom").value||""})});const d=await r.json();if(d.status==="success"){current.name=document.getElementById("editName").value;current.nickname=document.getElementById("editNickname").value||"-";current.dob=document.getElementById("editDob").value;current.gender=document.getElementById("editGender").value||"-";current.mother=document.getElementById("editMother").value||"";current.room=document.getElementById("editRoom").value||"-";refresh();alert("อัปเดต");closeEdit();}else alert("เกิดข้อผิดพลาด","error");}catch(err){alert("เกิดข้อผิดพลาด","error");}}
 
 async function deleteChild(){if(!current||!confirm("ลบเด็ก?"))return;try{const r=await fetch(`${API}/children/${current.id}`,{method:"DELETE"});const d=await r.json();if(d.status==="success"){children=children.filter(c=>c.id!==current.id);current=null;refresh();alert("ลบแล้ว");}else alert("เกิดข้อผิดพลาด","error");}catch(err){alert("เกิดข้อผิดพลาด","error");}}
 
-function refresh(){
-  if(!current){
-    document.getElementById("info").style.display="none";
-    document.getElementById("summary").style.display="block";
-    document.getElementById("vaccineTable").style.display="none";
-    document.getElementById("vaccineEmpty").style.display="block";
-  } else {
-    document.getElementById("info").style.display="block";
-    document.getElementById("summary").style.display="none";
-    document.getElementById("displayName").textContent=current.name;
-    document.getElementById("displayAge").textContent=calcAge(current.dob);
-    document.getElementById("displayGender").textContent=current.gender==="M"?"ชาย":current.gender==="F"?"หญิง":"-";
-    document.getElementById("displayRoom").textContent=current.room;
-    
-    let given=0,notGiven=0,pending=0;
-    vaccines.forEach(v=>{
-      const s=records[v.id]||"Pending";
-      if(s==="Given")given++;
-      else if(s==="Not Given")notGiven++;
-      else pending++;
-    });
-    
-    document.getElementById("given").textContent=given;
-    document.getElementById("notGiven").textContent=notGiven;
-    document.getElementById("pending").textContent=pending;
-    document.getElementById("total").textContent=vaccines.length;
-    
-    const tbody=document.getElementById("vaccineBody");
-    tbody.innerHTML="";
-    vaccines.forEach(v=>{
-      const s=records[v.id]||"Pending";
-      const statusText=s==="Given"?"ได้รับแล้ว":s==="Not Given"?"ยังไม่ได้":"รอติดตาม";
-      const badge=s==="Given"?"badge-green":s==="Not Given"?"badge-red":"badge-yellow";
-      
-      const tr=document.createElement("tr");
-      tr.innerHTML=`<td>${v.name}</td><td>${v.cat}</td><td>${v.age}</td><td><span class="badge ${badge}">${statusText}</span></td><td></td>`;
-      
-      const btn1=document.createElement("button");
-      btn1.className="btn btn-success";
-      btn1.innerHTML="✓";
-      btn1.onclick=()=>markVaccine(v.id,'Given');
-      
-      const btn2=document.createElement("button");
-      btn2.className="btn btn-danger";
-      btn2.innerHTML="✗";
-      btn2.onclick=()=>markVaccine(v.id,'Not Given');
-      
-      tr.lastChild.appendChild(btn1);
-      tr.lastChild.appendChild(btn2);
-      tbody.appendChild(tr);
-    });
-    
-    document.getElementById("vaccineTable").style.display="block";
-    document.getElementById("vaccineEmpty").style.display="none";
-  }
-  
-  document.getElementById("childList").innerHTML=children.length===0?'<div class="empty">ยังไม่มี</div>':children.map((c,i)=>`<div class="child-item ${current&&current.id===c.id?"active":""}" onclick="selectChild(${i})"><strong>${c.name}</strong><br><small>${fmt(c.dob)} | ห้อง: ${c.room}</small><br><button class="btn btn-secondary" style="width:48%;margin-right:2%;margin-top:5px;" onclick="openEdit(); return false;">แก้ไข</button><button class="btn btn-danger" style="width:48%;margin-top:5px;" onclick="deleteChild(); return false;">ลบ</button></div>`).join("");
-  
-  document.getElementById("histBody").innerHTML=children.length===0?'<tr><td colspan="4">ยังไม่มี</td></tr>':children.map(c=>`<tr><td><strong>${c.name}</strong></td><td>${fmt(c.dob)}</td><td>${calcAge(c.dob)}</td><td>${c.room}</td></tr>`).join("");
-}
+function refresh(){if(!current){document.getElementById("info").style.display="none";document.getElementById("summary").style.display="block";document.getElementById("vaccineTable").style.display="none";document.getElementById("vaccineEmpty").style.display="block";}else{document.getElementById("info").style.display="block";document.getElementById("summary").style.display="none";document.getElementById("displayName").textContent=current.name;document.getElementById("displayAge").textContent=calcAge(current.dob);document.getElementById("displayGender").textContent=current.gender==="M"?"ชาย":current.gender==="F"?"หญิง":"-";document.getElementById("displayRoom").textContent=current.room;let given=0,notGiven=0,pending=0;vaccines.forEach(v=>{const s=records[v.id]||"Pending";if(s==="Given")given++;else if(s==="Not Given")notGiven++;else pending++;});document.getElementById("given").textContent=given;document.getElementById("notGiven").textContent=notGiven;document.getElementById("pending").textContent=pending;document.getElementById("total").textContent=vaccines.length;const tbody=document.getElementById("vaccineBody");tbody.innerHTML="";vaccines.forEach(v=>{const s=records[v.id]||"Pending",statusText=s==="Given"?"ได้รับแล้ว":s==="Not Given"?"ยังไม่ได้":"รอติดตาม",badge=s==="Given"?"badge-green":s==="Not Given"?"badge-red":"badge-yellow",tr=document.createElement("tr");tr.innerHTML=`<td>${v.name}</td><td>${v.cat}</td><td>${v.age}</td><td><span class="badge ${badge}">${statusText}</span></td><td><button class="btn btn-success" onclick="markVaccine(${v.id},'Given')">✓</button><button class="btn btn-danger" onclick="markVaccine(${v.id},'Not Given')">✗</button></td>`;tbody.appendChild(tr);});document.getElementById("vaccineTable").style.display="block";document.getElementById("vaccineEmpty").style.display="none";}document.getElementById("childList").innerHTML=children.length===0?'<div class="empty">ยังไม่มี</div>':children.map((c,i)=>`<div class="child-item ${current&&current.id===c.id?"active":""}" onclick="selectChild(${i})"><strong>${c.name}</strong><br><small>${fmt(c.dob)} | ห้อง: ${c.room}</small><br><button class="btn btn-secondary" style="width:48%;margin-right:2%;margin-top:5px;" onclick="openEdit()">แก้ไข</button><button class="btn btn-danger" style="width:48%;margin-top:5px;" onclick="deleteChild()">ลบ</button></div>`).join("");document.getElementById("histBody").innerHTML=children.length===0?'<tr><td colspan="4">ยังไม่มี</td></tr>':children.map(c=>`<tr><td><strong>${c.name}</strong></td><td>${fmt(c.dob)}</td><td>${calcAge(c.dob)}</td><td>${c.room}</td></tr>`).join("");}
 
-async function loadDash(){try{const r=await fetch(`${API}/dashboard`);if(!r.ok)throw new Error(`HTTP error status: ${r.status}`);const d=await r.json();console.log("Dashboard data:",d);if(d.status==="success"&&d.data){const stats=d.data.vaccineStats||{given:0,not_given:0,pending:0};if(chart){chart.data.datasets[0].data=[stats.given||0,stats.not_given||0,stats.pending||0];chart.update();}else{const ctx=document.getElementById("chart").getContext("2d");chart=new Chart(ctx,{type:"doughnut",data:{labels:["ได้รับ","ไม่ได้","รอ"],datasets:[{data:[stats.given||0,stats.not_given||0,stats.pending||0],backgroundColor:["#28a745","#dc3545","#ffc107"]}]},options:{responsive:true,maintainAspectRatio:false}});}const rooms=d.data.byRoom||[];document.getElementById("roomStats").innerHTML=rooms.length===0?'<div style="padding:15px;color:#999;text-align:center;">ยังไม่มี</div>':rooms.map(rm=>`<div class="room-item">ห้อง ${rm.room}: ${rm.count} คน</div>`).join("");}}catch(e){console.error("Dashboard:",e);}}
+async function loadDash(){try{const r=await fetch(`${API}/dashboard`);if(!r.ok)throw new Error("API Error");const d=await r.json();if(d&&d.data){const stats=d.data.vaccineStats||{given:0,not_given:0,pending:0};const chartCanvas=document.getElementById("chart");if(!chartCanvas)return;if(chart)chart.destroy();const ctx=chartCanvas.getContext("2d");chart=new Chart(ctx,{type:"doughnut",data:{labels:["ได้รับ","ไม่ได้","รอ"],datasets:[{data:[stats.given||0,stats.not_given||0,stats.pending||0],backgroundColor:["#28a745","#dc3545","#ffc107"]}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"bottom"}}}});const rooms=d.data.byRoom||[];document.getElementById("roomStats").innerHTML=rooms.length===0?'<div style="padding:15px;color:#999;text-align:center;">ยังไม่มี</div>':rooms.map(rm=>`<div class="room-item">ห้อง ${rm.room}: ${rm.count} คน</div>`).join("");}else{document.getElementById("roomStats").innerHTML='<div style="padding:15px;color:#999;text-align:center;">ไม่พบข้อมูล</div>';}}catch(e){document.getElementById("roomStats").innerHTML='<div style="padding:15px;color:#999;text-align:center;">ข้อมูลไม่พร้อม</div>';}}
 
-async function load(){try{const r=await fetch(`${API}/children`);const d=await r.json();if(d.data){children=d.data.map(c=>({id:c.child_id,name:c.full_name,nickname:c.nickname||"-",dob:c.date_of_birth,gender:c.gender||"-",mother:c.mother_name||"",room:c.room||"-"}));refresh();}}catch(e){console.log(e);}}
+async function load(){try{const r=await fetch(`${API}/children`);const d=await r.json();if(d.data){children=d.data.map(c=>({id:c.child_id,name:c.full_name,nickname:c.nickname||"-",dob:c.date_of_birth,gender:c.gender||"-",mother:c.mother_name||"",room:c.room||"-"}));refresh();}}catch(e){}}
 
 load();
 document.getElementById("dob").max=new Date().toISOString().split("T")[0];
