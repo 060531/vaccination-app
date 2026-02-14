@@ -24,10 +24,10 @@ body { font-family: "Segoe UI", sans-serif; background: linear-gradient(135deg, 
 .form-group label { display: block; font-weight: 600; margin-bottom: 5px; }
 .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; }
 .btn { padding: 10px 15px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; }
-.btn-primary { background: var(--primary); color: var(--white); }
+.btn-primary { background: var(--primary); color: var(--white); width: 100%; margin-top: 10px; }
 .btn-success { background: var(--success); color: var(--white); padding: 6px 10px; font-size: 12px; }
 .btn-danger { background: var(--danger); color: var(--white); padding: 6px 10px; font-size: 12px; }
-.btn-secondary { background: #999; color: var(--white); }
+.btn-secondary { background: #999; color: var(--white); padding: 6px 10px; font-size: 11px; }
 .alert { padding: 12px; border-radius: 6px; margin-bottom: 15px; display: none; }
 .alert-success { background: #d4edda; color: #155724; display: block; }
 .alert-error { background: #f8d7da; color: #721c24; display: block; }
@@ -82,47 +82,17 @@ body { font-family: "Segoe UI", sans-serif; background: linear-gradient(135deg, 
 <h2>📝 ข้อมูลเด็ก</h2>
 <div id="alert"></div>
 <form id="form" onsubmit="addChild(event)">
-<div class="form-group">
-<label>ชื่อจริง-นามสกุล *</label>
-<input type="text" id="fullName" required>
-</div>
-<div class="form-group">
-<label>ชื่อเล่น</label>
-<input type="text" id="nickname">
-</div>
-<div class="form-group">
-<label>วัน/เดือน/ปีเกิด *</label>
-<input type="date" id="dob" required>
-</div>
-<div class="form-group">
-<label>เพศ</label>
-<select id="gender">
-<option value="">เลือก</option>
-<option value="M">ชาย</option>
-<option value="F">หญิง</option>
-</select>
-</div>
-<div class="form-group">
-<label>ชื่อแม่</label>
-<input type="text" id="motherName">
-</div>
-<div class="form-group">
-<label>ห้อง *</label>
-<select id="room" required>
-<option value="">เลือก</option>
-<option value="1/1">1/1</option><option value="1/2">1/2</option><option value="1/3">1/3</option>
-<option value="2/1">2/1</option><option value="2/2">2/2</option><option value="2/3">2/3</option>
-<option value="3/1">3/1</option><option value="3/2">3/2</option><option value="3/3">3/3</option>
-<option value="4/1">4/1</option><option value="4/2">4/2</option><option value="4/3">4/3</option>
-</select>
-</div>
-<button type="submit" class="btn btn-primary" style="width:100%;margin-top:10px;">💾 บันทึก</button>
+<div class="form-group"><label>ชื่อจริง-นามสกุล *</label><input type="text" id="fullName" required></div>
+<div class="form-group"><label>ชื่อเล่น</label><input type="text" id="nickname"></div>
+<div class="form-group"><label>วัน/เดือน/ปีเกิด *</label><input type="date" id="dob" required></div>
+<div class="form-group"><label>เพศ</label><select id="gender"><option value="">เลือก</option><option value="M">ชาย</option><option value="F">หญิง</option></select></div>
+<div class="form-group"><label>ชื่อแม่</label><input type="text" id="motherName"></div>
+<div class="form-group"><label>ห้อง *</label><select id="room" required><option value="">เลือก</option><option value="1/1">1/1</option><option value="1/2">1/2</option><option value="1/3">1/3</option><option value="2/1">2/1</option><option value="2/2">2/2</option><option value="2/3">2/3</option><option value="3/1">3/1</option><option value="3/2">3/2</option><option value="3/3">3/3</option><option value="4/1">4/1</option><option value="4/2">4/2</option><option value="4/3">4/3</option></select></div>
+<button type="submit" class="btn btn-primary">💾 บันทึก</button>
 </form>
 
 <h3 style="margin-top:20px;">📚 เด็ก</h3>
-<div id="childList" class="child-list">
-<div class="empty">ยังไม่มี</div>
-</div>
+<div id="childList" class="child-list"><div class="empty">ยังไม่มี</div></div>
 </div>
 
 <div class="panel">
@@ -130,14 +100,8 @@ body { font-family: "Segoe UI", sans-serif; background: linear-gradient(135deg, 
 <div id="summary" class="empty">เลือกเด็ก</div>
 <div id="info" style="display:none;">
 <div class="child-info">
-<div class="child-info-row">
-<div class="child-info-field"><strong>ชื่อ</strong><span id="displayName"></span></div>
-<div class="child-info-field"><strong>อายุ</strong><span id="displayAge"></span></div>
-</div>
-<div class="child-info-row">
-<div class="child-info-field"><strong>เพศ</strong><span id="displayGender">-</span></div>
-<div class="child-info-field"><strong>ห้อง</strong><span id="displayRoom">-</span></div>
-</div>
+<div class="child-info-row"><div class="child-info-field"><strong>ชื่อ</strong><span id="displayName"></span></div><div class="child-info-field"><strong>อายุ</strong><span id="displayAge"></span></div></div>
+<div class="child-info-row"><div class="child-info-field"><strong>เพศ</strong><span id="displayGender">-</span></div><div class="child-info-field"><strong>ห้อง</strong><span id="displayRoom">-</span></div></div>
 </div>
 <h3>สถิติ</h3>
 <div class="stats">
@@ -152,9 +116,7 @@ body { font-family: "Segoe UI", sans-serif; background: linear-gradient(135deg, 
 <h2>💉 วัคซีน</h2>
 <div id="vaccineTable" style="display:none;">
 <table class="table">
-<thead>
-<tr><th>วัคซีน</th><th>ประเภท</th><th>อายุ</th><th>สถานะ</th><th>การดำเนินการ</th></tr>
-</thead>
+<thead><tr><th>วัคซีน</th><th>ประเภท</th><th>อายุ</th><th>สถานะ</th><th>การดำเนินการ</th></tr></thead>
 <tbody id="vaccineBody"></tbody>
 </table>
 </div>
@@ -168,9 +130,7 @@ body { font-family: "Segoe UI", sans-serif; background: linear-gradient(135deg, 
 <div class="dashboard-grid">
 <div class="dashboard-box">
 <strong>📈 วัคซีน</strong>
-<div class="chart-container">
-<canvas id="chart"></canvas>
-</div>
+<div class="chart-container"><canvas id="chart"></canvas></div>
 </div>
 <div class="dashboard-box">
 <strong>🏥 ต่อห้อง</strong>
@@ -184,12 +144,8 @@ body { font-family: "Segoe UI", sans-serif; background: linear-gradient(135deg, 
 <div class="panel full-width">
 <h2>📋 ประวัติ</h2>
 <table class="table">
-<thead>
-<tr><th>เด็ก</th><th>วัน/เดือน/ปีเกิด</th><th>อายุ</th><th>ห้อง</th></tr>
-</thead>
-<tbody id="histBody">
-<tr><td colspan="4" style="text-align:center;">ยังไม่มี</td></tr>
-</tbody>
+<thead><tr><th>เด็ก</th><th>วัน/เดือน/ปีเกิด</th><th>อายุ</th><th>ห้อง</th></tr></thead>
+<tbody id="histBody"><tr><td colspan="4" style="text-align:center;">ยังไม่มี</td></tr></tbody>
 </table>
 </div>
 </div>
@@ -201,41 +157,13 @@ body { font-family: "Segoe UI", sans-serif; background: linear-gradient(135deg, 
 <span class="close" onclick="closeEdit()">&times;</span>
 <h2>แก้ไขข้อมูล</h2>
 <form id="editForm" onsubmit="updateChild(event)">
-<div class="form-group">
-<label>ชื่อจริง-นามสกุล *</label>
-<input type="text" id="editName" required>
-</div>
-<div class="form-group">
-<label>ชื่อเล่น</label>
-<input type="text" id="editNickname">
-</div>
-<div class="form-group">
-<label>วัน/เดือน/ปีเกิด *</label>
-<input type="date" id="editDob" required>
-</div>
-<div class="form-group">
-<label>เพศ</label>
-<select id="editGender">
-<option value="">เลือก</option>
-<option value="M">ชาย</option>
-<option value="F">หญิง</option>
-</select>
-</div>
-<div class="form-group">
-<label>ชื่อแม่</label>
-<input type="text" id="editMother">
-</div>
-<div class="form-group">
-<label>ห้อง *</label>
-<select id="editRoom" required>
-<option value="">เลือก</option>
-<option value="1/1">1/1</option><option value="1/2">1/2</option><option value="1/3">1/3</option>
-<option value="2/1">2/1</option><option value="2/2">2/2</option><option value="2/3">2/3</option>
-<option value="3/1">3/1</option><option value="3/2">3/2</option><option value="3/3">3/3</option>
-<option value="4/1">4/1</option><option value="4/2">4/2</option><option value="4/3">4/3</option>
-</select>
-</div>
-<button type="submit" class="btn btn-primary" style="width:100%;margin-top:10px;">💾 บันทึก</button>
+<div class="form-group"><label>ชื่อจริง-นามสกุล *</label><input type="text" id="editName" required></div>
+<div class="form-group"><label>ชื่อเล่น</label><input type="text" id="editNickname"></div>
+<div class="form-group"><label>วัน/เดือน/ปีเกิด *</label><input type="date" id="editDob" required></div>
+<div class="form-group"><label>เพศ</label><select id="editGender"><option value="">เลือก</option><option value="M">ชาย</option><option value="F">หญิง</option></select></div>
+<div class="form-group"><label>ชื่อแม่</label><input type="text" id="editMother"></div>
+<div class="form-group"><label>ห้อง *</label><select id="editRoom" required><option value="">เลือก</option><option value="1/1">1/1</option><option value="1/2">1/2</option><option value="1/3">1/3</option><option value="2/1">2/1</option><option value="2/2">2/2</option><option value="2/3">2/3</option><option value="3/1">3/1</option><option value="3/2">3/2</option><option value="3/3">3/3</option><option value="4/1">4/1</option><option value="4/2">4/2</option><option value="4/3">4/3</option></select></div>
+<button type="submit" class="btn btn-primary">💾 บันทึก</button>
 </form>
 </div>
 </div>
@@ -257,7 +185,7 @@ const vaccines=[
 let current=null,children=[],records={},chart=null;
 
 function alert(msg,type="success"){document.getElementById("alert").innerHTML=`<div class="alert alert-${type}">${msg}</div>`;setTimeout(()=>{document.getElementById("alert").innerHTML=""},3000);}
-function tabs(t){document.querySelectorAll(".tab-content").forEach(e=>e.classList.remove("active"));document.querySelectorAll(".tab-btn").forEach(e=>e.classList.remove("active"));document.getElementById(t).classList.add("active");event.target.classList.add("active");t==="dash"&&loadDash();}
+function tabs(t){document.querySelectorAll(".tab-content").forEach(e=>e.classList.remove("active"));document.querySelectorAll(".tab-btn").forEach(e=>e.classList.remove("active"));document.getElementById(t).classList.add("active");event.target.classList.add("active");if(t==="dash")loadDash();}
 function calcAge(dob){const now=new Date(),birth=new Date(dob),y=now.getFullYear()-birth.getFullYear(),m=now.getMonth()-birth.getMonth(),d=now.getDate()-birth.getDate();let yy=y,mm=m,dd=d;if(mm<0){yy--;mm+=12;}if(dd<0){mm--;dd+=30;}return `${yy} ปี ${mm} เดือน ${dd} วัน`;}
 function fmt(d){return new Date(d).toLocaleDateString("th-TH",{year:"numeric",month:"long",day:"numeric"});}
 
@@ -265,29 +193,22 @@ async function addChild(e){e.preventDefault();const name=document.getElementById
 
 async function selectChild(i){current=children[i];try{const r=await fetch(`${API}/vaccinations/child/${current.id}`);const d=await r.json();records={};if(d.data)d.data.forEach(x=>{records[x.vaccine_id]=x.status;});refresh();}catch(err){console.log(err);}}
 
-async function markVaccine(vid,status){if(!current)return;records[vid]=status;try{await fetch(`${API}/vaccinations`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({child_id:current.id,vaccine_id:vid,status:status})});refresh();alert("บันทึก");}catch(err){alert("เกิดข้อผิดพลาด","error");}}
-
-function openEdit(){document.getElementById("editName").value=current.name;document.getElementById("editNickname").value=current.nickname||"";document.getElementById("editDob").value=current.dob;document.getElementById("editGender").value=current.gender||"";document.getElementById("editMother").value=current.mother||"";document.getElementById("editRoom").value=current.room||"";document.getElementById("editModal").classList.add("active");}
-
-function closeEdit(){document.getElementById("editModal").classList.remove("active");}
-
-async function updateChild(e){e.preventDefault();if(!current)return;try{const r=await fetch(`${API}/children/${current.id}`,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify({full_name:document.getElementById("editName").value,nickname:document.getElementById("editNickname").value||"",date_of_birth:document.getElementById("editDob").value,gender:document.getElementById("editGender").value||"",mother_name:document.getElementById("editMother").value||"",room:document.getElementById("editRoom").value||""})});if((await r.json()).status==="success"){current.name=document.getElementById("editName").value;current.nickname=document.getElementById("editNickname").value||"-";current.dob=document.getElementById("editDob").value;current.gender=document.getElementById("editGender").value||"-";current.mother=document.getElementById("editMother").value||"";current.room=document.getElementById("editRoom").value||"-";refresh();alert("อัปเดต");closeEdit();}}catch(err){alert("เกิดข้อผิดพลาด","error");}}
-
-function refresh(){if(!current){document.getElementById("info").style.display="none";document.getElementById("summary").style.display="block";document.getElementById("vaccineTable").style.display="none";document.getElementById("vaccineEmpty").style.display="block";}else{document.getElementById("info").style.display="block";document.getElementById("summary").style.display="none";document.getElementById("displayName").textContent=current.name;document.getElementById("displayAge").textContent=calcAge(current.dob);document.getElementById("displayGender").textContent=current.gender==="M"?"ชาย":current.gender==="F"?"หญิง":"-";document.getElementById("displayRoom").textContent=current.room;let given=0,notGiven=0,pending=0;vaccines.forEach(v=>{const s=records[v.id]||"Pending";if(s==="Given")given++;else if(s==="Not Given")notGiven++;else pending++;});document.getElementById("given").textContent=given;document.getElementById("notGiven").textContent=notGiven;document.getElementById("pending").textContent=pending;document.getElementById("total").textContent=vaccines.length;document.getElementById("vaccineTable").innerHTML='<table class="table"><thead><tr><th>วัคซีน</th><th>ประเภท</th><th>อายุ</th><th>สถานะ</th><th>การดำเนินการ</th></tr></thead><tbody id="vaccineBody"></tbody></table>';document.getElementById("vaccineTable").style.display="block";document.getElementById("vaccineEmpty").style.display="none";const tbody=document.getElementById("vaccineBody");tbody.innerHTML="";vaccines.forEach(v=>{const s=records[v.id]||"Pending",statusText=s==="Given"?"ได้รับแล้ว":s==="Not Given"?"ยังไม่ได้":"รอติดตาม",badge=s==="Given"?"badge-green":s==="Not Given"?"badge-red":"badge-yellow",tr=document.createElement("tr");tr.innerHTML=`<td>${v.name}</td><td>${v.cat}</td><td>${v.age}</td><td><span class="badge ${badge}">${statusText}</span></td><td><button class="btn btn-success" onclick="markVaccine(${v.id},'Given')">✓</button><button class="btn btn-danger" onclick="markVaccine(${v.id},'Not Given')">✗</button></td>`;tbody.appendChild(tr);});document.getElementById("childList").innerHTML=children.map((c,i)=>`<div class="child-item ${current&&current.id===c.id?"active":""}" onclick="selectChild(${i})"><strong>${c.name}</strong><br/><small>${fmt(c.dob)} | ห้อง: ${c.room}</small><br/><button class="btn btn-secondary" style="margin-top:5px;font-size:11px;width:48%;margin-right:2%;" onclick="event.stopPropagation();openEdit()">แก้ไข</button><button class="btn btn-danger" style="margin-top:5px;font-size:11px;width:48%;" onclick="event.stopPropagation();deleteChild()">ลบ</button></div>`).join("");document.getElementById("histBody").innerHTML=children.map(c=>`<tr><td><strong>${c.name}</strong></td><td>${fmt(c.dob)}</td><td>${calcAge(c.dob)}</td><td>${c.room}</td></tr>`).join("")||'<tr><td colspan="4">ยังไม่มี</td></tr>';}}
-
-async function loadDash(){try{const r=await fetch(`${API}/dashboard`);const d=await r.json();if(d.status==="success"&&d.data){const v=d.data.vaccineStats||{given:0,not_given:0,pending:0};if(chart){chart.data.datasets[0].data=[v.given,v.not_given,v.pending];chart.update();}else{const ctx=document.getElementById("chart").getContext("2d");chart=new Chart(ctx,{type:"doughnut",data:{labels:["ได้รับ","ไม่ได้","รอ"],datasets:[{data:[v.given,v.not_given,v.pending],backgroundColor:["#28a745","#dc3545","#ffc107"]}]},options:{responsive:!0,maintainAspectRatio:!1}});}const rooms=d.data.byRoom||[];document.getElementById("roomStats").innerHTML=rooms.map(r=>`<div class="room-item"><strong>ห้อง ${r.room}:</strong> ${r.count} คน</div>`).join("");}}catch(e){console.log(e);}}
-
-async function load(){try{const r=await fetch(`${API}/children`);const d=await r.json();if(d.data){children=d.data.map(c=>({id:c.child_id,name:c.full_name,nickname:c.nickname||"-",dob:c.date_of_birth,gender:c.gender||"-",mother:c.mother_name||"",room:c.room||"-"}));refresh();}}catch(e){console.log(e);}}
-
-async function deleteChild(){if(!current||!confirm("ลบเด็ก?"))return;try{const r=await fetch(`${API}/children/${current.id}`,{method:"DELETE"});if((await r.json()).status==="success"){children=children.filter(c=>c.id!==current.id);current=null;refresh();alert("ลบแล้ว");}else alert("เกิดข้อผิดพลาด","error");}catch(err){alert("เกิดข้อผิดพลาด","error");}}
+async function markVaccine(vid,status){if(!current)return;records[vid]=status;try{const r=await fetch(`${API}/vaccinations`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({child_id:current.id,vaccine_id:vid,status:status})});const d=await r.json();if(d.status==="success"){refresh();alert("บันทึก");}else alert("เกิดข้อผิดพลาด","error");}catch(err){alert("เกิดข้อผิดพลาด","error");}}
 
 function openEdit(){if(!current)return;document.getElementById("editName").value=current.name;document.getElementById("editNickname").value=current.nickname||"";document.getElementById("editDob").value=current.dob;document.getElementById("editGender").value=current.gender||"";document.getElementById("editMother").value=current.mother||"";document.getElementById("editRoom").value=current.room||"";document.getElementById("editModal").classList.add("active");}
 
 function closeEdit(){document.getElementById("editModal").classList.remove("active");}
 
-async function updateChild(e){e.preventDefault();if(!current)return;try{const r=await fetch(`${API}/children/${current.id}`,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify({full_name:document.getElementById("editName").value,nickname:document.getElementById("editNickname").value||"",date_of_birth:document.getElementById("editDob").value,gender:document.getElementById("editGender").value||"",mother_name:document.getElementById("editMother").value||"",room:document.getElementById("editRoom").value||""})});if((await r.json()).status==="success"){current.name=document.getElementById("editName").value;current.nickname=document.getElementById("editNickname").value||"-";current.dob=document.getElementById("editDob").value;current.gender=document.getElementById("editGender").value||"-";current.mother=document.getElementById("editMother").value||"";current.room=document.getElementById("editRoom").value||"-";refresh();alert("อัปเดต");closeEdit();}else alert("เกิดข้อผิดพลาด","error");}catch(err){alert("เกิดข้อผิดพลาด","error");}}
+async function updateChild(e){e.preventDefault();if(!current)return;try{const r=await fetch(`${API}/children/${current.id}`,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify({full_name:document.getElementById("editName").value,nickname:document.getElementById("editNickname").value||"",date_of_birth:document.getElementById("editDob").value,gender:document.getElementById("editGender").value||"",mother_name:document.getElementById("editMother").value||"",room:document.getElementById("editRoom").value||""})});const d=await r.json();if(d.status==="success"){current.name=document.getElementById("editName").value;current.nickname=document.getElementById("editNickname").value||"-";current.dob=document.getElementById("editDob").value;current.gender=document.getElementById("editGender").value||"-";current.mother=document.getElementById("editMother").value||"";current.room=document.getElementById("editRoom").value||"-";refresh();alert("อัปเดต");closeEdit();}else alert("เกิดข้อผิดพลาด","error");}catch(err){alert("เกิดข้อผิดพลาด","error");}}
 
-async function markVaccine(vid,status){if(!current)return;records[vid]=status;try{const r=await fetch(`${API}/vaccinations`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({child_id:current.id,vaccine_id:vid,status:status})});const d=await r.json();if(d.status==="success"){refresh();alert("บันทึก");}else alert("เกิดข้อผิดพลาด","error");}catch(err){alert("เกิดข้อผิดพลาด","error");}}
+async function deleteChild(){if(!current||!confirm("ลบเด็ก?"))return;try{const r=await fetch(`${API}/children/${current.id}`,{method:"DELETE"});const d=await r.json();if(d.status==="success"){children=children.filter(c=>c.id!==current.id);current=null;refresh();alert("ลบแล้ว");}else alert("เกิดข้อผิดพลาด","error");}catch(err){alert("เกิดข้อผิดพลาด","error");}}
+
+function refresh(){if(!current){document.getElementById("info").style.display="none";document.getElementById("summary").style.display="block";document.getElementById("vaccineTable").style.display="none";document.getElementById("vaccineEmpty").style.display="block";}else{document.getElementById("info").style.display="block";document.getElementById("summary").style.display="none";document.getElementById("displayName").textContent=current.name;document.getElementById("displayAge").textContent=calcAge(current.dob);document.getElementById("displayGender").textContent=current.gender==="M"?"ชาย":current.gender==="F"?"หญิง":"-";document.getElementById("displayRoom").textContent=current.room;let given=0,notGiven=0,pending=0;vaccines.forEach(v=>{const s=records[v.id]||"Pending";if(s==="Given")given++;else if(s==="Not Given")notGiven++;else pending++;});document.getElementById("given").textContent=given;document.getElementById("notGiven").textContent=notGiven;document.getElementById("pending").textContent=pending;document.getElementById("total").textContent=vaccines.length;const tbody=document.getElementById("vaccineBody");tbody.innerHTML="";vaccines.forEach(v=>{const s=records[v.id]||"Pending",statusText=s==="Given"?"ได้รับแล้ว":s==="Not Given"?"ยังไม่ได้":"รอติดตาม",badge=s==="Given"?"badge-green":s==="Not Given"?"badge-red":"badge-yellow",tr=document.createElement("tr");tr.innerHTML=`<td>${v.name}</td><td>${v.cat}</td><td>${v.age}</td><td><span class="badge ${badge}">${statusText}</span></td><td><button class="btn btn-success" onclick="markVaccine(${v.id},'Given')">✓</button><button class="btn btn-danger" onclick="markVaccine(${v.id},'Not Given')">✗</button></td>`;tbody.appendChild(tr);});document.getElementById("vaccineTable").style.display="block";document.getElementById("vaccineEmpty").style.display="none";}document.getElementById("childList").innerHTML=children.length===0?'<div class="empty">ยังไม่มี</div>':children.map((c,i)=>`<div class="child-item ${current&&current.id===c.id?"active":""}" onclick="selectChild(${i})"><strong>${c.name}</strong><br/><small>${fmt(c.dob)} | ห้อง: ${c.room}</small><br/><button class="btn btn-secondary" style="width:48%;margin-right:2%;margin-top:5px;" onclick="event.stopPropagation();openEdit()">แก้ไข</button><button class="btn btn-danger" style="width:48%;margin-top:5px;" onclick="event.stopPropagation();deleteChild()">ลบ</button></div>`).join("");document.getElementById("histBody").innerHTML=children.length===0?'<tr><td colspan="4">ยังไม่มี</td></tr>':children.map(c=>`<tr><td><strong>${c.name}</strong></td><td>${fmt(c.dob)}</td><td>${calcAge(c.dob)}</td><td>${c.room}</td></tr>`).join("");}
+
+async function loadDash(){try{const r=await fetch(`${API}/dashboard`);const d=await r.json();if(d.status==="success"&&d.data){const v=d.data.vaccineStats||{given:0,not_given:0,pending:0};if(chart){chart.data.datasets[0].data=[v.given,v.not_given,v.pending];chart.update();}else{const ctx=document.getElementById("chart").getContext("2d");chart=new Chart(ctx,{type:"doughnut",data:{labels:["ได้รับ","ไม่ได้","รอ"],datasets:[{data:[v.given,v.not_given,v.pending],backgroundColor:["#28a745","#dc3545","#ffc107"]}]},options:{responsive:!0,maintainAspectRatio:!1}});}const rooms=d.data.byRoom||[];document.getElementById("roomStats").innerHTML=rooms.length===0?'<div class="empty">ยังไม่มี</div>':rooms.map(r=>`<div class="room-item"><strong>ห้อง ${r.room}:</strong> ${r.count} คน</div>`).join("");}}catch(e){console.log(e);}}
+
+async function load(){try{const r=await fetch(`${API}/children`);const d=await r.json();if(d.data){children=d.data.map(c=>({id:c.child_id,name:c.full_name,nickname:c.nickname||"-",dob:c.date_of_birth,gender:c.gender||"-",mother:c.mother_name||"",room:c.room||"-"}));refresh();}}catch(e){console.log(e);}}
+
 load();
 document.getElementById("dob").max=new Date().toISOString().split("T")[0];
 document.getElementById("editDob").max=new Date().toISOString().split("T")[0];
