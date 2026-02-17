@@ -2353,8 +2353,17 @@ function getVaccinesReceivedByChild(childId) {
   let receivedCodes = [];
   
   childVaccines.forEach(record => {
-    if (record.vaccineCode) {
-      receivedCodes.push(record.vaccineCode);
+    // Try to match vaccine name to code
+    // Field is "name" which contains Thai name (e.g. "วัณโรค (BCG)")
+    if (record.name) {
+      // Find matching vaccine in allRequiredVaccines
+      const vaccineMatch = allRequiredVaccines.find(v => 
+        record.name.includes(v.code) || v.name.includes(record.name)
+      );
+      
+      if (vaccineMatch) {
+        receivedCodes.push(vaccineMatch.code);
+      }
     }
   });
   
