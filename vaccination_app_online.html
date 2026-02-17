@@ -26,7 +26,7 @@
         color: var(--text-dark);
       }
       .app-container {
-        max-width: 1600px;
+        max-width: 1800px;
         margin: 0 auto;
         background: var(--white);
         box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
@@ -85,6 +85,9 @@
       .stat-card h4 { color: var(--text-light); margin-bottom: 8px; font-size: 0.85em; text-transform: uppercase; }
       .stat-card .number { font-size: 2.5em; font-weight: 700; color: var(--primary-color); }
       .stat-card .label { color: var(--text-light); font-size: 0.9em; margin-top: 5px; }
+      .stat-card.success .number { color: var(--success-color); }
+      .stat-card.warning .number { color: var(--warning-color); }
+      .stat-card.danger .number { color: var(--danger-color); }
       .child-list { max-height: 400px; overflow-y: auto; background: var(--white); border: 1px solid var(--border-color); border-radius: 8px; }
       .child-item { padding: 12px; border-bottom: 1px solid var(--border-color); cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
       .child-item:hover { background: var(--light-bg); }
@@ -125,10 +128,214 @@
       .vaccine-date { color: var(--success-color); font-weight: 600; }
       .vaccine-notes { margin-top: 10px; padding: 10px; background: var(--light-bg); border-radius: 4px; font-size: 0.9em; color: var(--text-dark); }
       .loading { text-align: center; padding: 20px; color: var(--text-light); }
-      .online-badge { display: inline-block; padding: 5px 10px; border-radius: 15px; font-size: 0.8em; background: #28a745; color: white; margin-left: 10px; }
+      .online-badge { 
+        padding: 2px 6px;
+        border-radius: 8px;
+        font-size: 0.6em;
+        margin-left: 6px;
+      }   
+      .room-card { background: var(--white); border: 1px solid var(--border-color); border-radius: 8px; padding: 15px; margin-bottom: 15px; }
+      .room-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 2px solid var(--border-color); }
+      .room-name { font-size: 1.2em; font-weight: 700; color: var(--primary-dark); }
+      .room-stats { display: flex; gap: 15px; font-size: 0.9em; }
+      .room-stat { display: flex; align-items: center; gap: 5px; }
+      .room-stat.complete { color: var(--success-color); font-weight: 600; }
+      .room-stat.incomplete { color: var(--danger-color); font-weight: 600; }
+      
+      .child-detail-card { background: var(--light-bg); border-left: 4px solid var(--border-color); padding: 12px; margin-bottom: 10px; border-radius: 4px; }
+      .child-detail-card.complete { border-left-color: var(--success-color); }
+      .child-detail-card.incomplete { border-left-color: var(--danger-color); }
+      .child-detail-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+      .child-detail-name { font-weight: 600; color: var(--text-dark); }
+      .child-detail-progress { font-size: 0.9em; color: var(--text-light); }
+      .child-detail-progress.complete { color: var(--success-color); font-weight: 600; }
+      .child-detail-progress.incomplete { color: var(--danger-color); font-weight: 600; }
+      
+      .vaccine-list { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border-color); }
+      .vaccine-list-title { font-size: 0.85em; font-weight: 600; color: var(--text-dark); margin-bottom: 5px; }
+      .vaccine-list-items { font-size: 0.85em; line-height: 1.6; }
+      .vaccine-list-items.received { color: var(--success-color); }
+      .vaccine-list-items.missing { color: var(--danger-color); }
+      
+      .progress-bar-container { width: 100%; height: 8px; background: var(--border-color); border-radius: 4px; overflow: hidden; margin-top: 5px; }
+      .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--success-color), #20c997); transition: width 0.3s; }
+      
+      .collapse-btn { background: none; border: none; color: var(--primary-color); cursor: pointer; font-size: 0.85em; padding: 5px 10px; text-decoration: underline; }
+      .collapse-btn:hover { color: var(--primary-dark); }
+      
+      .collapsible-content { display: none; margin-top: 10px; }
+      .collapsible-content.show { display: block; }
+      
       @media (max-width: 1024px) { 
         .dashboard-grid { grid-template-columns: 1fr; }
         .form-row, .form-row-3 { grid-template-columns: 1fr; }
+        .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        .charts-grid { grid-template-columns: 1fr; }
+      }
+
+      /* ===== Alert System Styles ===== */
+      .alert-section {
+        margin-bottom: 25px;
+        border: 2px solid var(--danger-color);
+        border-radius: 12px;
+        overflow: hidden;
+        animation: alertPulse 2s ease-in-out infinite;
+      }
+      @keyframes alertPulse {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.15); }
+        50% { box-shadow: 0 0 15px 3px rgba(220, 53, 69, 0.15); }
+      }
+      .alert-section-header {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        color: var(--white);
+        padding: 15px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+      }
+      .alert-section-header h3 { margin: 0; font-size: 1.1em; }
+      .alert-badge {
+        background: var(--white);
+        color: var(--danger-color);
+        border-radius: 20px;
+        padding: 3px 12px;
+        font-weight: 700;
+        font-size: 0.95em;
+      }
+      .alert-section-body { padding: 0; max-height: 500px; overflow-y: auto; }
+      .alert-item {
+        padding: 14px 20px;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        transition: background 0.2s;
+      }
+      .alert-item:hover { background: #fff5f5; }
+      .alert-item:last-child { border-bottom: none; }
+      .alert-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2em;
+        flex-shrink: 0;
+      }
+      .alert-icon.upcoming { background: #fff3cd; }
+      .alert-icon.overdue { background: #f8d7da; }
+      .alert-info { flex: 1; }
+      .alert-child-name { font-weight: 700; color: var(--text-dark); font-size: 0.95em; }
+      .alert-vaccine-name { font-size: 0.85em; color: var(--text-light); margin-top: 2px; }
+      .alert-status-tag {
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.78em;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+      .alert-status-tag.upcoming { background: #fff3cd; color: #856404; }
+      .alert-status-tag.overdue { background: #f8d7da; color: #721c24; }
+      .alert-due-date { font-size: 0.8em; color: var(--text-light); margin-top: 3px; }
+      .no-alerts {
+        text-align: center;
+        padding: 30px;
+        color: var(--success-color);
+        font-weight: 600;
+      }
+
+      /* ===== Charts Styles ===== */
+      .charts-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 25px;
+      }
+      .chart-box {
+        background: var(--white);
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      }
+      .chart-box h3 {
+        color: var(--primary-dark);
+        font-size: 1em;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid var(--border-color);
+      }
+      .chart-wrapper {
+        position: relative;
+        height: 280px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* ===== Enhanced Report Styles ===== */
+      .report-summary {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+        border: 1px solid var(--border-color);
+      }
+      .report-summary h3 {
+        color: var(--primary-dark);
+        margin-bottom: 15px;
+        font-size: 1.1em;
+      }
+      .report-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(0,0,0,0.06);
+      }
+      .report-row:last-child { border-bottom: none; }
+      .report-label { font-weight: 600; color: var(--text-dark); }
+      .report-value { font-weight: 700; font-size: 1.2em; }
+      .report-value.success { color: var(--success-color); }
+      .report-value.danger { color: var(--danger-color); }
+      .report-value.primary { color: var(--primary-color); }
+      .report-value.warning { color: #e67e22; }
+      .big-completion {
+        text-align: center;
+        padding: 20px;
+        background: var(--white);
+        border-radius: 10px;
+        border: 1px solid var(--border-color);
+        margin-bottom: 20px;
+      }
+      .big-completion .big-number {
+        font-size: 3.5em;
+        font-weight: 800;
+        background: linear-gradient(135deg, var(--primary-color), var(--success-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .big-completion .big-label {
+        font-size: 0.95em;
+        color: var(--text-light);
+        margin-top: 5px;
+      }
+      .completion-bar-large {
+        width: 100%;
+        height: 20px;
+        background: var(--border-color);
+        border-radius: 10px;
+        overflow: hidden;
+        margin-top: 12px;
+      }
+      .completion-bar-large .fill {
+        height: 100%;
+        border-radius: 10px;
+        background: linear-gradient(90deg, var(--success-color), #20c997);
+        transition: width 0.8s ease;
       }
     </style>
 </head>
@@ -147,6 +354,8 @@
 
         <div class="tabs">
             <button class="tab-button active" onclick="switchTab('dashboard')">📊 Dashboard</button>
+            <button class="tab-button" onclick="switchTab('rooms')">🏫 รายงานตามห้อง</button>
+            <button class="tab-button" onclick="switchTab('children')">👶 รายงานรายบุคคล</button>
             <button class="tab-button" onclick="switchTab('register')">📝 ลงทะเบียนเด็ก</button>
             <button class="tab-button" onclick="switchTab('vaccine')">💉 บันทึกวัคซีน</button>
             <button class="tab-button" onclick="switchTab('plan')">📋 แผนวัคซีน</button>
@@ -159,29 +368,118 @@
                 <div class="panel">
                     <h2>📊 Dashboard - สรุปภาพรวม</h2>
                     
+                    <!-- ===== Alert Section ===== -->
+                    <div id="alertSection" style="display: none;">
+                        <div class="alert-section">
+                            <div class="alert-section-header" onclick="toggleAlertBody()">
+                                <h3>🔔 การแจ้งเตือนวัคซีน</h3>
+                                <span class="alert-badge" id="alertCount">0</span>
+                            </div>
+                            <div class="alert-section-body" id="alertBody"></div>
+                        </div>
+                    </div>
+
+                    <!-- ===== Big Completion Rate ===== -->
+                    <div class="big-completion">
+                        <div class="big-number" id="bigCompletionRate">0%</div>
+                        <div class="big-label">อัตราความครบถ้วนของหน่วยงาน</div>
+                        <div class="completion-bar-large">
+                            <div class="fill" id="bigCompletionBar" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <!-- ===== Stats Cards ===== -->
                     <div class="stats-grid">
                         <div class="stat-card">
                             <h4>จำนวนเด็กทั้งหมด</h4>
                             <div class="number" id="totalChildren">0</div>
                             <div class="label">คน</div>
                         </div>
-                        <div class="stat-card">
+                        <div class="stat-card success">
                             <h4>ได้รับวัคซีนครบแล้ว</h4>
                             <div class="number" id="completeVaccine">0</div>
                             <div class="label">คน</div>
                         </div>
-                        <div class="stat-card">
-                            <h4>กำลังติดตาม</h4>
+                        <div class="stat-card danger">
+                            <h4>ยังไม่ครบ / กำลังติดตาม</h4>
                             <div class="number" id="pendingVaccine">0</div>
                             <div class="label">คน</div>
                         </div>
                         <div class="stat-card">
-                            <h4>วัคซีนทั้งหมด</h4>
+                            <h4>วัคซีนทั้งหมดในระบบ</h4>
                             <div class="number" id="totalVaccines">0</div>
                             <div class="label">ชนิด</div>
                         </div>
                     </div>
 
+                    <!-- ===== Enhanced Report Summary ===== -->
+                    <div class="report-summary">
+                        <h3>📋 รายงานสรุปความครบถ้วน</h3>
+                        <div class="report-row">
+                            <span class="report-label">👶 เด็กทั้งหมด</span>
+                            <span class="report-value primary" id="reportTotal">0 คน</span>
+                        </div>
+                        <div class="report-row">
+                            <span class="report-label">✅ ได้วัคซีนพื้นฐานครบถ้วน</span>
+                            <span class="report-value success" id="reportComplete">0 คน (0%)</span>
+                        </div>
+                        <div class="report-row">
+                            <span class="report-label">❌ ได้วัคซีนพื้นฐานยังไม่ครบ</span>
+                            <span class="report-value danger" id="reportIncomplete">0 คน (0%)</span>
+                        </div>
+                        <div class="report-row">
+                            <span class="report-label">💉 วัคซีนที่ให้ไปแล้วทั้งหมด</span>
+                            <span class="report-value primary" id="reportGiven">0 คน</span>
+                        </div>
+                        <div class="report-row">
+                            <span class="report-label">📊 วัคซีนพื้นฐาน</span>
+                            <span class="report-value" id="reportBasic" style="color: var(--text-dark);">0 ชนิด</span>
+                        </div>
+                        <div class="report-row">
+                            <span class="report-label">📊 วัคซีนเสริม</span>
+                            <span class="report-value" id="reportOptional" style="color: var(--text-dark);">0 ชนิด</span>
+                        </div>
+                        <div class="report-row">
+                            <span class="report-label">⚠️ เด็กที่มีวัคซีนเลยกำหนด</span>
+                            <span class="report-value danger" id="reportOverdue">0 คน</span>
+                        </div>
+                        <div class="report-row">
+                            <span class="report-label">🔔 เด็กที่วัคซีนใกล้ถึงกำหนด (7 วัน)</span>
+                            <span class="report-value warning" id="reportUpcoming">0 คน</span>
+                        </div>
+                    </div>
+
+                    <!-- ===== Charts Section ===== -->
+                    <div class="charts-grid">
+                        <div class="chart-box">
+                            <h3>📊 สัดส่วนความครบถ้วนของวัคซีน</h3>
+                            <div class="chart-wrapper">
+                                <canvas id="completionPieChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-box">
+                            <h3>📊 สรุปจำนวนเด็กตามห้อง</h3>
+                            <div class="chart-wrapper">
+                                <canvas id="roomBarChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="charts-grid">
+                        <div class="chart-box">
+                            <h3>📊 สัดส่วนวัคซีนที่ให้แล้ว vs ยังไม่ได้ให้</h3>
+                            <div class="chart-wrapper">
+                                <canvas id="vaccineStatusChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-box">
+                            <h3>📊 อัตราความครบถ้วนแต่ละห้อง (%)</h3>
+                            <div class="chart-wrapper">
+                                <canvas id="roomCompletionChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===== Children Overview ===== -->
                     <div class="dashboard-grid">
                         <div class="chart-container">
                             <h3>📈 รายการเด็กทั้งหมด</h3>
@@ -196,6 +494,8 @@
                             </div>
                         </div>
                     </div>
+
+                    <div id="roomsSummary"></div>
                 </div>
             </div>
 
@@ -369,6 +669,24 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Rooms Report Tab -->
+            <div id="rooms" class="tab-content">
+                <div class="panel">
+                    <h2>🏫 รายงานตามห้อง</h2>
+                    <p style="color: var(--text-light); margin-bottom: 20px;">แสดงรายละเอียดการให้วัคซีนแยกตามห้องเรียน</p>
+                    <div id="roomsDetail"></div>
+                </div>
+            </div>
+
+            <!-- Children Detail Tab -->
+            <div id="children" class="tab-content">
+                <div class="panel">
+                    <h2>👶 รายงานรายบุคคล</h2>
+                    <p style="color: var(--text-light); margin-bottom: 20px;">แสดงรายละเอียดวัคซีนที่ได้รับและยังขาดของแต่ละคน</p>
+                    <div id="childrenDetail"></div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -507,15 +825,15 @@
         </div>
     </div>
 
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
     <script>
-// ========================================
 // Firebase Configuration
-// ========================================
-// คุณต้องแทนที่ config นี้ด้วย config จาก Firebase Console ของคุณเอง
 const firebaseConfig = {
   apiKey: "AIzaSyCfZX2haHp_B7HEnOTJaYSQKgiTbpgJMNY",
   authDomain: "vaccination-tracking-sys-f0271.firebaseapp.com",
@@ -526,7 +844,6 @@ const firebaseConfig = {
   appId: "1:1069962654649:web:1e1a5a500a5d48eb333c68"
 };
 
-// Initialize Firebase
 let database;
 let isFirebaseInitialized = false;
 
@@ -552,9 +869,7 @@ function updateOnlineStatus(isOnline) {
   }
 }
 
-// ========================================
-// Vaccine Database (same as before)
-// ========================================
+// Vaccine Database
 const vaccineDatabase = {
   basic: {
     "แรกเกิด": [
@@ -630,17 +945,400 @@ const vaccineDatabase = {
   }
 };
 
-// ========================================
-// Global Variables
-// ========================================
-let allChildren = [];
-let currentChild = null;
-let currentYear = new Date().getFullYear() + 543; // พ.ศ.
-let vaccineRecords = {};
+// Required vaccines list for reporting
+const allRequiredVaccines = [
+  { code: "BCG", name: "วัณโรค (BCG)", type: "basic", age: "แรกเกิด" },
+  { code: "HB1", name: "ตับอักเสบบี (HB1)", type: "basic", age: "แรกเกิด" },
+  { code: "DTaP_DTwP_HB_Hib1", name: "DTaP/DTwP-HB-Hib1", type: "basic", age: "2 เดือน" },
+  { code: "IPV1", name: "โปลิโอชนิดฉีด (IPV1)", type: "basic", age: "2 เดือน" },
+  { code: "Rota1", name: "โรต้า (Rota1)", type: "basic", age: "2 เดือน" },
+  { code: "DTaP_DTwP_HB_Hib2", name: "DTaP/DTwP-HB-Hib2", type: "basic", age: "4 เดือน" },
+  { code: "IPV2", name: "โปลิโอชนิดฉีด (IPV2)", type: "basic", age: "4 เดือน" },
+  { code: "Rota2", name: "โรต้า (Rota2)", type: "basic", age: "4 เดือน" },
+  { code: "DTaP_DTwP_HB_Hib3", name: "DTaP/DTwP-HB-Hib3", type: "basic", age: "6 เดือน" },
+  { code: "OPV3", name: "โปลิโอชนิดรับประทาน (OPV3)", type: "basic", age: "6 เดือน" },
+  { code: "Rota3", name: "โรต้า (Rota3)", type: "basic", age: "6 เดือน" },
+  { code: "MMR1", name: "หัด-คางทูม-หัดเยอรมัน (MMR1)", type: "basic", age: "9-12 เดือน" },
+  { code: "JE1", name: "ไข้สมองอักเสบเจอี (JE1)", type: "basic", age: "9-12 เดือน" },
+  { code: "DTwP_Booster1", name: "DTwP กระตุ้น 1", type: "basic", age: "18 เดือน" },
+  { code: "OPV_Booster1", name: "OPV กระตุ้น 1", type: "basic", age: "18 เดือน" },
+  { code: "MMR2", name: "หัด-คางทูม-หัดเยอรมัน (MMR2)", type: "basic", age: "18 เดือน" },
+  { code: "JE2", name: "ไข้สมองอักเสบเจอี (JE2)", type: "basic", age: "2-2½ ปี" },
+  { code: "DTwP_Booster2", name: "DTwP กระตุ้น 2", type: "basic", age: "4-6 ปี" },
+  { code: "OPV_Booster2", name: "OPV กระตุ้น 2", type: "basic", age: "4-6 ปี" }
+];
 
-// ========================================
+let allChildren = [];
+let allVaccineRecords = [];
+let currentChild = null;
+let currentYear = new Date().getFullYear() + 543;
+
+// Chart instances
+let completionPieChartInstance = null;
+let roomBarChartInstance = null;
+let vaccineStatusChartInstance = null;
+let roomCompletionChartInstance = null;
+
+// ===== Vaccine Schedule Mapping (age in months when each vaccine is due) =====
+const vaccineScheduleMonths = {
+  "BCG": 0,
+  "HB1": 0,
+  "HB2": 1,
+  "DTaP_DTwP_HB_Hib1": 2,
+  "IPV1": 2,
+  "Rota1": 2,
+  "DTaP_DTwP_HB_Hib2": 4,
+  "IPV2": 4,
+  "Rota2": 4,
+  "DTaP_DTwP_HB_Hib3": 6,
+  "OPV3": 6,
+  "Rota3": 6,
+  "MMR1": 9,
+  "JE1": 9,
+  "DTwP_Booster1": 18,
+  "OPV_Booster1": 18,
+  "MMR2": 18,
+  "JE2": 30,
+  "DTwP_Booster2": 48,
+  "OPV_Booster2": 48
+};
+
+// ===== Alert System Functions =====
+function getVaccineDueDate(dobStr, scheduleMonths) {
+  const dob = new Date(dobStr);
+  const dueDate = new Date(dob);
+  dueDate.setMonth(dueDate.getMonth() + scheduleMonths);
+  return dueDate;
+}
+
+function getDaysDiff(date1, date2) {
+  const diffTime = date2.getTime() - date1.getTime();
+  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+}
+
+function getChildAlerts(childId) {
+  const child = allChildren.find(c => c.id === childId);
+  if (!child) return [];
+  
+  const receivedCodes = getReceivedVaccineCodes(childId);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const alerts = [];
+  
+  allRequiredVaccines.forEach(vaccine => {
+    // Skip if already received
+    if (receivedCodes.includes(vaccine.code)) return;
+    
+    // Skip HB2 (conditional)
+    if (vaccine.code === 'HB2') return;
+    
+    const scheduleMonth = vaccineScheduleMonths[vaccine.code];
+    if (scheduleMonth === undefined) return;
+    
+    const dueDate = getVaccineDueDate(child.dob, scheduleMonth);
+    dueDate.setHours(0, 0, 0, 0);
+    const daysDiff = getDaysDiff(today, dueDate);
+    
+    if (daysDiff <= 7 && daysDiff > 0) {
+      // Upcoming: within 7 days
+      alerts.push({
+        childId: child.id,
+        childName: child.fullName,
+        room: child.room,
+        vaccineCode: vaccine.code,
+        vaccineName: vaccine.name,
+        dueDate: dueDate,
+        daysDiff: daysDiff,
+        type: 'upcoming',
+        age: vaccine.age
+      });
+    } else if (daysDiff <= 0) {
+      // Overdue: past due date
+      alerts.push({
+        childId: child.id,
+        childName: child.fullName,
+        room: child.room,
+        vaccineCode: vaccine.code,
+        vaccineName: vaccine.name,
+        dueDate: dueDate,
+        daysDiff: Math.abs(daysDiff),
+        type: 'overdue',
+        age: vaccine.age
+      });
+    }
+  });
+  
+  return alerts;
+}
+
+function getAllAlerts() {
+  let allAlerts = [];
+  allChildren.forEach(child => {
+    const childAlerts = getChildAlerts(child.id);
+    allAlerts = allAlerts.concat(childAlerts);
+  });
+  
+  // Sort: overdue first, then by days
+  allAlerts.sort((a, b) => {
+    if (a.type === 'overdue' && b.type === 'upcoming') return -1;
+    if (a.type === 'upcoming' && b.type === 'overdue') return 1;
+    if (a.type === 'overdue') return b.daysDiff - a.daysDiff;
+    return a.daysDiff - b.daysDiff;
+  });
+  
+  return allAlerts;
+}
+
+function displayAlerts() {
+  const alerts = getAllAlerts();
+  const section = document.getElementById('alertSection');
+  const body = document.getElementById('alertBody');
+  const countBadge = document.getElementById('alertCount');
+  
+  if (alerts.length === 0) {
+    section.style.display = 'none';
+    return;
+  }
+  
+  section.style.display = 'block';
+  countBadge.textContent = alerts.length + ' รายการ';
+  
+  const overdueAlerts = alerts.filter(a => a.type === 'overdue');
+  const upcomingAlerts = alerts.filter(a => a.type === 'upcoming');
+  
+  let html = '';
+  
+  if (overdueAlerts.length > 0) {
+    html += '<div style="padding: 10px 20px; background: #f8d7da; font-weight: 700; font-size: 0.9em; color: #721c24;">🔴 เลยกำหนดแล้ว (' + overdueAlerts.length + ' รายการ) — ยังไม่ได้รับวัคซีน</div>';
+    overdueAlerts.forEach(alert => {
+      html += `
+        <div class="alert-item">
+          <div class="alert-icon overdue">🔴</div>
+          <div class="alert-info">
+            <div class="alert-child-name">👶 ${alert.childName} <span style="font-weight:400; color: var(--text-light); font-size: 0.85em;">(ห้อง ${alert.room})</span></div>
+            <div class="alert-vaccine-name">💉 ${alert.vaccineName}</div>
+            <div class="alert-due-date">📅 กำหนดฉีด: ${formatDate(alert.dueDate.toISOString().split('T')[0])} (เลยมาแล้ว ${alert.daysDiff} วัน)</div>
+          </div>
+          <div class="alert-status-tag overdue">เลยกำหนด</div>
+        </div>
+      `;
+    });
+  }
+  
+  if (upcomingAlerts.length > 0) {
+    html += '<div style="padding: 10px 20px; background: #fff3cd; font-weight: 700; font-size: 0.9em; color: #856404;">🟡 ใกล้ถึงกำหนด (' + upcomingAlerts.length + ' รายการ) — ภายใน 7 วัน</div>';
+    upcomingAlerts.forEach(alert => {
+      html += `
+        <div class="alert-item">
+          <div class="alert-icon upcoming">🟡</div>
+          <div class="alert-info">
+            <div class="alert-child-name">👶 ${alert.childName} <span style="font-weight:400; color: var(--text-light); font-size: 0.85em;">(ห้อง ${alert.room})</span></div>
+            <div class="alert-vaccine-name">💉 ${alert.vaccineName}</div>
+            <div class="alert-due-date">📅 กำหนดฉีด: ${formatDate(alert.dueDate.toISOString().split('T')[0])} (อีก ${alert.daysDiff} วัน)</div>
+          </div>
+          <div class="alert-status-tag upcoming">ใกล้ถึงกำหนด</div>
+        </div>
+      `;
+    });
+  }
+  
+  body.innerHTML = html;
+}
+
+function toggleAlertBody() {
+  const body = document.getElementById('alertBody');
+  if (body.style.maxHeight === '0px') {
+    body.style.maxHeight = '500px';
+    body.style.overflow = 'auto';
+  } else {
+    body.style.maxHeight = '0px';
+    body.style.overflow = 'hidden';
+  }
+}
+
+// ===== Chart Functions =====
+function renderCharts() {
+  renderCompletionPieChart();
+  renderRoomBarChart();
+  renderVaccineStatusChart();
+  renderRoomCompletionChart();
+}
+
+function renderCompletionPieChart() {
+  const canvas = document.getElementById('completionPieChart');
+  if (!canvas) return;
+  
+  if (completionPieChartInstance) {
+    completionPieChartInstance.destroy();
+  }
+  
+  const completeCount = allChildren.filter(child => isChildComplete(child.id)).length;
+  const incompleteCount = allChildren.length - completeCount;
+  
+  completionPieChartInstance = new Chart(canvas, {
+    type: 'doughnut',
+    data: {
+      labels: ['ได้วัคซีนครบ', 'ยังไม่ครบ'],
+      datasets: [{
+        data: [completeCount, incompleteCount],
+        backgroundColor: ['#28a745', '#dc3545'],
+        borderWidth: 2,
+        borderColor: '#ffffff'
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { size: 13, family: 'Segoe UI' }, padding: 15 } },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              const total = context.dataset.data.reduce((a, b) => a + b, 0);
+              const pct = total > 0 ? Math.round((context.raw / total) * 100) : 0;
+              return context.label + ': ' + context.raw + ' คน (' + pct + '%)';
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+function renderRoomBarChart() {
+  const canvas = document.getElementById('roomBarChart');
+  if (!canvas) return;
+  
+  if (roomBarChartInstance) {
+    roomBarChartInstance.destroy();
+  }
+  
+  const rooms = {};
+  allChildren.forEach(child => {
+    if (!rooms[child.room]) rooms[child.room] = { complete: 0, incomplete: 0 };
+    if (isChildComplete(child.id)) {
+      rooms[child.room].complete++;
+    } else {
+      rooms[child.room].incomplete++;
+    }
+  });
+  
+  const labels = Object.keys(rooms).sort();
+  const completeData = labels.map(r => rooms[r].complete);
+  const incompleteData = labels.map(r => rooms[r].incomplete);
+  
+  roomBarChartInstance = new Chart(canvas, {
+    type: 'bar',
+    data: {
+      labels: labels.map(l => 'ห้อง ' + l),
+      datasets: [
+        { label: 'ครบ', data: completeData, backgroundColor: '#28a745', borderRadius: 4 },
+        { label: 'ไม่ครบ', data: incompleteData, backgroundColor: '#dc3545', borderRadius: 4 }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: { stacked: true },
+        y: { stacked: true, beginAtZero: true, ticks: { stepSize: 1 } }
+      },
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { size: 13 }, padding: 15 } }
+      }
+    }
+  });
+}
+
+function renderVaccineStatusChart() {
+  const canvas = document.getElementById('vaccineStatusChart');
+  if (!canvas) return;
+  
+  if (vaccineStatusChartInstance) {
+    vaccineStatusChartInstance.destroy();
+  }
+  
+  const totalExpected = allChildren.length * allRequiredVaccines.length;
+  const givenCount = allVaccineRecords.filter(v => v.status === 'Given').length;
+  const remainingCount = totalExpected - givenCount;
+  
+  vaccineStatusChartInstance = new Chart(canvas, {
+    type: 'doughnut',
+    data: {
+      labels: ['ให้แล้ว', 'ยังไม่ได้ให้'],
+      datasets: [{
+        data: [givenCount, Math.max(0, remainingCount)],
+        backgroundColor: ['#0066cc', '#e9ecef'],
+        borderWidth: 2,
+        borderColor: '#ffffff'
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { size: 13 }, padding: 15 } },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              const total = context.dataset.data.reduce((a, b) => a + b, 0);
+              const pct = total > 0 ? Math.round((context.raw / total) * 100) : 0;
+              return context.label + ': ' + context.raw + ' คน (' + pct + '%)';
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+function renderRoomCompletionChart() {
+  const canvas = document.getElementById('roomCompletionChart');
+  if (!canvas) return;
+  
+  if (roomCompletionChartInstance) {
+    roomCompletionChartInstance.destroy();
+  }
+  
+  const rooms = {};
+  allChildren.forEach(child => {
+    if (!rooms[child.room]) rooms[child.room] = { complete: 0, total: 0 };
+    rooms[child.room].total++;
+    if (isChildComplete(child.id)) rooms[child.room].complete++;
+  });
+  
+  const labels = Object.keys(rooms).sort();
+  const percentages = labels.map(r => Math.round((rooms[r].complete / rooms[r].total) * 100));
+  const colors = percentages.map(p => p >= 80 ? '#28a745' : p >= 50 ? '#ffc107' : '#dc3545');
+  
+  roomCompletionChartInstance = new Chart(canvas, {
+    type: 'bar',
+    data: {
+      labels: labels.map(l => 'ห้อง ' + l),
+      datasets: [{
+        label: 'ความครบถ้วน (%)',
+        data: percentages,
+        backgroundColor: colors,
+        borderRadius: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      indexAxis: 'y',
+      scales: {
+        x: { beginAtZero: true, max: 100, ticks: { callback: v => v + '%' } },
+        y: {}
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => ctx.raw + '%' } }
+      }
+    }
+  });
+}
+
 // Helper Functions
-// ========================================
 function showAlert(message, type, elementId = 'alertRegister') {
   const alert = document.getElementById(elementId);
   alert.className = `alert alert-${type}`;
@@ -695,6 +1393,9 @@ function getVaccineName(code) {
     const vaccine = vaccineDatabase.optional[category].find(v => v.code === code);
     if (vaccine) return vaccine.name;
   }
+  
+  const reqVaccine = allRequiredVaccines.find(v => v.code === code);
+  if (reqVaccine) return reqVaccine.name;
   
   return code;
 }
@@ -753,74 +1454,72 @@ function switchTab(tabName) {
   event.target.classList.add('active');
 
   if (tabName === 'dashboard') {
-    loadChildren();
+    loadAllData();
   } else if (tabName === 'plan') {
     displayVaccinePlan();
   } else if (tabName === 'history') {
     displayHistory();
+  } else if (tabName === 'rooms') {
+    displayRoomsReport();
+  } else if (tabName === 'children') {
+    displayChildrenDetail();
   }
 }
 
-// ========================================
 // Firebase CRUD Operations
-// ========================================
-
-// Load all children from Firebase
-function loadChildren() {
+function loadAllData() {
   if (!isFirebaseInitialized) {
     console.error('Firebase not initialized');
     return;
   }
 
-  const childrenRef = database.ref('children');
-  childrenRef.on('value', (snapshot) => {
+  database.ref('children').on('value', (snapshot) => {
     allChildren = [];
     snapshot.forEach((childSnapshot) => {
-      const child = childSnapshot.val();
       allChildren.push({
         id: childSnapshot.key,
-        ...child
+        ...childSnapshot.val()
       });
     });
     
-    updateChildSelect();
-    updateDashboard();
+    database.ref('vaccines').on('value', (vaccineSnapshot) => {
+      allVaccineRecords = [];
+      vaccineSnapshot.forEach((vacSnapshot) => {
+        allVaccineRecords.push({
+          id: vacSnapshot.key,
+          ...vacSnapshot.val()
+        });
+      });
+      
+      updateChildSelect();
+      updateDashboard();
+    });
   });
 }
 
-// Add new child to Firebase
 function addChild(childData) {
   if (!isFirebaseInitialized) {
     showAlert('❌ ไม่สามารถเชื่อมต่อฐานข้อมูลได้', 'error');
     return Promise.reject('Firebase not initialized');
   }
-
-  const childrenRef = database.ref('children');
-  return childrenRef.push(childData);
+  return database.ref('children').push(childData);
 }
 
-// Update child in Firebase
 function updateChild(childId, childData) {
   if (!isFirebaseInitialized) {
     showAlert('❌ ไม่สามารถเชื่อมต่อฐานข้อมูลได้', 'error');
     return Promise.reject('Firebase not initialized');
   }
-
-  const childRef = database.ref('children/' + childId);
-  return childRef.update(childData);
+  return database.ref('children/' + childId).update(childData);
 }
 
-// Delete child from Firebase
 function deleteChildFromDB(childId) {
   if (!isFirebaseInitialized) {
     showAlert('❌ ไม่สามารถเชื่อมต่อฐานข้อมูลได้', 'error');
     return Promise.reject('Firebase not initialized');
   }
-
-  // Delete child
-  const childRef = database.ref('children/' + childId);
   
-  // Delete all vaccine records for this child
+  const childRef = database.ref('children/' + childId);
   const vaccinesRef = database.ref('vaccines');
   vaccinesRef.orderByChild('childId').equalTo(childId).once('value', (snapshot) => {
     snapshot.forEach((childSnapshot) => {
@@ -831,40 +1530,30 @@ function deleteChildFromDB(childId) {
   return childRef.remove();
 }
 
-// Add vaccine record to Firebase
 function addVaccineRecord(vaccineData) {
   if (!isFirebaseInitialized) {
     showAlert('❌ ไม่สามารถเชื่อมต่อฐานข้อมูลได้', 'error', 'alertVaccine');
     return Promise.reject('Firebase not initialized');
   }
-
-  const vaccinesRef = database.ref('vaccines');
-  return vaccinesRef.push(vaccineData);
+  return database.ref('vaccines').push(vaccineData);
 }
 
-// Update vaccine record in Firebase
 function updateVaccineRecord(recordId, vaccineData) {
   if (!isFirebaseInitialized) {
     showAlert('❌ ไม่สามารถเชื่อมต่อฐานข้อมูลได้', 'error', 'alertVaccine');
     return Promise.reject('Firebase not initialized');
   }
-
-  const vaccineRef = database.ref('vaccines/' + recordId);
-  return vaccineRef.update(vaccineData);
+  return database.ref('vaccines/' + recordId).update(vaccineData);
 }
 
-// Delete vaccine record from Firebase
 function deleteVaccineFromDB(recordId) {
   if (!isFirebaseInitialized) {
     showAlert('❌ ไม่สามารถเชื่อมต่อฐานข้อมูลได้', 'error', 'alertVaccine');
     return Promise.reject('Firebase not initialized');
   }
-
-  const vaccineRef = database.ref('vaccines/' + recordId);
-  return vaccineRef.remove();
+  return database.ref('vaccines/' + recordId).remove();
 }
 
-// Load vaccine records for a specific child and year
 function loadVaccineRecords() {
   if (!currentChild || !isFirebaseInitialized) return;
   
@@ -915,11 +1604,7 @@ function displayVaccineRecords(records) {
   `).join('');
 }
 
-// ========================================
 // Form Handlers
-// ========================================
-
-// Child Registration
 document.getElementById('childForm').addEventListener('submit', function(e) {
   e.preventDefault();
   
@@ -951,7 +1636,6 @@ document.getElementById('childForm').addEventListener('submit', function(e) {
     });
 });
 
-// Edit Child Modal
 function openEditChildModal(childId) {
   const child = allChildren.find(c => c.id === childId);
   
@@ -1041,7 +1725,6 @@ function deleteChild(childId) {
     });
 }
 
-// Vaccine Recording
 document.getElementById('vaccineForm').addEventListener('submit', function(e) {
   e.preventDefault();
   
@@ -1150,22 +1833,162 @@ function setupYearSelector() {
   const currentYearBE = new Date().getFullYear() + 543;
   const years = [currentYearBE - 2, currentYearBE - 1, currentYearBE, currentYearBE + 1];
   
+  // Create wrapper for year buttons
+  const yearButtonsWrapper = document.createElement('div');
+  yearButtonsWrapper.style.display = 'flex';
+  yearButtonsWrapper.style.gap = '8px';
+  yearButtonsWrapper.style.flexWrap = 'wrap';
+  yearButtonsWrapper.style.marginBottom = '10px';
+  
   years.forEach(year => {
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'year-btn' + (year === currentYear ? ' active' : '');
     btn.textContent = `ปี ${year}`;
-    btn.onclick = () => {
+    btn.onclick = (e) => {
+      e.preventDefault();
       currentYear = year;
       document.querySelectorAll('.year-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       loadVaccineRecords();
     };
-    container.appendChild(btn);
+    yearButtonsWrapper.appendChild(btn);
   });
+  
+  container.appendChild(yearButtonsWrapper);
+  
+  // Add custom year input section
+  const customYearDiv = document.createElement('div');
+  customYearDiv.style.display = 'flex';
+  customYearDiv.style.gap = '10px';
+  customYearDiv.style.alignItems = 'center';
+  customYearDiv.style.padding = '12px';
+  customYearDiv.style.background = 'rgba(0, 102, 204, 0.05)';
+  customYearDiv.style.borderRadius = '8px';
+  customYearDiv.style.border = '1px solid var(--border-color)';
+  customYearDiv.style.flexWrap = 'wrap';
+  
+  const label = document.createElement('label');
+  label.textContent = '🔄 เพิ่มปีใหม่:';
+  label.style.fontWeight = '600';
+  label.style.fontSize = '0.9em';
+  label.style.color = 'var(--primary-dark)';
+  label.style.whiteSpace = 'nowrap';
+  
+  const input = document.createElement('input');
+  input.type = 'number';
+  input.placeholder = 'ป.ศ.';
+  input.style.padding = '8px 12px';
+  input.style.border = '1px solid var(--border-color)';
+  input.style.borderRadius = '6px';
+  input.style.width = '100px';
+  input.style.fontSize = '0.9em';
+  input.style.fontWeight = '600';
+  const minYear = currentYearBE - 20;
+  const maxYear = currentYearBE + 10;
+  input.min = minYear;
+  input.max = maxYear;
+  input.value = currentYearBE;
+  
+  const addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  addBtn.textContent = '✅ เพิ่มปี';
+  addBtn.style.padding = '8px 15px';
+  addBtn.style.background = 'var(--success-color)';
+  addBtn.style.color = 'var(--white)';
+  addBtn.style.border = 'none';
+  addBtn.style.borderRadius = '6px';
+  addBtn.style.fontWeight = '600';
+  addBtn.style.fontSize = '0.85em';
+  addBtn.style.cursor = 'pointer';
+  addBtn.style.transition = 'all 0.3s';
+  addBtn.style.whiteSpace = 'nowrap';
+  
+  addBtn.onmouseover = () => { addBtn.style.opacity = '0.8'; addBtn.style.transform = 'translateY(-2px)'; };
+  addBtn.onmouseout = () => { addBtn.style.opacity = '1'; addBtn.style.transform = 'translateY(0)'; };
+  
+  addBtn.onclick = (e) => {
+    e.preventDefault();
+    const year = parseInt(input.value);
+    
+    // Validation
+    if (!year || isNaN(year)) {
+      showAlert('❌ กรุณาระบุปีที่ถูกต้อง', 'error', 'alertVaccine');
+      return;
+    }
+    
+    if (year < minYear || year > maxYear) {
+      showAlert(`❌ ปีควรอยู่ระหว่าง ${minYear} - ${maxYear}`, 'error', 'alertVaccine');
+      return;
+    }
+    
+    // Check if year button already exists
+    const existingBtn = Array.from(yearButtonsWrapper.querySelectorAll('.year-btn')).find(btn => 
+      parseInt(btn.textContent.replace('ปี ', '')) === year
+    );
+    
+    if (existingBtn) {
+      showAlert(`⚠️ ปี ${year} มีอยู่แล้ว`, 'error', 'alertVaccine');
+      return;
+    }
+    
+    // Create new year button
+    const newBtn = document.createElement('button');
+    newBtn.type = 'button';
+    newBtn.className = 'year-btn active';
+    newBtn.textContent = `ปี ${year}`;
+    
+    newBtn.onclick = (e) => {
+      e.preventDefault();
+      currentYear = year;
+      document.querySelectorAll('.year-btn').forEach(b => b.classList.remove('active'));
+      newBtn.classList.add('active');
+      loadVaccineRecords();
+    };
+    
+    // Insert in sorted order (from smallest to largest year)
+    const allButtons = Array.from(yearButtonsWrapper.querySelectorAll('.year-btn'));
+    const allButtonsWithNew = [...allButtons, newBtn];
+    
+    // Sort by year (extract number from text)
+    allButtonsWithNew.sort((a, b) => {
+      const yearA = parseInt(a.textContent.replace('ปี ', ''));
+      const yearB = parseInt(b.textContent.replace('ปี ', ''));
+      return yearA - yearB;
+    });
+    
+    // Clear and re-insert in sorted order
+    yearButtonsWrapper.innerHTML = '';
+    allButtonsWithNew.forEach(btn => {
+      btn.onclick = (e) => {
+        e.preventDefault();
+        const btnYear = parseInt(btn.textContent.replace('ปี ', ''));
+        currentYear = btnYear;
+        document.querySelectorAll('.year-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        loadVaccineRecords();
+      };
+      yearButtonsWrapper.appendChild(btn);
+    });
+    
+    // Update current year and load data
+    currentYear = year;
+    document.querySelectorAll('.year-btn').forEach(b => b.classList.remove('active'));
+    newBtn.classList.add('active');
+    loadVaccineRecords();
+    
+    // Clear input and show success
+    input.value = currentYearBE;
+    showAlert(`✅ เพิ่มปี ${year} สำเร็จ`, 'success', 'alertVaccine');
+  };
+  
+  customYearDiv.appendChild(label);
+  customYearDiv.appendChild(input);
+  customYearDiv.appendChild(addBtn);
+  
+  container.appendChild(customYearDiv);
 }
 
-// Edit Vaccine Modal
 function openEditVaccineModal(recordId) {
   if (!isFirebaseInitialized) return;
   
@@ -1292,70 +2115,128 @@ function deleteVaccine(recordId) {
     });
 }
 
-// ========================================
 // Display Functions
-// ========================================
-
 function updateDashboard() {
   if (!isFirebaseInitialized) return;
   
-  const vaccinesRef = database.ref('vaccines');
-  vaccinesRef.once('value', (snapshot) => {
-    const allVaccines = [];
-    snapshot.forEach((vaccineSnapshot) => {
-      allVaccines.push(vaccineSnapshot.val());
-    });
-    
-    let totalVaccines = 0;
-    Object.keys(vaccineDatabase.basic).forEach(ageGroup => {
-      totalVaccines += vaccineDatabase.basic[ageGroup].length;
-    });
-    Object.keys(vaccineDatabase.optional).forEach(category => {
-      totalVaccines += vaccineDatabase.optional[category].length;
-    });
-    
-    document.getElementById('totalChildren').textContent = allChildren.length;
-    document.getElementById('totalVaccines').textContent = totalVaccines;
-    document.getElementById('completeVaccine').textContent = 0; // Can be calculated based on logic
-    document.getElementById('pendingVaccine').textContent = allChildren.length;
-    
-    const overviewContainer = document.getElementById('childrenOverview');
-    if (allChildren.length === 0) {
-      overviewContainer.innerHTML = '<div class="empty-state"><div class="empty-state-icon">👶</div><p>ยังไม่มีข้อมูลเด็กในระบบ</p></div>';
-    } else {
-      overviewContainer.innerHTML = allChildren.map(child => {
-        const childRecords = allVaccines.filter(v => v.childId === child.id);
-        return `
-          <div class="child-item">
-            <div style="flex: 1;">
-              <div class="child-item-name">👶 ${child.fullName}</div>
-              <div class="child-item-info">
-                วัน/เดือน/ปีเกิด: ${formatDate(child.dob)} | อายุ: ${calculateAge(child.dob)} | ห้อง: ${child.room} | วัคซีน: ${childRecords.length} เข็ม
-              </div>
-            </div>
-            <div class="action-btn-group">
-              <button class="btn-edit" onclick="openEditChildModal('${child.id}')">✏️ แก้ไข</button>
-              <button class="btn-delete" onclick="deleteChild('${child.id}')">🗑️ ลบ</button>
+  const totalChildren = allChildren.length;
+  const completeChildren = allChildren.filter(child => isChildComplete(child.id)).length;
+  const incompleteChildren = totalChildren - completeChildren;
+  const completionRate = totalChildren > 0 ? Math.round((completeChildren / totalChildren) * 100) : 0;
+  
+  let totalVaccines = 0;
+  Object.keys(vaccineDatabase.basic).forEach(ageGroup => {
+    totalVaccines += vaccineDatabase.basic[ageGroup].length;
+  });
+  Object.keys(vaccineDatabase.optional).forEach(category => {
+    totalVaccines += vaccineDatabase.optional[category].length;
+  });
+  
+  const totalBasic = allRequiredVaccines.filter(v => v.type === 'basic').length;
+  const totalOptional = totalVaccines - totalBasic;
+  const givenVaccines = allVaccineRecords.filter(v => v.status === 'Given').length;
+  
+  // Update stat cards
+  document.getElementById('totalChildren').textContent = totalChildren;
+  document.getElementById('completeVaccine').textContent = completeChildren;
+  document.getElementById('pendingVaccine').textContent = incompleteChildren;
+  document.getElementById('totalVaccines').textContent = totalVaccines;
+
+  // Update big completion rate
+  document.getElementById('bigCompletionRate').textContent = completionRate + '%';
+  document.getElementById('bigCompletionBar').style.width = completionRate + '%';
+  
+  // Update enhanced report summary
+  const completePercent = totalChildren > 0 ? Math.round((completeChildren / totalChildren) * 100) : 0;
+  const incompletePercent = totalChildren > 0 ? Math.round((incompleteChildren / totalChildren) * 100) : 0;
+  
+  document.getElementById('reportTotal').textContent = totalChildren + ' คน';
+  document.getElementById('reportComplete').textContent = completeChildren + ' คน (' + completePercent + '%)';
+  document.getElementById('reportIncomplete').textContent = incompleteChildren + ' คน (' + incompletePercent + '%)';
+  document.getElementById('reportGiven').textContent = givenVaccines + ' คน';
+  document.getElementById('reportBasic').textContent = totalBasic + ' ชนิด';
+  document.getElementById('reportOptional').textContent = totalOptional + ' ชนิด';
+  
+  // Calculate overdue and upcoming alerts
+  const allAlerts = getAllAlerts();
+  const overdueChildren = new Set(allAlerts.filter(a => a.type === 'overdue').map(a => a.childId));
+  const upcomingChildren = new Set(allAlerts.filter(a => a.type === 'upcoming').map(a => a.childId));
+  
+  document.getElementById('reportOverdue').textContent = overdueChildren.size + ' คน';
+  document.getElementById('reportUpcoming').textContent = upcomingChildren.size + ' คน';
+  
+  // Display alerts
+  displayAlerts();
+  
+  // Render charts
+  setTimeout(() => { renderCharts(); }, 100);
+  
+  // Children overview
+  const overviewContainer = document.getElementById('childrenOverview');
+  if (allChildren.length === 0) {
+    overviewContainer.innerHTML = '<div class="empty-state"><div class="empty-state-icon">👶</div><p>ยังไม่มีข้อมูลเด็กในระบบ</p></div>';
+  } else {
+    overviewContainer.innerHTML = allChildren.map(child => {
+      const childRecords = allVaccineRecords.filter(v => v.childId === child.id);
+      const childAlerts = getChildAlerts(child.id);
+      const hasOverdue = childAlerts.some(a => a.type === 'overdue');
+      const hasUpcoming = childAlerts.some(a => a.type === 'upcoming');
+      let alertTag = '';
+      if (hasOverdue) {
+        alertTag = '<span style="background:#f8d7da; color:#721c24; padding:2px 8px; border-radius:10px; font-size:0.75em; font-weight:600; margin-left:8px;">🔴 เลยกำหนด</span>';
+      } else if (hasUpcoming) {
+        alertTag = '<span style="background:#fff3cd; color:#856404; padding:2px 8px; border-radius:10px; font-size:0.75em; font-weight:600; margin-left:8px;">🟡 ใกล้กำหนด</span>';
+      }
+      return `
+        <div class="child-item">
+          <div style="flex: 1;">
+            <div class="child-item-name">👶 ${child.fullName} ${alertTag}</div>
+            <div class="child-item-info">
+              วัน/เดือน/ปีเกิด: ${formatDate(child.dob)} | อายุ: ${calculateAge(child.dob)} | ห้อง: ${child.room} | วัคซีน: ${childRecords.length} เข็ม
             </div>
           </div>
-        `;
-      }).join('');
-    }
-    
-    const pendingContainer = document.getElementById('pendingList');
-    if (allChildren.length === 0) {
-      pendingContainer.innerHTML = '<div class="empty-state"><div class="empty-state-icon">✅</div><p>ไม่มีรายการที่ต้องติดตาม</p></div>';
-    } else {
-      pendingContainer.innerHTML = allChildren.slice(0, 5).map(child => `
+          <div class="action-btn-group">
+            <button class="btn-edit" onclick="openEditChildModal('${child.id}')">✏️ แก้ไข</button>
+            <button class="btn-delete" onclick="deleteChild('${child.id}')">🗑️ ลบ</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+  
+  // Pending list - show children with alerts or incomplete vaccines
+  const pendingContainer = document.getElementById('pendingList');
+  const childrenWithAlerts = allChildren.filter(child => {
+    const alerts = getChildAlerts(child.id);
+    return alerts.length > 0;
+  });
+  
+  if (childrenWithAlerts.length === 0 && incompleteChildren === 0) {
+    pendingContainer.innerHTML = '<div class="empty-state"><div class="empty-state-icon">✅</div><p>ไม่มีรายการที่ต้องติดตาม</p></div>';
+  } else {
+    const pendingChildren = childrenWithAlerts.length > 0 ? childrenWithAlerts : allChildren.filter(c => !isChildComplete(c.id));
+    pendingContainer.innerHTML = pendingChildren.map(child => {
+      const alerts = getChildAlerts(child.id);
+      const overdueCount = alerts.filter(a => a.type === 'overdue').length;
+      const upcomingCount = alerts.filter(a => a.type === 'upcoming').length;
+      
+      let statusText = '';
+      if (overdueCount > 0) statusText += `<span style="color:#dc3545;">🔴 เลยกำหนด ${overdueCount} รายการ</span>`;
+      if (upcomingCount > 0) statusText += `${overdueCount > 0 ? ' | ' : ''}<span style="color:#856404;">🟡 ใกล้กำหนด ${upcomingCount} รายการ</span>`;
+      if (!statusText) statusText = '<span style="color:var(--text-light);">ควรตรวจสอบแผนวัคซีน</span>';
+      
+      return `
         <div class="child-item">
           <div>
             <div class="child-item-name">⚠️ ${child.fullName}</div>
-            <div class="child-item-info">ควรตรวจสอบแผนวัคซีน</div>
+            <div class="child-item-info">${statusText}</div>
           </div>
         </div>
-      `).join('');
-    }
-  });
+      `;
+    }).join('');
+  }
+  
+  displayRoomsSummary();
 }
 
 function displayVaccinePlan() {
@@ -1422,36 +2303,28 @@ function displayVaccinePlan() {
 function displayHistory() {
   if (!isFirebaseInitialized) return;
   
-  const vaccinesRef = database.ref('vaccines');
-  vaccinesRef.once('value', (snapshot) => {
-    const allVaccines = [];
-    snapshot.forEach((vaccineSnapshot) => {
-      allVaccines.push(vaccineSnapshot.val());
-    });
-    
-    const container = document.getElementById('historyContent');
-    if (allChildren.length === 0) {
-      container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📖</div><p>ยังไม่มีประวัติการใช้งาน</p></div>';
-      return;
-    }
-    
-    let html = '<table class="vaccine-table"><thead><tr><th>ชื่อเด็ก</th><th>วัน/เดือน/ปีเกิด</th><th>อายุ</th><th>จำนวนวัคซีน</th></tr></thead><tbody>';
-    
-    allChildren.forEach(child => {
-      const childRecords = allVaccines.filter(v => v.childId === child.id);
-      html += `
-        <tr>
-          <td><strong>${child.fullName}</strong></td>
-          <td>${formatDate(child.dob)}</td>
-          <td>${calculateAge(child.dob)}</td>
-          <td>${childRecords.length} เข็ม</td>
-        </tr>
-      `;
-    });
-    
-    html += '</tbody></table>';
-    container.innerHTML = html;
+  const container = document.getElementById('historyContent');
+  if (allChildren.length === 0) {
+    container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📖</div><p>ยังไม่มีประวัติการใช้งาน</p></div>';
+    return;
+  }
+  
+  let html = '<table class="vaccine-table"><thead><tr><th>ชื่อเด็ก</th><th>วัน/เดือน/ปีเกิด</th><th>อายุ</th><th>จำนวนวัคซีน</th></tr></thead><tbody>';
+  
+  allChildren.forEach(child => {
+    const childRecords = allVaccineRecords.filter(v => v.childId === child.id);
+    html += `
+      <tr>
+        <td><strong>${child.fullName}</strong></td>
+        <td>${formatDate(child.dob)}</td>
+        <td>${calculateAge(child.dob)}</td>
+        <td>${childRecords.length} เข็ม</td>
+      </tr>
+    `;
   });
+  
+  html += '</tbody></table>';
+  container.innerHTML = html;
 }
 
 function searchHistory() {
@@ -1464,51 +2337,308 @@ function searchHistory() {
   
   if (!isFirebaseInitialized) return;
   
-  const vaccinesRef = database.ref('vaccines');
-  vaccinesRef.once('value', (snapshot) => {
-    const allVaccines = [];
-    snapshot.forEach((vaccineSnapshot) => {
-      allVaccines.push(vaccineSnapshot.val());
-    });
-    
-    const filtered = allChildren.filter(child => 
-      child.fullName.toLowerCase().includes(searchTerm) || 
-      (child.nickname && child.nickname.toLowerCase().includes(searchTerm))
-    );
-    
-    const container = document.getElementById('historyContent');
-    if (filtered.length === 0) {
-      container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🔍</div><p>ไม่พบข้อมูลที่ค้นหา</p></div>';
-      return;
+  const filtered = allChildren.filter(child => 
+    child.fullName.toLowerCase().includes(searchTerm) || 
+    (child.nickname && child.nickname.toLowerCase().includes(searchTerm))
+  );
+  
+  const container = document.getElementById('historyContent');
+  if (filtered.length === 0) {
+    container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🔍</div><p>ไม่พบข้อมูลที่ค้นหา</p></div>';
+    return;
+  }
+  
+  let html = '<table class="vaccine-table"><thead><tr><th>ชื่อเด็ก</th><th>วัน/เดือน/ปีเกิด</th><th>อายุ</th><th>จำนวนวัคซีน</th></tr></thead><tbody>';
+  
+  filtered.forEach(child => {
+    const childRecords = allVaccineRecords.filter(v => v.childId === child.id);
+    html += `
+      <tr>
+        <td><strong>${child.fullName}</strong></td>
+        <td>${formatDate(child.dob)}</td>
+        <td>${calculateAge(child.dob)}</td>
+        <td>${childRecords.length} เข็ม</td>
+      </tr>
+    `;
+  });
+  
+  html += '</tbody></table>';
+  container.innerHTML = html;
+}
+
+// Report Functions
+function getChildVaccines(childId) {
+  return allVaccineRecords.filter(v => v.childId === childId && v.status === 'Given');
+}
+
+function getReceivedVaccineCodes(childId) {
+  const vaccines = getChildVaccines(childId);
+  return vaccines.map(v => v.name);
+}
+
+function getMissingVaccines(childId) {
+  const receivedCodes = getReceivedVaccineCodes(childId);
+  return allRequiredVaccines.filter(v => !receivedCodes.includes(v.code));
+}
+
+function isChildComplete(childId) {
+  const receivedCodes = getReceivedVaccineCodes(childId);
+  return receivedCodes.length >= allRequiredVaccines.length;
+}
+
+function getCompletionPercentage(childId) {
+  const receivedCodes = getReceivedVaccineCodes(childId);
+  return Math.round((receivedCodes.length / allRequiredVaccines.length) * 100);
+}
+
+function displayRoomsSummary() {
+  const rooms = {};
+  
+  allChildren.forEach(child => {
+    if (!rooms[child.room]) {
+      rooms[child.room] = { complete: 0, incomplete: 0, total: 0 };
     }
+    rooms[child.room].total++;
+    if (isChildComplete(child.id)) {
+      rooms[child.room].complete++;
+    } else {
+      rooms[child.room].incomplete++;
+    }
+  });
+  
+  const container = document.getElementById('roomsSummary');
+  
+  if (Object.keys(rooms).length === 0) {
+    container.innerHTML = '<p style="text-align: center; color: var(--text-light); padding: 20px;">ยังไม่มีข้อมูล</p>';
+    return;
+  }
+  
+  let html = '<h3 style="margin-top: 30px;">📊 สรุปตามห้อง</h3>';
+  html += '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 15px;">';
+  
+  Object.keys(rooms).sort().forEach(roomName => {
+    const room = rooms[roomName];
+    const percentage = Math.round((room.complete / room.total) * 100);
     
-    let html = '<table class="vaccine-table"><thead><tr><th>ชื่อเด็ก</th><th>วัน/เดือน/ปีเกิด</th><th>อายุ</th><th>จำนวนวัคซีน</th></tr></thead><tbody>';
+    html += `
+      <div class="stat-card">
+        <h4>ห้อง ${roomName}</h4>
+        <div style="display: flex; justify-content: space-around; margin: 15px 0;">
+          <div>
+            <div style="font-size: 1.5em; font-weight: 700; color: var(--success-color);">${room.complete}</div>
+            <div class="label">ครบ</div>
+          </div>
+          <div>
+            <div style="font-size: 1.5em; font-weight: 700; color: var(--danger-color);">${room.incomplete}</div>
+            <div class="label">ไม่ครบ</div>
+          </div>
+        </div>
+        <div class="progress-bar-container">
+          <div class="progress-bar-fill" style="width: ${percentage}%"></div>
+        </div>
+        <div style="margin-top: 5px; font-size: 0.85em; color: var(--text-light);">ความครบถ้วน ${percentage}%</div>
+      </div>
+    `;
+  });
+  
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+function displayRoomsReport() {
+  const rooms = {};
+  
+  allChildren.forEach(child => {
+    if (!rooms[child.room]) {
+      rooms[child.room] = [];
+    }
+    rooms[child.room].push(child);
+  });
+  
+  const container = document.getElementById('roomsDetail');
+  
+  if (Object.keys(rooms).length === 0) {
+    container.innerHTML = '<p style="text-align: center; color: var(--text-light); padding: 40px;">ยังไม่มีข้อมูล</p>';
+    return;
+  }
+  
+  let html = '';
+  
+  Object.keys(rooms).sort().forEach(roomName => {
+    const children = rooms[roomName];
+    const completeCount = children.filter(child => isChildComplete(child.id)).length;
+    const incompleteCount = children.length - completeCount;
+    const percentage = Math.round((completeCount / children.length) * 100);
     
-    filtered.forEach(child => {
-      const childRecords = allVaccines.filter(v => v.childId === child.id);
+    html += `
+      <div class="room-card">
+        <div class="room-header">
+          <div class="room-name">🏫 ห้อง ${roomName}</div>
+          <div class="room-stats">
+            <div class="room-stat complete">✅ ครบ ${completeCount} คน</div>
+            <div class="room-stat incomplete">⚠️ ไม่ครบ ${incompleteCount} คน</div>
+            <div class="room-stat" style="color: var(--primary-color); font-weight: 600;">(${percentage}%)</div>
+          </div>
+        </div>
+        <div class="progress-bar-container" style="margin-bottom: 15px;">
+          <div class="progress-bar-fill" style="width: ${percentage}%"></div>
+        </div>
+    `;
+    
+    children.forEach(child => {
+      const isComplete = isChildComplete(child.id);
+      const receivedVaccines = getChildVaccines(child.id);
+      const missingVaccines = getMissingVaccines(child.id);
+      const progress = getCompletionPercentage(child.id);
+      
       html += `
-        <tr>
-          <td><strong>${child.fullName}</strong></td>
-          <td>${formatDate(child.dob)}</td>
-          <td>${calculateAge(child.dob)}</td>
-          <td>${childRecords.length} เข็ม</td>
-        </tr>
+        <div class="child-detail-card ${isComplete ? 'complete' : 'incomplete'}">
+          <div class="child-detail-header">
+            <div class="child-detail-name">${isComplete ? '✅' : '⚠️'} ${child.fullName}</div>
+            <div class="child-detail-progress ${isComplete ? 'complete' : 'incomplete'}">
+              ${receivedVaccines.length}/${allRequiredVaccines.length} เข็ม (${progress}%)
+            </div>
+          </div>
+          <div class="progress-bar-container">
+            <div class="progress-bar-fill" style="width: ${progress}%"></div>
+          </div>
+          <button class="collapse-btn" onclick="toggleCollapse('room-${roomName}-${child.id}')">
+            ดูรายละเอียด
+          </button>
+          <div id="room-${roomName}-${child.id}" class="collapsible-content">
+            <div class="vaccine-list">
+              <div class="vaccine-list-title" style="color: var(--success-color);">✅ วัคซีนที่ได้รับแล้ว (${receivedVaccines.length})</div>
+              <div class="vaccine-list-items received">
+                ${receivedVaccines.length > 0 ? receivedVaccines.map(v => getVaccineName(v.name)).join(', ') : '-'}
+              </div>
+            </div>
+            ${missingVaccines.length > 0 ? `
+            <div class="vaccine-list">
+              <div class="vaccine-list-title" style="color: var(--danger-color);">❌ วัคซีนที่ยังขาด (${missingVaccines.length})</div>
+              <div class="vaccine-list-items missing">
+                ${missingVaccines.map(v => v.name).join(', ')}
+              </div>
+            </div>
+            ` : ''}
+          </div>
+        </div>
       `;
     });
     
-    html += '</tbody></table>';
-    container.innerHTML = html;
+    html += '</div>';
   });
+  
+  container.innerHTML = html;
 }
 
-// ========================================
+function displayChildrenDetail() {
+  const container = document.getElementById('childrenDetail');
+  
+  if (allChildren.length === 0) {
+    container.innerHTML = '<p style="text-align: center; color: var(--text-light); padding: 40px;">ยังไม่มีข้อมูล</p>';
+    return;
+  }
+  
+  const completeChildren = allChildren.filter(child => isChildComplete(child.id));
+  const incompleteChildren = allChildren.filter(child => !isChildComplete(child.id));
+  
+  let html = '';
+  
+  if (completeChildren.length > 0) {
+    html += '<h3 style="color: var(--success-color); margin-bottom: 15px;">✅ เด็กที่ได้วัคซีนครบแล้ว (' + completeChildren.length + ' คน)</h3>';
+    
+    completeChildren.forEach(child => {
+      const receivedVaccines = getChildVaccines(child.id);
+      
+      html += `
+        <div class="child-detail-card complete">
+          <div class="child-detail-header">
+            <div>
+              <div class="child-detail-name">👶 ${child.fullName}</div>
+              <div style="font-size: 0.85em; color: var(--text-light); margin-top: 3px;">ห้อง: ${child.room} | อายุ: ${calculateAge(child.dob)}</div>
+            </div>
+            <div class="child-detail-progress complete">
+              ✅ ครบถ้วน ${receivedVaccines.length}/${allRequiredVaccines.length} เข็ม
+            </div>
+          </div>
+          <button class="collapse-btn" onclick="toggleCollapse('detail-${child.id}')">
+            ดูรายการวัคซีนทั้งหมด
+          </button>
+          <div id="detail-${child.id}" class="collapsible-content">
+            <div class="vaccine-list">
+              <div class="vaccine-list-title">💉 วัคซีนที่ได้รับ</div>
+              <div class="vaccine-list-items received">
+                ${receivedVaccines.map(v => getVaccineName(v.name) + ' (' + formatDate(v.date) + ')').join('<br>')}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+  }
+  
+  if (incompleteChildren.length > 0) {
+    html += '<h3 style="color: var(--danger-color); margin-top: 30px; margin-bottom: 15px;">⚠️ เด็กที่ได้วัคซีนยังไม่ครบ (' + incompleteChildren.length + ' คน)</h3>';
+    
+    incompleteChildren.forEach(child => {
+      const receivedVaccines = getChildVaccines(child.id);
+      const missingVaccines = getMissingVaccines(child.id);
+      const progress = getCompletionPercentage(child.id);
+      
+      html += `
+        <div class="child-detail-card incomplete">
+          <div class="child-detail-header">
+            <div>
+              <div class="child-detail-name">👶 ${child.fullName}</div>
+              <div style="font-size: 0.85em; color: var(--text-light); margin-top: 3px;">ห้อง: ${child.room} | อายุ: ${calculateAge(child.dob)}</div>
+            </div>
+            <div class="child-detail-progress incomplete">
+              ${receivedVaccines.length}/${allRequiredVaccines.length} เข็ม (${progress}%)
+            </div>
+          </div>
+          <div class="progress-bar-container">
+            <div class="progress-bar-fill" style="width: ${progress}%"></div>
+          </div>
+          <button class="collapse-btn" onclick="toggleCollapse('detail-${child.id}')">
+            ดูรายละเอียด
+          </button>
+          <div id="detail-${child.id}" class="collapsible-content">
+            ${receivedVaccines.length > 0 ? `
+            <div class="vaccine-list">
+              <div class="vaccine-list-title" style="color: var(--success-color);">✅ วัคซีนที่ได้รับแล้ว (${receivedVaccines.length})</div>
+              <div class="vaccine-list-items received">
+                ${receivedVaccines.map(v => getVaccineName(v.name) + ' (' + formatDate(v.date) + ')').join('<br>')}
+              </div>
+            </div>
+            ` : ''}
+            <div class="vaccine-list">
+              <div class="vaccine-list-title" style="color: var(--danger-color);">❌ วัคซีนที่ยังขาด (${missingVaccines.length})</div>
+              <div class="vaccine-list-items missing">
+                ${missingVaccines.map(v => `${v.name} (${v.age})`).join('<br>')}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+  }
+  
+  container.innerHTML = html;
+}
+
+function toggleCollapse(id) {
+  const element = document.getElementById(id);
+  if (element) {
+    element.classList.toggle('show');
+  }
+}
+
 // Initialization
-// ========================================
 window.addEventListener('load', function() {
   if (isFirebaseInitialized) {
-    loadChildren();
+    loadAllData();
     displayVaccinePlan();
-  }else {
+  } else {
     showAlert('⚠️ กรุณาตั้งค่า Firebase Configuration ใน code', 'info', 'alertRegister');
   }
   
