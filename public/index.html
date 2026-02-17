@@ -2348,7 +2348,7 @@ function getMissingVaccines(childId) {
 // ===== Vaccine Schedule by Age (Based on Thailand Immunization Program) =====
 const vaccineScheduleByAge = {
   'birth': ['BCG', 'HB1'],
-  '1_month': ['HB2'],
+  '1_month': [],  // HB2 is optional (only if mother is carrier) - not mandatory
   '2_months': ['DTaP_DTwP_HB_Hib1', 'IPV1', 'Rota1'],
   '4_months': ['DTaP_DTwP_HB_Hib2', 'IPV2', 'Rota2'],
   '6_months': ['DTaP_DTwP_HB_Hib3', 'OPV3', 'Rota3'],
