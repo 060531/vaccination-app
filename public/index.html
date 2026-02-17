@@ -1414,19 +1414,31 @@ function switchTab(tabName) {
 function loadAllData() {
   if (!isFirebaseInitialized) {
     console.error('Firebase not initialized');
-    return;
+    return Promise.reject('Firebase not initialized');
   }
 
-  database.ref('children').on('value', (snapshot) => {
-    allChildren = [];
-    snapshot.forEach((childSnapshot) => {
-      allChildren.push({
-        id: childSnapshot.key,
-        ...childSnapshot.val()
+  return new Promise((resolve) => {
+    let childrenLoaded = false;
+    let vaccinesLoaded = false;
+
+    database.ref('children').once('value', (snapshot) => {
+      allChildren = [];
+      snapshot.forEach((childSnapshot) => {
+        allChildren.push({
+          id: childSnapshot.key,
+          ...childSnapshot.val()
+        });
       });
+      childrenLoaded = true;
+      
+      if (vaccinesLoaded) {
+        updateChildSelect();
+        updateDashboard();
+        resolve();
+      }
     });
-    
-    database.ref('vaccines').on('value', (vaccineSnapshot) => {
+
+    database.ref('vaccines').once('value', (vaccineSnapshot) => {
       allVaccineRecords = [];
       vaccineSnapshot.forEach((vacSnapshot) => {
         allVaccineRecords.push({
@@ -1434,9 +1446,13 @@ function loadAllData() {
           ...vacSnapshot.val()
         });
       });
+      vaccinesLoaded = true;
       
-      updateChildSelect();
-      updateDashboard();
+      if (childrenLoaded) {
+        updateChildSelect();
+        updateDashboard();
+        resolve();
+      }
     });
   });
 }
@@ -1799,21 +1815,36 @@ function setupYearSelector() {
     document.querySelectorAll('.year-btn').forEach(b => b.classList.remove('active'));
     newBtn.classList.add('active');
     
-    // Save custom years to Firebase
-    const userDoc = firebase.firestore().collection('appConfig').doc('years');
-    userDoc.get().then(doc => {
-      const customYears = doc.exists ? (doc.data().customYears || []) : [];
-      if (!customYears.includes(year)) {
-        customYears.push(year);
-        customYears.sort((a, b) => a - b);
-        userDoc.set({ customYears }, { merge: true });
-      }
-    });
+    // Save custom years to Firestore
+    try {
+      const db = firebase.firestore();
+      const userDoc = db.collection('appConfig').doc('years');
+      userDoc.get().then(doc => {
+        const customYears = doc.exists ? (doc.data().customYears || []) : [];
+        if (!customYears.includes(year)) {
+          customYears.push(year);
+          customYears.sort((a, b) => a - b);
+          userDoc.set({ customYears }, { merge: true })
+            .then(() => {
+              showAlert(`✅ เพิ่มปี ${year} สำเร็จ (บันทึกออนไลน์)`, 'success', 'alertVaccine');
+            })
+            .catch(err => {
+              console.error('Save year error:', err);
+              showAlert(`⚠️ เพิ่มปี ${year} สำเร็จ แต่ยังไม่บันทึกออนไลน์`, 'warning', 'alertVaccine');
+            });
+        }
+      }).catch(err => {
+        console.error('Get year error:', err);
+        showAlert(`⚠️ เพิ่มปี ${year} สำเร็จ แต่ยังไม่บันทึกออนไลน์`, 'warning', 'alertVaccine');
+      });
+    } catch (err) {
+      console.error('Firestore error:', err);
+      showAlert(`⚠️ เพิ่มปี ${year} สำเร็จ แต่ยังไม่บันทึกออนไลน์`, 'warning', 'alertVaccine');
+    }
     
     loadVaccineRecords();
     
     input.value = currentYearBE;
-    showAlert(`✅ เพิ่มปี ${year} สำเร็จ (บันทึกออนไลน์)`, 'success', 'alertVaccine');
   };
   
   customYearDiv.appendChild(label);
