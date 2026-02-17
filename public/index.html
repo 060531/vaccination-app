@@ -1028,6 +1028,16 @@ function getAllAlerts() {
 }
 
 function displayAlertsTab() {
+  // Ensure data is loaded before displaying alerts
+  if (!allChildren || allChildren.length === 0) {
+    const container = document.getElementById('alertsContent');
+    container.innerHTML = '<div class="empty-state"><div style="font-size: 2em; margin-bottom: 15px;">⏳</div><p>กำลังโหลดข้อมูล...</p></div>';
+    loadAllData().then(() => {
+      displayAlertsTab();
+    });
+    return;
+  }
+
   const alerts = getAllAlerts();
   const container = document.getElementById('alertsContent');
   
@@ -1788,10 +1798,22 @@ function setupYearSelector() {
     currentYear = year;
     document.querySelectorAll('.year-btn').forEach(b => b.classList.remove('active'));
     newBtn.classList.add('active');
+    
+    // Save custom years to Firebase
+    const userDoc = firebase.firestore().collection('appConfig').doc('years');
+    userDoc.get().then(doc => {
+      const customYears = doc.exists ? (doc.data().customYears || []) : [];
+      if (!customYears.includes(year)) {
+        customYears.push(year);
+        customYears.sort((a, b) => a - b);
+        userDoc.set({ customYears }, { merge: true });
+      }
+    });
+    
     loadVaccineRecords();
     
     input.value = currentYearBE;
-    showAlert(`✅ เพิ่มปี ${year} สำเร็จ`, 'success', 'alertVaccine');
+    showAlert(`✅ เพิ่มปี ${year} สำเร็จ (บันทึกออนไลน์)`, 'success', 'alertVaccine');
   };
   
   customYearDiv.appendChild(label);
