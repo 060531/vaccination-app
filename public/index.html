@@ -962,42 +962,52 @@ function getDaysDiff(date1, date2) {
 
 function getChildAlerts(childId) {
   const child = allChildren.find(c => c.id === childId);
-  if (!child) return [];
+  if (!child || !child.dob) return [];
   
-  const receivedCodes = getReceivedVaccineCodes(childId);
+  const receivedCodes = getVaccinesReceivedByChild(childId);
+  const shouldHaveCodes = getVaccinesShouldHaveByAge(child.dob);
+  
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const alerts = [];
   
-  allRequiredVaccines.forEach(vaccine => {
-    if (receivedCodes.includes(vaccine.code)) return;
-    if (vaccine.code === 'HB2') return;
+  // Only check vaccines that should have been given by age
+  shouldHaveCodes.forEach(vaccineCode => {
+    // Skip if already received
+    if (receivedCodes.includes(vaccineCode)) return;
     
-    const scheduleMonth = vaccineScheduleMonths[vaccine.code];
+    // Find vaccine in allRequiredVaccines to get schedule info
+    const vaccine = allRequiredVaccines.find(v => v.code === vaccineCode);
+    if (!vaccine) return;
+    
+    const scheduleMonth = vaccineScheduleMonths[vaccineCode];
     if (scheduleMonth === undefined) return;
     
     const dueDate = getVaccineDueDate(child.dob, scheduleMonth);
     dueDate.setHours(0, 0, 0, 0);
     const daysDiff = getDaysDiff(today, dueDate);
     
+    // Upcoming: within 7 days but not yet overdue
     if (daysDiff <= 7 && daysDiff > 0) {
       alerts.push({
         childId: child.id,
         childName: child.fullName,
         room: child.room,
-        vaccineCode: vaccine.code,
+        vaccineCode: vaccineCode,
         vaccineName: vaccine.name,
         dueDate: dueDate,
         daysDiff: daysDiff,
         type: 'upcoming',
         age: vaccine.age
       });
-    } else if (daysDiff <= 0) {
+    } 
+    // Overdue: already past due date
+    else if (daysDiff <= 0) {
       alerts.push({
         childId: child.id,
         childName: child.fullName,
         room: child.room,
-        vaccineCode: vaccine.code,
+        vaccineCode: vaccineCode,
         vaccineName: vaccine.name,
         dueDate: dueDate,
         daysDiff: Math.abs(daysDiff),
@@ -2286,18 +2296,100 @@ function getReceivedVaccineCodes(childId) {
 }
 
 function getMissingVaccines(childId) {
-  const receivedCodes = getReceivedVaccineCodes(childId);
-  return allRequiredVaccines.filter(v => !receivedCodes.includes(v.code));
+  const child = allChildren.find(c => c.id === childId);
+  if (!child || !child.dob) return [];
+  
+  const shouldHaveCodes = getVaccinesShouldHaveByAge(child.dob);
+  const receivedCodes = getVaccinesReceivedByChild(childId);
+  
+  // Return vaccine codes that should have been given but haven't been
+  return shouldHaveCodes.filter(code => !receivedCodes.includes(code));
+}
+
+// ===== Vaccine Schedule by Age (Based on Thailand Immunization Program) =====
+const vaccineScheduleByAge = {
+  'birth': ['BCG', 'HB1'],
+  '1_month': ['HB2'],
+  '2_months': ['DTaP_DTwP_HB_Hib1', 'IPV1', 'Rota1'],
+  '4_months': ['DTaP_DTwP_HB_Hib2', 'IPV2', 'Rota2'],
+  '6_months': ['DTaP_DTwP_HB_Hib3', 'OPV3', 'Rota3'],
+  '9_12_months': ['MMR1', 'JE1'],
+  '18_months': ['DTwP_Booster1', 'OPV_Booster1', 'MMR2'],
+  '30_months': ['JE2'],
+  '4_6_years': ['DTwP_Booster2', 'OPV_Booster2']
+};
+
+// Get vaccines that should be given by child's age (based on age in months)
+function getVaccinesShouldHaveByAge(dob) {
+  if (!dob) return [];
+  
+  const birthDate = new Date(dob);
+  const today = new Date();
+  
+  // Calculate age in months
+  let ageMonths = (today.getFullYear() - birthDate.getFullYear()) * 12;
+  ageMonths += today.getMonth() - birthDate.getMonth();
+  
+  let shouldHaveCodes = [];
+  
+  // Add vaccines by age milestone (cumulative)
+  if (ageMonths >= 0) shouldHaveCodes.push(...vaccineScheduleByAge['birth']);
+  if (ageMonths >= 1) shouldHaveCodes.push(...vaccineScheduleByAge['1_month']);
+  if (ageMonths >= 2) shouldHaveCodes.push(...vaccineScheduleByAge['2_months']);
+  if (ageMonths >= 4) shouldHaveCodes.push(...vaccineScheduleByAge['4_months']);
+  if (ageMonths >= 6) shouldHaveCodes.push(...vaccineScheduleByAge['6_months']);
+  if (ageMonths >= 9) shouldHaveCodes.push(...vaccineScheduleByAge['9_12_months']);
+  if (ageMonths >= 18) shouldHaveCodes.push(...vaccineScheduleByAge['18_months']);
+  if (ageMonths >= 30) shouldHaveCodes.push(...vaccineScheduleByAge['30_months']);
+  if (ageMonths >= 48) shouldHaveCodes.push(...vaccineScheduleByAge['4_6_years']);
+  
+  // Remove duplicates and return
+  return [...new Set(shouldHaveCodes)];
+}
+
+// Get vaccine codes received by child
+function getVaccinesReceivedByChild(childId) {
+  const childVaccines = allVaccineRecords.filter(v => v.childId === childId);
+  let receivedCodes = [];
+  
+  childVaccines.forEach(record => {
+    if (record.vaccineCode) {
+      receivedCodes.push(record.vaccineCode);
+    }
+  });
+  
+  return [...new Set(receivedCodes)];
+}
+
+// Count how many vaccines received match what should have been given by age
+function getCompletionByAge(childId) {
+  const child = allChildren.find(c => c.id === childId);
+  if (!child || !child.dob) return { completed: 0, total: 0 };
+  
+  const shouldHaveCodes = getVaccinesShouldHaveByAge(child.dob);
+  if (shouldHaveCodes.length === 0) return { completed: 0, total: 0 };
+  
+  const receivedCodes = getVaccinesReceivedByChild(childId);
+  
+  let completed = 0;
+  shouldHaveCodes.forEach(vaccineCode => {
+    if (receivedCodes.includes(vaccineCode)) {
+      completed++;
+    }
+  });
+  
+  return { completed, total: shouldHaveCodes.length };
 }
 
 function isChildComplete(childId) {
-  const receivedCodes = getReceivedVaccineCodes(childId);
-  return receivedCodes.length >= allRequiredVaccines.length;
+  const completion = getCompletionByAge(childId);
+  return completion.completed >= completion.total && completion.total > 0;
 }
 
 function getCompletionPercentage(childId) {
-  const receivedCodes = getReceivedVaccineCodes(childId);
-  return Math.round((receivedCodes.length / allRequiredVaccines.length) * 100);
+  const completion = getCompletionByAge(childId);
+  if (completion.total === 0) return 0;
+  return Math.round((completion.completed / completion.total) * 100);
 }
 
 function displayRoomsSummary() {
