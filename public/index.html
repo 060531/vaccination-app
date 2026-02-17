@@ -73,6 +73,13 @@
       .vaccine-table th { padding: 12px; text-align: left; font-weight: 600; }
       .vaccine-table td { padding: 10px 12px; border-bottom: 1px solid var(--border-color); }
       .vaccine-table tbody tr:hover { background: #f0f6ff; }
+      .vaccine-category { display: inline-block; padding: 3px 8px; border-radius: 15px; font-size: 0.75em; font-weight: 600; }
+      .category-basic { background: #d4edda; color: #155724; }
+      .category-optional { background: #d1ecf1; color: #0c5460; }
+      .status-badge { display: inline-block; padding: 5px 10px; border-radius: 15px; font-size: 0.8em; font-weight: 600; }
+      .status-given { background: #d4edda; color: #155724; }
+      .status-not-given { background: #f8d7da; color: #721c24; }
+      .status-pending { background: #fff3cd; color: #856404; }
       .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
       .stat-card { background: var(--white); padding: 20px; border-radius: 8px; text-align: center; border: 1px solid var(--border-color); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); }
       .stat-card h4 { color: var(--text-light); margin-bottom: 8px; font-size: 0.85em; text-transform: uppercase; }
@@ -84,6 +91,7 @@
       .child-list { max-height: 400px; overflow-y: auto; background: var(--white); border: 1px solid var(--border-color); border-radius: 8px; }
       .child-item { padding: 12px; border-bottom: 1px solid var(--border-color); cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
       .child-item:hover { background: var(--light-bg); }
+      .child-item.selected { background: rgba(0, 102, 204, 0.1); border-left: 3px solid var(--primary-color); }
       .child-item-name { font-weight: 600; color: var(--primary-color); }
       .child-item-info { font-size: 0.85em; color: var(--text-light); margin-top: 4px; }
       .vaccine-plan { background: var(--white); border: 1px solid var(--border-color); border-radius: 8px; padding: 15px; margin-top: 15px; }
@@ -110,14 +118,9 @@
       .hidden { display: none; }
       .modal-buttons { display: flex; gap: 10px; margin-top: 20px; }
       .modal-buttons button { flex: 1; }
-      .year-selector { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
+      .year-selector { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
       .year-btn { padding: 8px 15px; background: var(--light-bg); border: 1px solid var(--border-color); border-radius: 6px; cursor: pointer; font-weight: 600; color: var(--text-dark); }
       .year-btn.active { background: var(--primary-color); color: var(--white); }
-      .year-selector-custom { display: flex; gap: 10px; align-items: center; padding: 12px; background: rgba(0, 102, 204, 0.05); border-radius: 8px; border: 1px solid var(--border-color); flex-wrap: wrap; }
-      .year-selector-custom label { margin: 0; font-weight: 600; font-size: 0.9em; color: var(--primary-dark); }
-      .year-selector-custom input { width: 100px; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.9em; }
-      .year-selector-custom button { padding: 8px 15px; background: var(--success-color); color: var(--white); border: none; border-radius: 6px; font-weight: 600; font-size: 0.85em; cursor: pointer; white-space: nowrap; }
-      .year-selector-custom button:hover { opacity: 0.8; transform: translateY(-2px); }
       .vaccine-record-item { background: var(--white); padding: 15px; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 12px; }
       .vaccine-record-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
       .vaccine-name { font-weight: 600; color: var(--primary-dark); font-size: 1.05em; }
@@ -163,32 +166,14 @@
       .collapsible-content { display: none; margin-top: 10px; }
       .collapsible-content.show { display: block; }
       
-      .report-summary {
-        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-        border-radius: 10px;
-        padding: 20px;
-        margin-bottom: 20px;
-        border: 1px solid var(--border-color);
+      @media (max-width: 1024px) { 
+        .dashboard-grid { grid-template-columns: 1fr; }
+        .form-row, .form-row-3 { grid-template-columns: 1fr; }
+        .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        .charts-grid { grid-template-columns: 1fr; }
       }
-      .report-summary h3 {
-        color: var(--primary-dark);
-        margin-bottom: 15px;
-        font-size: 1.1em;
-      }
-      .report-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 10px 0;
-        border-bottom: 1px solid rgba(0,0,0,0.06);
-      }
-      .report-row:last-child { border-bottom: none; }
-      .report-label { font-weight: 600; color: var(--text-dark); }
-      .report-value { font-weight: 700; font-size: 1.2em; }
-      .report-value.success { color: var(--success-color); }
-      .report-value.danger { color: var(--danger-color); }
-      .report-value.primary { color: var(--primary-color); }
 
+      /* ===== Alert System Styles ===== */
       .alert-section {
         margin-bottom: 25px;
         border: 2px solid var(--danger-color);
@@ -254,7 +239,14 @@
       .alert-status-tag.upcoming { background: #fff3cd; color: #856404; }
       .alert-status-tag.overdue { background: #f8d7da; color: #721c24; }
       .alert-due-date { font-size: 0.8em; color: var(--text-light); margin-top: 3px; }
+      .no-alerts {
+        text-align: center;
+        padding: 30px;
+        color: var(--success-color);
+        font-weight: 600;
+      }
 
+      /* ===== Charts Styles ===== */
       .charts-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -283,6 +275,33 @@
         justify-content: center;
       }
 
+      /* ===== Enhanced Report Styles ===== */
+      .report-summary {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+        border: 1px solid var(--border-color);
+      }
+      .report-summary h3 {
+        color: var(--primary-dark);
+        margin-bottom: 15px;
+        font-size: 1.1em;
+      }
+      .report-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(0,0,0,0.06);
+      }
+      .report-row:last-child { border-bottom: none; }
+      .report-label { font-weight: 600; color: var(--text-dark); }
+      .report-value { font-weight: 700; font-size: 1.2em; }
+      .report-value.success { color: var(--success-color); }
+      .report-value.danger { color: var(--danger-color); }
+      .report-value.primary { color: var(--primary-color); }
+      .report-value.warning { color: #e67e22; }
       .big-completion {
         text-align: center;
         padding: 20px;
@@ -318,13 +337,6 @@
         background: linear-gradient(90deg, var(--success-color), #20c997);
         transition: width 0.8s ease;
       }
-
-      @media (max-width: 1024px) { 
-        .dashboard-grid { grid-template-columns: 1fr; }
-        .form-row, .form-row-3 { grid-template-columns: 1fr; }
-        .stats-grid { grid-template-columns: repeat(2, 1fr); }
-        .charts-grid { grid-template-columns: 1fr; }
-      }
     </style>
 </head>
 <body>
@@ -341,9 +353,9 @@
         </div>
 
         <div class="tabs">
-            <button class="tab-button active" onclick="switchTab('alerts')">🔔 แจ้งเตือน</button>
-            <button class="tab-button" onclick="switchTab('dashboard')">📊 Dashboard</button>
+            <button class="tab-button active" onclick="switchTab('dashboard')">📊 Dashboard</button>
             <button class="tab-button" onclick="switchTab('rooms')">🏫 รายงานตามห้อง</button>
+            <button class="tab-button" onclick="switchTab('children')">👶 รายงานรายบุคคล</button>
             <button class="tab-button" onclick="switchTab('register')">📝 ลงทะเบียนเด็ก</button>
             <button class="tab-button" onclick="switchTab('vaccine')">💉 บันทึกวัคซีน</button>
             <button class="tab-button" onclick="switchTab('plan')">📋 แผนวัคซีน</button>
@@ -351,11 +363,139 @@
         </div>
 
         <div class="main-content">
-            <!-- Alerts Tab (FIRST) -->
-            <div id="alerts" class="tab-content active">
+            <!-- Dashboard Tab -->
+            <div id="dashboard" class="tab-content active">
                 <div class="panel">
-                    <h2>🔔 แจ้งเตือนวัคซีน</h2>
-                    <div id="alertsContent"></div>
+                    <h2>📊 Dashboard - สรุปภาพรวม</h2>
+                    
+                    <!-- ===== Alert Section ===== -->
+                    <div id="alertSection" style="display: none;">
+                        <div class="alert-section">
+                            <div class="alert-section-header" onclick="toggleAlertBody()">
+                                <h3>🔔 การแจ้งเตือนวัคซีน</h3>
+                                <span class="alert-badge" id="alertCount">0</span>
+                            </div>
+                            <div class="alert-section-body" id="alertBody"></div>
+                        </div>
+                    </div>
+
+                    <!-- ===== Big Completion Rate ===== -->
+                    <div class="big-completion">
+                        <div class="big-number" id="bigCompletionRate">0%</div>
+                        <div class="big-label">อัตราความครบถ้วนของหน่วยงาน</div>
+                        <div class="completion-bar-large">
+                            <div class="fill" id="bigCompletionBar" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <!-- ===== Stats Cards ===== -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h4>จำนวนเด็กทั้งหมด</h4>
+                            <div class="number" id="totalChildren">0</div>
+                            <div class="label">คน</div>
+                        </div>
+                        <div class="stat-card success">
+                            <h4>ได้รับวัคซีนครบแล้ว</h4>
+                            <div class="number" id="completeVaccine">0</div>
+                            <div class="label">คน</div>
+                        </div>
+                        <div class="stat-card danger">
+                            <h4>ยังไม่ครบ / กำลังติดตาม</h4>
+                            <div class="number" id="pendingVaccine">0</div>
+                            <div class="label">คน</div>
+                        </div>
+                        <div class="stat-card">
+                            <h4>วัคซีนทั้งหมดในระบบ</h4>
+                            <div class="number" id="totalVaccines">0</div>
+                            <div class="label">ชนิด</div>
+                        </div>
+                    </div>
+
+                    <!-- ===== Enhanced Report Summary ===== -->
+                    <div class="report-summary">
+                        <h3>📋 รายงานสรุปความครบถ้วน</h3>
+                        <div class="report-row">
+                            <span class="report-label">👶 เด็กทั้งหมด</span>
+                            <span class="report-value primary" id="reportTotal">0 คน</span>
+                        </div>
+                        <div class="report-row">
+                            <span class="report-label">✅ ได้วัคซีนพื้นฐานครบถ้วน</span>
+                            <span class="report-value success" id="reportComplete">0 คน (0%)</span>
+                        </div>
+                        <div class="report-row">
+                            <span class="report-label">❌ ได้วัคซีนพื้นฐานยังไม่ครบ</span>
+                            <span class="report-value danger" id="reportIncomplete">0 คน (0%)</span>
+                        </div>
+                        <div class="report-row">
+                            <span class="report-label">💉 วัคซีนที่ให้ไปแล้วทั้งหมด</span>
+                            <span class="report-value primary" id="reportGiven">0 คน</span>
+                        </div>
+                        <div class="report-row">
+                            <span class="report-label">📊 วัคซีนพื้นฐาน</span>
+                            <span class="report-value" id="reportBasic" style="color: var(--text-dark);">0 ชนิด</span>
+                        </div>
+                        <div class="report-row">
+                            <span class="report-label">📊 วัคซีนเสริม</span>
+                            <span class="report-value" id="reportOptional" style="color: var(--text-dark);">0 ชนิด</span>
+                        </div>
+                        <div class="report-row">
+                            <span class="report-label">⚠️ เด็กที่มีวัคซีนเลยกำหนด</span>
+                            <span class="report-value danger" id="reportOverdue">0 คน</span>
+                        </div>
+                        <div class="report-row">
+                            <span class="report-label">🔔 เด็กที่วัคซีนใกล้ถึงกำหนด (7 วัน)</span>
+                            <span class="report-value warning" id="reportUpcoming">0 คน</span>
+                        </div>
+                    </div>
+
+                    <!-- ===== Charts Section ===== -->
+                    <div class="charts-grid">
+                        <div class="chart-box">
+                            <h3>📊 สัดส่วนความครบถ้วนของวัคซีน</h3>
+                            <div class="chart-wrapper">
+                                <canvas id="completionPieChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-box">
+                            <h3>📊 สรุปจำนวนเด็กตามห้อง</h3>
+                            <div class="chart-wrapper">
+                                <canvas id="roomBarChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="charts-grid">
+                        <div class="chart-box">
+                            <h3>📊 สัดส่วนวัคซีนที่ให้แล้ว vs ยังไม่ได้ให้</h3>
+                            <div class="chart-wrapper">
+                                <canvas id="vaccineStatusChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-box">
+                            <h3>📊 อัตราความครบถ้วนแต่ละห้อง (%)</h3>
+                            <div class="chart-wrapper">
+                                <canvas id="roomCompletionChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===== Children Overview ===== -->
+                    <div class="dashboard-grid">
+                        <div class="chart-container">
+                            <h3>📈 รายการเด็กทั้งหมด</h3>
+                            <div id="childrenOverview" class="child-list">
+                                <div class="loading">🔄 กำลังโหลดข้อมูล...</div>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <h3>⚠️ เด็กที่ต้องติดตามวัคซีน</h3>
+                            <div id="pendingList">
+                                <div class="loading">🔄 กำลังโหลดข้อมูล...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="roomsSummary"></div>
                 </div>
             </div>
 
@@ -423,121 +563,6 @@
 
                         <button type="submit" class="btn-primary">💾 บันทึกข้อมูล</button>
                     </form>
-                </div>
-            </div>
-            <div id="dashboard" class="tab-content">
-                <div class="panel">
-                    <h2>📊 Dashboard - สรุปภาพรวม</h2>
-
-                    <!-- ===== Big Completion Rate ===== -->
-                    <div class="big-completion">
-                        <div class="big-number" id="bigCompletionRate">0%</div>
-                        <div class="big-label">อัตราความครบถ้วนของหน่วยงาน</div>
-                        <div class="completion-bar-large">
-                            <div class="fill" id="bigCompletionBar" style="width: 0%"></div>
-                        </div>
-                    </div>
-
-                    <!-- ===== Stats Cards ===== -->
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <h4>จำนวนเด็กทั้งหมด</h4>
-                            <div class="number" id="totalChildren">0</div>
-                            <div class="label">คน</div>
-                        </div>
-                        <div class="stat-card success">
-                            <h4>ได้รับวัคซีนครบแล้ว</h4>
-                            <div class="number" id="completeVaccine">0</div>
-                            <div class="label">คน</div>
-                        </div>
-                        <div class="stat-card danger">
-                            <h4>ยังไม่ครบ / กำลังติดตาม</h4>
-                            <div class="number" id="pendingVaccine">0</div>
-                            <div class="label">คน</div>
-                        </div>
-                        <div class="stat-card">
-                            <h4>วัคซีนทั้งหมดในระบบ</h4>
-                            <div class="number" id="totalVaccines">0</div>
-                            <div class="label">ชนิด</div>
-                        </div>
-                    </div>
-
-                    <!-- ===== Enhanced Report Summary ===== -->
-                    <div class="report-summary">
-                        <h3>📋 รายงานสรุปความครบถ้วน</h3>
-                        <div class="report-row">
-                            <span class="report-label">👶 เด็กทั้งหมด</span>
-                            <span class="report-value primary" id="reportTotal">0 คน</span>
-                        </div>
-                        <div class="report-row">
-                            <span class="report-label">✅ ได้วัคซีนพื้นฐานครบถ้วน</span>
-                            <span class="report-value success" id="reportComplete">0 คน (0%)</span>
-                        </div>
-                        <div class="report-row">
-                            <span class="report-label">❌ ได้วัคซีนพื้นฐานยังไม่ครบ</span>
-                            <span class="report-value danger" id="reportIncomplete">0 คน (0%)</span>
-                        </div>
-                        <div class="report-row">
-                            <span class="report-label">💉 วัคซีนที่ให้ไปแล้วทั้งหมด</span>
-                            <span class="report-value primary" id="reportGiven">0 คน</span>
-                        </div>
-                        <div class="report-row">
-                            <span class="report-label">⚠️ เด็กที่มีวัคซีนเลยกำหนด</span>
-                            <span class="report-value danger" id="reportOverdue">0 คน</span>
-                        </div>
-                        <div class="report-row">
-                            <span class="report-label">🔔 เด็กที่วัคซีนใกล้ถึงกำหนด (7 วัน)</span>
-                            <span class="report-value warning" id="reportUpcoming">0 คน</span>
-                        </div>
-                    </div>
-
-                    <!-- ===== Charts Section ===== -->
-                    <div class="charts-grid">
-                        <div class="chart-box">
-                            <h3>📊 สัดส่วนความครบถ้วนของวัคซีน</h3>
-                            <div class="chart-wrapper">
-                                <canvas id="completionPieChart"></canvas>
-                            </div>
-                        </div>
-                        <div class="chart-box">
-                            <h3>📊 สรุปจำนวนเด็กตามห้อง</h3>
-                            <div class="chart-wrapper">
-                                <canvas id="roomBarChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="charts-grid">
-                        <div class="chart-box">
-                            <h3>📊 สัดส่วนวัคซีนที่ให้แล้ว vs ยังไม่ได้ให้</h3>
-                            <div class="chart-wrapper">
-                                <canvas id="vaccineStatusChart"></canvas>
-                            </div>
-                        </div>
-                        <div class="chart-box">
-                            <h3>📊 อัตราความครบถ้วนแต่ละห้อง (%)</h3>
-                            <div class="chart-wrapper">
-                                <canvas id="roomCompletionChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ===== Children Overview ===== -->
-                    <div class="dashboard-grid">
-                        <div class="chart-container">
-                            <h3>📈 รายการเด็กทั้งหมด</h3>
-                            <div id="childrenOverview" class="child-list">
-                                <div class="loading">🔄 กำลังโหลดข้อมูล...</div>
-                            </div>
-                        </div>
-                        <div class="chart-container">
-                            <h3>⚠️ เด็กที่ต้องติดตามวัคซีน</h3>
-                            <div id="pendingList">
-                                <div class="loading">🔄 กำลังโหลดข้อมูล...</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="roomsSummary"></div>
                 </div>
             </div>
 
@@ -651,6 +676,15 @@
                     <h2>🏫 รายงานตามห้อง</h2>
                     <p style="color: var(--text-light); margin-bottom: 20px;">แสดงรายละเอียดการให้วัคซีนแยกตามห้องเรียน</p>
                     <div id="roomsDetail"></div>
+                </div>
+            </div>
+
+            <!-- Children Detail Tab -->
+            <div id="children" class="tab-content">
+                <div class="panel">
+                    <h2>👶 รายงานรายบุคคล</h2>
+                    <p style="color: var(--text-light); margin-bottom: 20px;">แสดงรายละเอียดวัคซีนที่ได้รับและยังขาดของแต่ละคน</p>
+                    <div id="childrenDetail"></div>
                 </div>
             </div>
         </div>
@@ -820,6 +854,7 @@ try {
   updateOnlineStatus(true);
 } catch (error) {
   console.error('Firebase initialization error:', error);
+  showAlert('⚠️ กำลังใช้งานแบบออฟไลน์ กรุณาตั้งค่า Firebase', 'error', 'alertRegister');
   updateOnlineStatus(false);
 }
 
@@ -878,13 +913,34 @@ const vaccineDatabase = {
   },
   optional: {
     "นิวโมคอคคัส (PCV)": [
-      { name: "นิวโมคอคคัสชนิดคอนจูเกต ครั้งที่ 1 (2 เดือน)", code: "PCV1", brands: ["Synforix (PCV10)", "Pneumosil (PCV10)", "Prevnar13 (PCV13)", "Weuhoria (PCV13)", "Vaxneuvance (PCV15)", "Prevnar20 (PCV20)", "Pneumovax23 (PS-23)", "อื่นๆ"], required: false }
+      { name: "นิวโมคอคคัสชนิดคอนจูเกต ครั้งที่ 1 (2 เดือน)", code: "PCV1", brands: ["Synforix (PCV10)", "Pneumosil (PCV10)", "Prevnar13 (PCV13)", "Weuhoria (PCV13)", "Vaxneuvance (PCV15)", "Prevnar20 (PCV20)", "Pneumovax23 (PS-23)", "อื่นๆ"], required: false },
+      { name: "นิวโมคอคคัสชนิดคอนจูเกต ครั้งที่ 2 (4 เดือน)", code: "PCV2", brands: ["Synforix (PCV10)", "Pneumosil (PCV10)", "Prevnar13 (PCV13)", "Weuhoria (PCV13)", "Vaxneuvance (PCV15)", "Prevnar20 (PCV20)", "Pneumovax23 (PS-23)", "อื่นๆ"], required: false },
+      { name: "นิวโมคอคคัสชนิดคอนจูเกต ครั้งที่ 3 (6 เดือน)", code: "PCV3", brands: ["Synforix (PCV10)", "Pneumosil (PCV10)", "Prevnar13 (PCV13)", "Weuhoria (PCV13)", "Vaxneuvance (PCV15)", "Prevnar20 (PCV20)", "Pneumovax23 (PS-23)", "อื่นๆ"], required: false },
+      { name: "นิวโมคอคคัสชนิดคอนจูเกต ครั้งที่ 4 (12-15 เดือน)", code: "PCV4", brands: ["Synforix (PCV10)", "Pneumosil (PCV10)", "Prevnar13 (PCV13)", "Weuhoria (PCV13)", "Vaxneuvance (PCV15)", "Prevnar20 (PCV20)", "Pneumovax23 (PS-23)", "อื่นๆ"], required: false }
     ],
     "มือเท้าปาก (EV71)": [
-      { name: "มือเท้าปาก (EV71/EntroVac) ครั้งที่ 1", code: "EV71_1", brands: [], required: false, note: "อายุ 6 เดือน - 6 ปี ให้ 2 เข็ม ห่างกัน 1 เดือน" }
+      { name: "มือเท้าปาก (EV71/EntroVac) ครั้งที่ 1", code: "EV71_1", brands: [], required: false, note: "อายุ 6 เดือน - 6 ปี ให้ 2 เข็ม ห่างกัน 1 เดือน" },
+      { name: "มือเท้าปาก (EV71/EntroVac) ครั้งที่ 2", code: "EV71_2", brands: [], required: false }
     ],
     "ไข้หวัดใหญ่ (Influenza)": [
       { name: "ไข้หวัดใหญ่ (Influenza)", code: "Influenza", brands: [], required: false, note: "อายุ 6 เดือนขึ้นไป ให้ครั้งแรกอายุ <9 ปี ให้ 2 เข็ม ห่างกัน 1 เดือน หลังจากนั้นให้ปีละ 1 ครั้ง" }
+    ],
+    "ตับอักเสบเอ (HAV)": [
+      { name: "ตับอักเสบเอ (HAV) ชนิดเชื้อไม่มีชีวิต ครั้งที่ 1", code: "HAV1_Inactivated", brands: ["Avaxim", "Havrix", "Vaqta", "Healive", "อื่นๆ"], required: false, note: "12 เดือน - 12 ปี ให้ 2 เข็ม ห่างกัน 6-12 เดือน" },
+      { name: "ตับอักเสบเอ (HAV) ชนิดเชื้อไม่มีชีวิต ครั้งที่ 2", code: "HAV2_Inactivated", brands: ["Avaxim", "Havrix", "Vaqta", "Healive", "อื่นๆ"], required: false },
+      { name: "ตับอักเสบเอ (HAV) ชนิดเชื้อมีชีวิต", code: "HAV_Live", brands: ["Mevac-A"], required: false, note: "18 เดือนขึ้นไป ให้ 1 เข็ม" }
+    ],
+    "อีสุกอีใส (VZV)": [
+      { name: "อีสุกอีใส (VZV) ครั้งที่ 1", code: "VZV1", brands: ["Variix (OKA)", "Varivax (OKA)", "SKYvaricella (OKA)", "Varicella GCC (MAV06)", "อื่นๆ"], required: false, note: "12-15 เดือน" },
+      { name: "อีสุกอีใส (VZV) ครั้งที่ 2", code: "VZV2", brands: ["Variix (OKA)", "Varivax (OKA)", "SKYvaricella (OKA)", "Varicella GCC (MAV06)", "อื่นๆ"], required: false, note: "18 เดือน - 4 ปี" }
+    ],
+    "ไข้เลือดออก (DEN)": [
+      { name: "ไข้เลือดออก (DEN: Qdenga) ครั้งที่ 1", code: "DEN1", brands: [], required: false, note: "อายุ 4 ปีขึ้นไป ให้ 2 เข็ม ห่างกัน 3 เดือน" },
+      { name: "ไข้เลือดออก (DEN: Qdenga) ครั้งที่ 2", code: "DEN2", brands: [], required: false }
+    ],
+    "พิษสุนัขบ้า (Rabies)": [
+      { name: "พิษสุนัขบ้า (ก่อนการสัมผัสโรค) ครั้งที่ 1", code: "Rabies1", brands: [], required: false, note: "อายุ 2 เดือนขึ้นไป ให้ 2 เข็ม ห่างกันอย่างน้อย 7 วัน" },
+      { name: "พิษสุนัขบ้า (ก่อนการสัมผัสโรค) ครั้งที่ 2", code: "Rabies2", brands: [], required: false }
     ]
   }
 };
@@ -970,7 +1026,10 @@ function getChildAlerts(childId) {
   const alerts = [];
   
   allRequiredVaccines.forEach(vaccine => {
+    // Skip if already received
     if (receivedCodes.includes(vaccine.code)) return;
+    
+    // Skip HB2 (conditional)
     if (vaccine.code === 'HB2') return;
     
     const scheduleMonth = vaccineScheduleMonths[vaccine.code];
@@ -981,6 +1040,7 @@ function getChildAlerts(childId) {
     const daysDiff = getDaysDiff(today, dueDate);
     
     if (daysDiff <= 7 && daysDiff > 0) {
+      // Upcoming: within 7 days
       alerts.push({
         childId: child.id,
         childName: child.fullName,
@@ -993,6 +1053,7 @@ function getChildAlerts(childId) {
         age: vaccine.age
       });
     } else if (daysDiff <= 0) {
+      // Overdue: past due date
       alerts.push({
         childId: child.id,
         childName: child.fullName,
@@ -1017,6 +1078,7 @@ function getAllAlerts() {
     allAlerts = allAlerts.concat(childAlerts);
   });
   
+  // Sort: overdue first, then by days
   allAlerts.sort((a, b) => {
     if (a.type === 'overdue' && b.type === 'upcoming') return -1;
     if (a.type === 'upcoming' && b.type === 'overdue') return 1;
@@ -1027,14 +1089,19 @@ function getAllAlerts() {
   return allAlerts;
 }
 
-function displayAlertsTab() {
+function displayAlerts() {
   const alerts = getAllAlerts();
-  const container = document.getElementById('alertsContent');
+  const section = document.getElementById('alertSection');
+  const body = document.getElementById('alertBody');
+  const countBadge = document.getElementById('alertCount');
   
   if (alerts.length === 0) {
-    container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">✅</div><p>ไม่มีการแจ้งเตือน - วัคซีนทั้งหมดถูกต้อง!</p></div>';
+    section.style.display = 'none';
     return;
   }
+  
+  section.style.display = 'block';
+  countBadge.textContent = alerts.length + ' รายการ';
   
   const overdueAlerts = alerts.filter(a => a.type === 'overdue');
   const upcomingAlerts = alerts.filter(a => a.type === 'upcoming');
@@ -1042,48 +1109,51 @@ function displayAlertsTab() {
   let html = '';
   
   if (overdueAlerts.length > 0) {
-    html += '<div class="alert-section" style="border-color: var(--danger-color);">';
-    html += '<div class="alert-section-header"><h3>🔴 วัคซีนที่เลยกำหนดแล้ว (' + overdueAlerts.length + ' รายการ)</h3><span class="alert-badge">' + overdueAlerts.length + '</span></div>';
-    html += '<div class="alert-section-body">';
-    
+    html += '<div style="padding: 10px 20px; background: #f8d7da; font-weight: 700; font-size: 0.9em; color: #721c24;">🔴 เลยกำหนดแล้ว (' + overdueAlerts.length + ' รายการ) — ยังไม่ได้รับวัคซีน</div>';
     overdueAlerts.forEach(alert => {
       html += `
         <div class="alert-item">
           <div class="alert-icon overdue">🔴</div>
           <div class="alert-info">
-            <div class="alert-child-name">👶 ${alert.childName}</div>
+            <div class="alert-child-name">👶 ${alert.childName} <span style="font-weight:400; color: var(--text-light); font-size: 0.85em;">(ห้อง ${alert.room})</span></div>
             <div class="alert-vaccine-name">💉 ${alert.vaccineName}</div>
-            <div class="alert-due-date">📅 ห้อง: ${alert.room} | เลยมาแล้ว ${alert.daysDiff} วัน</div>
+            <div class="alert-due-date">📅 กำหนดฉีด: ${formatDate(alert.dueDate.toISOString().split('T')[0])} (เลยมาแล้ว ${alert.daysDiff} วัน)</div>
           </div>
           <div class="alert-status-tag overdue">เลยกำหนด</div>
         </div>
       `;
     });
-    html += '</div></div>';
   }
   
   if (upcomingAlerts.length > 0) {
-    html += '<div class="alert-section" style="border-color: var(--warning-color);">';
-    html += '<div class="alert-section-header"><h3>🟡 วัคซีนที่ใกล้ถึงกำหนด (' + upcomingAlerts.length + ' รายการ)</h3><span class="alert-badge">' + upcomingAlerts.length + '</span></div>';
-    html += '<div class="alert-section-body">';
-    
+    html += '<div style="padding: 10px 20px; background: #fff3cd; font-weight: 700; font-size: 0.9em; color: #856404;">🟡 ใกล้ถึงกำหนด (' + upcomingAlerts.length + ' รายการ) — ภายใน 7 วัน</div>';
     upcomingAlerts.forEach(alert => {
       html += `
         <div class="alert-item">
           <div class="alert-icon upcoming">🟡</div>
           <div class="alert-info">
-            <div class="alert-child-name">👶 ${alert.childName}</div>
+            <div class="alert-child-name">👶 ${alert.childName} <span style="font-weight:400; color: var(--text-light); font-size: 0.85em;">(ห้อง ${alert.room})</span></div>
             <div class="alert-vaccine-name">💉 ${alert.vaccineName}</div>
-            <div class="alert-due-date">📅 ห้อง: ${alert.room} | อีก ${alert.daysDiff} วัน</div>
+            <div class="alert-due-date">📅 กำหนดฉีด: ${formatDate(alert.dueDate.toISOString().split('T')[0])} (อีก ${alert.daysDiff} วัน)</div>
           </div>
           <div class="alert-status-tag upcoming">ใกล้ถึงกำหนด</div>
         </div>
       `;
     });
-    html += '</div></div>';
   }
   
-  container.innerHTML = html;
+  body.innerHTML = html;
+}
+
+function toggleAlertBody() {
+  const body = document.getElementById('alertBody');
+  if (body.style.maxHeight === '0px') {
+    body.style.maxHeight = '500px';
+    body.style.overflow = 'auto';
+  } else {
+    body.style.maxHeight = '0px';
+    body.style.overflow = 'hidden';
+  }
 }
 
 // ===== Chart Functions =====
@@ -1213,7 +1283,7 @@ function renderVaccineStatusChart() {
             label: function(context) {
               const total = context.dataset.data.reduce((a, b) => a + b, 0);
               const pct = total > 0 ? Math.round((context.raw / total) * 100) : 0;
-              return context.label + ': ' + context.raw + ' เข็ม (' + pct + '%)';
+              return context.label + ': ' + context.raw + ' คน (' + pct + '%)';
             }
           }
         }
@@ -1257,7 +1327,8 @@ function renderRoomCompletionChart() {
       maintainAspectRatio: false,
       indexAxis: 'y',
       scales: {
-        x: { beginAtZero: true, max: 100, ticks: { callback: v => v + '%' } }
+        x: { beginAtZero: true, max: 100, ticks: { callback: v => v + '%' } },
+        y: {}
       },
       plugins: {
         legend: { display: false },
@@ -1270,12 +1341,10 @@ function renderRoomCompletionChart() {
 // Helper Functions
 function showAlert(message, type, elementId = 'alertRegister') {
   const alert = document.getElementById(elementId);
-  if (alert) {
-    alert.className = `alert alert-${type}`;
-    alert.textContent = message;
-    alert.style.display = 'block';
-    setTimeout(() => { alert.style.display = 'none'; }, 4000);
-  }
+  alert.className = `alert alert-${type}`;
+  alert.textContent = message;
+  alert.style.display = 'block';
+  setTimeout(() => { alert.style.display = 'none'; }, 4000);
 }
 
 function formatDate(dateStr) {
@@ -1346,14 +1415,6 @@ function toggleCustomRoom() {
   }
 }
 
-function getRoomValue() {
-  const roomSelect = document.getElementById('room').value;
-  if (roomSelect === 'อื่นๆ') {
-    return document.getElementById('customRoom').value;
-  }
-  return roomSelect;
-}
-
 function toggleCustomRoomEdit() {
   const room = document.getElementById('editRoom').value;
   const customRoomGroup = document.getElementById('customRoomGroupEdit');
@@ -1369,6 +1430,14 @@ function toggleCustomRoomEdit() {
   }
 }
 
+function getRoomValue() {
+  const roomSelect = document.getElementById('room').value;
+  if (roomSelect === 'อื่นๆ') {
+    return document.getElementById('customRoom').value;
+  }
+  return roomSelect;
+}
+
 function getRoomValueEdit() {
   const roomSelect = document.getElementById('editRoom').value;
   if (roomSelect === 'อื่นๆ') {
@@ -1381,22 +1450,19 @@ function switchTab(tabName) {
   document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
   document.querySelectorAll('.tab-button').forEach(el => el.classList.remove('active'));
   
-  const contentEl = document.getElementById(tabName);
-  if (contentEl) {
-    contentEl.classList.add('active');
-  }
+  document.getElementById(tabName).classList.add('active');
   event.target.classList.add('active');
 
   if (tabName === 'dashboard') {
     loadAllData();
-  } else if (tabName === 'alerts') {
-    displayAlertsTab();
   } else if (tabName === 'plan') {
     displayVaccinePlan();
   } else if (tabName === 'history') {
     displayHistory();
   } else if (tabName === 'rooms') {
     displayRoomsReport();
+  } else if (tabName === 'children') {
+    displayChildrenDetail();
   }
 }
 
@@ -1538,12 +1604,13 @@ function displayVaccineRecords(records) {
   `).join('');
 }
 
+// Form Handlers
 document.getElementById('childForm').addEventListener('submit', function(e) {
   e.preventDefault();
   
   const roomValue = getRoomValue();
   if (!roomValue) {
-    showAlert('❌ กรุณาระบุห้อง', 'error', 'alertRegister');
+    showAlert('❌ กรุณาระบุห้อง', 'error');
     return;
   }
   
@@ -1559,15 +1626,104 @@ document.getElementById('childForm').addEventListener('submit', function(e) {
 
   addChild(childData)
     .then(() => {
-      showAlert('✅ บันทึกข้อมูลเด็กสำเร็จ', 'success', 'alertRegister');
+      showAlert('✅ บันทึกข้อมูลเด็กสำเร็จ', 'success');
       this.reset();
       document.getElementById('customRoomGroup').classList.add('hidden');
     })
     .catch(error => {
       console.error('Error adding child:', error);
-      showAlert('❌ เกิดข้อผิดพลาดในการบันทึก', 'error', 'alertRegister');
+      showAlert('❌ เกิดข้อผิดพลาดในการบันทึก', 'error');
     });
 });
+
+function openEditChildModal(childId) {
+  const child = allChildren.find(c => c.id === childId);
+  
+  if (!child) {
+    showAlert('❌ ไม่พบข้อมูลเด็ก', 'error');
+    return;
+  }
+  
+  document.getElementById('editChildId').value = child.id;
+  document.getElementById('editFullName').value = child.fullName;
+  document.getElementById('editNickname').value = child.nickname === '-' ? '' : child.nickname;
+  document.getElementById('editDob').value = child.dob;
+  document.getElementById('editGender').value = child.gender;
+  document.getElementById('editMotherName').value = child.motherName;
+  
+  const roomOptions = ['1/1', '1/2', '1/3', '2/1', '2/2', '2/3', '3/1', '3/2', '3/3', '4/1', '4/2', '4/3'];
+  if (roomOptions.includes(child.room)) {
+    document.getElementById('editRoom').value = child.room;
+  } else {
+    document.getElementById('editRoom').value = 'อื่นๆ';
+    document.getElementById('editCustomRoom').value = child.room;
+    document.getElementById('customRoomGroupEdit').classList.remove('hidden');
+  }
+  
+  document.getElementById('editChildModal').style.display = 'block';
+}
+
+function closeEditChildModal() {
+  document.getElementById('editChildModal').style.display = 'none';
+  document.getElementById('editChildForm').reset();
+  document.getElementById('customRoomGroupEdit').classList.add('hidden');
+}
+
+document.getElementById('editChildForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  
+  const childId = document.getElementById('editChildId').value;
+  const roomValue = getRoomValueEdit();
+  
+  if (!roomValue) {
+    showAlert('❌ กรุณาระบุห้อง', 'error');
+    return;
+  }
+  
+  const childData = {
+    fullName: document.getElementById('editFullName').value,
+    nickname: document.getElementById('editNickname').value || '-',
+    dob: document.getElementById('editDob').value,
+    gender: document.getElementById('editGender').value,
+    motherName: document.getElementById('editMotherName').value || '',
+    room: roomValue,
+    updatedAt: new Date().toISOString()
+  };
+  
+  updateChild(childId, childData)
+    .then(() => {
+      showAlert('✅ แก้ไขข้อมูลเด็กสำเร็จ', 'success');
+      closeEditChildModal();
+      
+      if (currentChild && currentChild.id === childId) {
+        currentChild = { id: childId, ...childData };
+      }
+    })
+    .catch(error => {
+      console.error('Error updating child:', error);
+      showAlert('❌ เกิดข้อผิดพลาดในการแก้ไข', 'error');
+    });
+});
+
+function deleteChild(childId) {
+  if (!confirm('⚠️ คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูลเด็กนี้?\n\nการลบจะลบข้อมูลวัคซีนทั้งหมดของเด็กด้วย')) {
+    return;
+  }
+  
+  deleteChildFromDB(childId)
+    .then(() => {
+      showAlert('✅ ลบข้อมูลเด็กสำเร็จ', 'success');
+      
+      if (currentChild && currentChild.id === childId) {
+        currentChild = null;
+        document.getElementById('vaccineFormContainer').style.display = 'none';
+      }
+    })
+    .catch(error => {
+      console.error('Error deleting child:', error);
+      showAlert('❌ เกิดข้อผิดพลาดในการลบ', 'error');
+    });
+}
 
 document.getElementById('vaccineForm').addEventListener('submit', function(e) {
   e.preventDefault();
@@ -1600,6 +1756,173 @@ document.getElementById('vaccineForm').addEventListener('submit', function(e) {
       showAlert('❌ เกิดข้อผิดพลาดในการบันทึก', 'error', 'alertVaccine');
     });
 });
+
+// ===== PASTE THIS FUNCTION BEFORE updateVaccineOptions() =====
+
+function setupYearSelector() {
+  const container = document.getElementById('yearSelector');
+  container.innerHTML = '';
+  
+  const currentYearBE = new Date().getFullYear() + 543;
+  const years = [currentYearBE - 2, currentYearBE - 1, currentYearBE, currentYearBE + 1];
+  
+  // Create wrapper for year buttons
+  const yearButtonsWrapper = document.createElement('div');
+  yearButtonsWrapper.style.display = 'flex';
+  yearButtonsWrapper.style.gap = '8px';
+  yearButtonsWrapper.style.flexWrap = 'wrap';
+  yearButtonsWrapper.style.marginBottom = '10px';
+  
+  years.forEach(year => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'year-btn' + (year === currentYear ? ' active' : '');
+    btn.textContent = `ปี ${year}`;
+    btn.onclick = (e) => {
+      e.preventDefault();
+      currentYear = year;
+      document.querySelectorAll('.year-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      loadVaccineRecords();
+    };
+    yearButtonsWrapper.appendChild(btn);
+  });
+  
+  container.appendChild(yearButtonsWrapper);
+  
+  // Add custom year input section
+  const customYearDiv = document.createElement('div');
+  customYearDiv.style.display = 'flex';
+  customYearDiv.style.gap = '10px';
+  customYearDiv.style.alignItems = 'center';
+  customYearDiv.style.padding = '12px';
+  customYearDiv.style.background = 'rgba(0, 102, 204, 0.05)';
+  customYearDiv.style.borderRadius = '8px';
+  customYearDiv.style.border = '1px solid var(--border-color)';
+  customYearDiv.style.flexWrap = 'wrap';
+  
+  const label = document.createElement('label');
+  label.textContent = '🔄 เพิ่มปีใหม่:';
+  label.style.fontWeight = '600';
+  label.style.fontSize = '0.9em';
+  label.style.color = 'var(--primary-dark)';
+  label.style.whiteSpace = 'nowrap';
+  
+  const input = document.createElement('input');
+  input.type = 'number';
+  input.placeholder = 'ป.ศ.';
+  input.style.padding = '8px 12px';
+  input.style.border = '1px solid var(--border-color)';
+  input.style.borderRadius = '6px';
+  input.style.width = '100px';
+  input.style.fontSize = '0.9em';
+  input.style.fontWeight = '600';
+  const minYear = currentYearBE - 20;
+  const maxYear = currentYearBE + 10;
+  input.min = minYear;
+  input.max = maxYear;
+  input.value = currentYearBE;
+  
+  const addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  addBtn.textContent = '✅ เพิ่มปี';
+  addBtn.style.padding = '8px 15px';
+  addBtn.style.background = 'var(--success-color)';
+  addBtn.style.color = 'var(--white)';
+  addBtn.style.border = 'none';
+  addBtn.style.borderRadius = '6px';
+  addBtn.style.fontWeight = '600';
+  addBtn.style.fontSize = '0.85em';
+  addBtn.style.cursor = 'pointer';
+  addBtn.style.transition = 'all 0.3s';
+  addBtn.style.whiteSpace = 'nowrap';
+  
+  addBtn.onmouseover = () => { addBtn.style.opacity = '0.8'; addBtn.style.transform = 'translateY(-2px)'; };
+  addBtn.onmouseout = () => { addBtn.style.opacity = '1'; addBtn.style.transform = 'translateY(0)'; };
+  
+  addBtn.onclick = (e) => {
+    e.preventDefault();
+    const year = parseInt(input.value);
+    
+    // Validation
+    if (!year || isNaN(year)) {
+      showAlert('❌ กรุณาระบุปีที่ถูกต้อง', 'error', 'alertVaccine');
+      return;
+    }
+    
+    if (year < minYear || year > maxYear) {
+      showAlert(`❌ ปีควรอยู่ระหว่าง ${minYear} - ${maxYear}`, 'error', 'alertVaccine');
+      return;
+    }
+    
+    // Check if year button already exists
+    const existingBtn = Array.from(yearButtonsWrapper.querySelectorAll('.year-btn')).find(btn => 
+      parseInt(btn.textContent.replace('ปี ', '')) === year
+    );
+    
+    if (existingBtn) {
+      showAlert(`⚠️ ปี ${year} มีอยู่แล้ว`, 'error', 'alertVaccine');
+      return;
+    }
+    
+    // Create new year button
+    const newBtn = document.createElement('button');
+    newBtn.type = 'button';
+    newBtn.className = 'year-btn active';
+    newBtn.textContent = `ปี ${year}`;
+    
+    newBtn.onclick = (e) => {
+      e.preventDefault();
+      currentYear = year;
+      document.querySelectorAll('.year-btn').forEach(b => b.classList.remove('active'));
+      newBtn.classList.add('active');
+      loadVaccineRecords();
+    };
+    
+    // Insert in sorted order (from smallest to largest year)
+    const allButtons = Array.from(yearButtonsWrapper.querySelectorAll('.year-btn'));
+    const allButtonsWithNew = [...allButtons, newBtn];
+    
+    // Sort by year (extract number from text)
+    allButtonsWithNew.sort((a, b) => {
+      const yearA = parseInt(a.textContent.replace('ปี ', ''));
+      const yearB = parseInt(b.textContent.replace('ปี ', ''));
+      return yearA - yearB;
+    });
+    
+    // Clear and re-insert in sorted order
+    yearButtonsWrapper.innerHTML = '';
+    allButtonsWithNew.forEach(btn => {
+      btn.onclick = (e) => {
+        e.preventDefault();
+        const btnYear = parseInt(btn.textContent.replace('ปี ', ''));
+        currentYear = btnYear;
+        document.querySelectorAll('.year-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        loadVaccineRecords();
+      };
+      yearButtonsWrapper.appendChild(btn);
+    });
+    
+    // Update current year and load data
+    currentYear = year;
+    document.querySelectorAll('.year-btn').forEach(b => b.classList.remove('active'));
+    newBtn.classList.add('active');
+    loadVaccineRecords();
+    
+    // Clear input and show success
+    input.value = currentYearBE;
+    showAlert(`✅ เพิ่มปี ${year} สำเร็จ`, 'success', 'alertVaccine');
+  };
+  
+  customYearDiv.appendChild(label);
+  customYearDiv.appendChild(input);
+  customYearDiv.appendChild(addBtn);
+  
+  container.appendChild(customYearDiv);
+}
+
+// ===== END OF setupYearSelector() =====
 
 function updateVaccineOptions() {
   const type = document.getElementById('vaccineType').value;
@@ -1663,14 +1986,13 @@ function loadChildVaccineData() {
   
   if (currentChild) {
     document.getElementById('vaccineFormContainer').style.display = 'block';
-    setupYearSelector();
+    setupYearSelector();  // ← เพิ่มบรรทัดนี้
     loadVaccineRecords();
   } else {
     document.getElementById('vaccineFormContainer').style.display = 'none';
   }
 }
 
-// ===== SETUP YEAR SELECTOR FUNCTION =====
 function setupYearSelector() {
   const container = document.getElementById('yearSelector');
   container.innerHTML = '';
@@ -1678,127 +2000,19 @@ function setupYearSelector() {
   const currentYearBE = new Date().getFullYear() + 543;
   const years = [currentYearBE - 2, currentYearBE - 1, currentYearBE, currentYearBE + 1];
   
-  // Create wrapper for year buttons
-  const yearButtonsWrapper = document.createElement('div');
-  yearButtonsWrapper.style.display = 'flex';
-  yearButtonsWrapper.style.gap = '8px';
-  yearButtonsWrapper.style.flexWrap = 'wrap';
-  yearButtonsWrapper.style.marginBottom = '10px';
-  
   years.forEach(year => {
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'year-btn' + (year === currentYear ? ' active' : '');
     btn.textContent = `ปี ${year}`;
-    btn.onclick = (e) => {
-      e.preventDefault();
+    btn.onclick = () => {
       currentYear = year;
       document.querySelectorAll('.year-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       loadVaccineRecords();
     };
-    yearButtonsWrapper.appendChild(btn);
+    container.appendChild(btn);
   });
-  
-  container.appendChild(yearButtonsWrapper);
-  
-  // Add custom year input section
-  const customYearDiv = document.createElement('div');
-  customYearDiv.className = 'year-selector-custom';
-  
-  const label = document.createElement('label');
-  label.textContent = '🔄 เพิ่มปีใหม่:';
-  
-  const input = document.createElement('input');
-  input.type = 'number';
-  input.placeholder = 'ป.ศ.';
-  input.style.padding = '8px 12px';
-  input.style.border = '1px solid var(--border-color)';
-  input.style.borderRadius = '6px';
-  input.style.width = '100px';
-  input.style.fontSize = '0.9em';
-  const minYear = currentYearBE - 20;
-  const maxYear = currentYearBE + 10;
-  input.min = minYear;
-  input.max = maxYear;
-  input.value = currentYearBE;
-  
-  const addBtn = document.createElement('button');
-  addBtn.type = 'button';
-  addBtn.textContent = '✅ เพิ่มปี';
-  
-  addBtn.onclick = (e) => {
-    e.preventDefault();
-    const year = parseInt(input.value);
-    
-    if (!year || isNaN(year)) {
-      showAlert('❌ กรุณาระบุปีที่ถูกต้อง', 'error', 'alertVaccine');
-      return;
-    }
-    
-    if (year < minYear || year > maxYear) {
-      showAlert(`❌ ปีควรอยู่ระหว่าง ${minYear} - ${maxYear}`, 'error', 'alertVaccine');
-      return;
-    }
-    
-    const existingBtn = Array.from(yearButtonsWrapper.querySelectorAll('.year-btn')).find(btn => 
-      parseInt(btn.textContent.replace('ปี ', '')) === year
-    );
-    
-    if (existingBtn) {
-      showAlert(`⚠️ ปี ${year} มีอยู่แล้ว`, 'error', 'alertVaccine');
-      return;
-    }
-    
-    const newBtn = document.createElement('button');
-    newBtn.type = 'button';
-    newBtn.className = 'year-btn active';
-    newBtn.textContent = `ปี ${year}`;
-    
-    newBtn.onclick = (e) => {
-      e.preventDefault();
-      currentYear = year;
-      document.querySelectorAll('.year-btn').forEach(b => b.classList.remove('active'));
-      newBtn.classList.add('active');
-      loadVaccineRecords();
-    };
-    
-    const allButtons = Array.from(yearButtonsWrapper.querySelectorAll('.year-btn'));
-    const allButtonsWithNew = [...allButtons, newBtn];
-    
-    allButtonsWithNew.sort((a, b) => {
-      const yearA = parseInt(a.textContent.replace('ปี ', ''));
-      const yearB = parseInt(b.textContent.replace('ปี ', ''));
-      return yearA - yearB;
-    });
-    
-    yearButtonsWrapper.innerHTML = '';
-    allButtonsWithNew.forEach(btn => {
-      btn.onclick = (e) => {
-        e.preventDefault();
-        const btnYear = parseInt(btn.textContent.replace('ปี ', ''));
-        currentYear = btnYear;
-        document.querySelectorAll('.year-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        loadVaccineRecords();
-      };
-      yearButtonsWrapper.appendChild(btn);
-    });
-    
-    currentYear = year;
-    document.querySelectorAll('.year-btn').forEach(b => b.classList.remove('active'));
-    newBtn.classList.add('active');
-    loadVaccineRecords();
-    
-    input.value = currentYearBE;
-    showAlert(`✅ เพิ่มปี ${year} สำเร็จ`, 'success', 'alertVaccine');
-  };
-  
-  customYearDiv.appendChild(label);
-  customYearDiv.appendChild(input);
-  customYearDiv.appendChild(addBtn);
-  
-  container.appendChild(customYearDiv);
 }
 
 function openEditVaccineModal(recordId) {
@@ -1945,16 +2159,20 @@ function updateDashboard() {
   });
   
   const totalBasic = allRequiredVaccines.filter(v => v.type === 'basic').length;
+  const totalOptional = totalVaccines - totalBasic;
   const givenVaccines = allVaccineRecords.filter(v => v.status === 'Given').length;
   
+  // Update stat cards
   document.getElementById('totalChildren').textContent = totalChildren;
   document.getElementById('completeVaccine').textContent = completeChildren;
   document.getElementById('pendingVaccine').textContent = incompleteChildren;
   document.getElementById('totalVaccines').textContent = totalVaccines;
 
+  // Update big completion rate
   document.getElementById('bigCompletionRate').textContent = completionRate + '%';
   document.getElementById('bigCompletionBar').style.width = completionRate + '%';
   
+  // Update enhanced report summary
   const completePercent = totalChildren > 0 ? Math.round((completeChildren / totalChildren) * 100) : 0;
   const incompletePercent = totalChildren > 0 ? Math.round((incompleteChildren / totalChildren) * 100) : 0;
   
@@ -1962,7 +2180,10 @@ function updateDashboard() {
   document.getElementById('reportComplete').textContent = completeChildren + ' คน (' + completePercent + '%)';
   document.getElementById('reportIncomplete').textContent = incompleteChildren + ' คน (' + incompletePercent + '%)';
   document.getElementById('reportGiven').textContent = givenVaccines + ' คน';
+  document.getElementById('reportBasic').textContent = totalBasic + ' ชนิด';
+  document.getElementById('reportOptional').textContent = totalOptional + ' ชนิด';
   
+  // Calculate overdue and upcoming alerts
   const allAlerts = getAllAlerts();
   const overdueChildren = new Set(allAlerts.filter(a => a.type === 'overdue').map(a => a.childId));
   const upcomingChildren = new Set(allAlerts.filter(a => a.type === 'upcoming').map(a => a.childId));
@@ -1970,8 +2191,13 @@ function updateDashboard() {
   document.getElementById('reportOverdue').textContent = overdueChildren.size + ' คน';
   document.getElementById('reportUpcoming').textContent = upcomingChildren.size + ' คน';
   
+  // Display alerts
+  displayAlerts();
+  
+  // Render charts
   setTimeout(() => { renderCharts(); }, 100);
   
+  // Children overview
   const overviewContainer = document.getElementById('childrenOverview');
   if (allChildren.length === 0) {
     overviewContainer.innerHTML = '<div class="empty-state"><div class="empty-state-icon">👶</div><p>ยังไม่มีข้อมูลเด็กในระบบ</p></div>';
@@ -2004,6 +2230,7 @@ function updateDashboard() {
     }).join('');
   }
   
+  // Pending list - show children with alerts or incomplete vaccines
   const pendingContainer = document.getElementById('pendingList');
   const childrenWithAlerts = allChildren.filter(child => {
     const alerts = getChildAlerts(child.id);
@@ -2062,6 +2289,10 @@ function displayVaccinePlan() {
         html += `<div class="vaccine-options" style="color: var(--warning-color);">หรือ: ${vaccine.alternative}</div>`;
       }
       
+      if (vaccine.alternatives) {
+        html += `<div class="vaccine-options" style="color: var(--warning-color);">ทางเลือก: ${vaccine.alternatives.join(', ')}</div>`;
+      }
+      
       html += `</div>`;
     });
     
@@ -2104,66 +2335,21 @@ function displayHistory() {
     return;
   }
   
-  let html = '';
+  let html = '<table class="vaccine-table"><thead><tr><th>ชื่อเด็ก</th><th>วัน/เดือน/ปีเกิด</th><th>อายุ</th><th>จำนวนวัคซีน</th></tr></thead><tbody>';
   
   allChildren.forEach(child => {
     const childRecords = allVaccineRecords.filter(v => v.childId === child.id);
-    const givenRecords = childRecords.filter(v => v.status === 'Given');
-    
     html += `
-      <div class="child-detail-card" style="margin-bottom: 15px; border: 1px solid var(--border-color); padding: 15px; border-radius: 8px;">
-        <div class="child-detail-header" style="margin-bottom: 12px;">
-          <div>
-            <div class="child-detail-name">👶 ${child.fullName}</div>
-            <div style="font-size: 0.85em; color: var(--text-light); margin-top: 3px;">
-              วัน/เดือน/ปีเกิด: ${formatDate(child.dob)} | อายุ: ${calculateAge(child.dob)} | ห้อง: ${child.room}
-            </div>
-          </div>
-        </div>
-        
-        <div style="background: var(--light-bg); padding: 12px; border-radius: 6px; margin-bottom: 10px;">
-          <div style="font-weight: 600; color: var(--primary-dark); margin-bottom: 8px;">📊 สถิติวัคซีน:</div>
-          <div style="display: flex; gap: 20px; font-size: 0.9em;">
-            <div>
-              <span style="color: var(--text-light);">ทั้งหมด:</span>
-              <span style="font-weight: 700; color: var(--primary-color);">${childRecords.length} เข็ม</span>
-            </div>
-            <div>
-              <span style="color: var(--text-light);">ได้รับแล้ว:</span>
-              <span style="font-weight: 700; color: var(--success-color);">${givenRecords.length} เข็ม</span>
-            </div>
-          </div>
-        </div>
-        
-        ${givenRecords.length > 0 ? `
-        <div style="margin-top: 10px;">
-          <div style="font-weight: 600; color: var(--success-color); margin-bottom: 8px;">✅ วัคซีนที่ได้รับแล้ว (${givenRecords.length}):</div>
-          <div style="background: var(--white); padding: 12px; border-radius: 6px; border-left: 3px solid var(--success-color);">
-            <table class="vaccine-table" style="margin: 0;">
-              <thead>
-                <tr>
-                  <th>วัคซีน</th>
-                  <th>วันที่ให้</th>
-                  <th>ปี</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${givenRecords.map(v => `
-                  <tr>
-                    <td>${getVaccineName(v.name)}</td>
-                    <td>${formatDate(v.date)}</td>
-                    <td>${v.year}</td>
-                  </tr>
-                `).join('')}
-              </tbody>
-            </table>
-          </div>
-        </div>
-        ` : '<div style="color: var(--text-light); font-size: 0.9em; font-style: italic;">ยังไม่มีการบันทึกวัคซีน</div>'}
-      </div>
+      <tr>
+        <td><strong>${child.fullName}</strong></td>
+        <td>${formatDate(child.dob)}</td>
+        <td>${calculateAge(child.dob)}</td>
+        <td>${childRecords.length} เข็ม</td>
+      </tr>
     `;
   });
   
+  html += '</tbody></table>';
   container.innerHTML = html;
 }
 
@@ -2178,7 +2364,8 @@ function searchHistory() {
   if (!isFirebaseInitialized) return;
   
   const filtered = allChildren.filter(child => 
-    child.fullName.toLowerCase().includes(searchTerm)
+    child.fullName.toLowerCase().includes(searchTerm) || 
+    (child.nickname && child.nickname.toLowerCase().includes(searchTerm))
   );
   
   const container = document.getElementById('historyContent');
@@ -2187,66 +2374,21 @@ function searchHistory() {
     return;
   }
   
-  let html = '';
+  let html = '<table class="vaccine-table"><thead><tr><th>ชื่อเด็ก</th><th>วัน/เดือน/ปีเกิด</th><th>อายุ</th><th>จำนวนวัคซีน</th></tr></thead><tbody>';
   
   filtered.forEach(child => {
     const childRecords = allVaccineRecords.filter(v => v.childId === child.id);
-    const givenRecords = childRecords.filter(v => v.status === 'Given');
-    
     html += `
-      <div class="child-detail-card" style="margin-bottom: 15px; border: 1px solid var(--border-color); padding: 15px; border-radius: 8px;">
-        <div class="child-detail-header" style="margin-bottom: 12px;">
-          <div>
-            <div class="child-detail-name">👶 ${child.fullName}</div>
-            <div style="font-size: 0.85em; color: var(--text-light); margin-top: 3px;">
-              วัน/เดือน/ปีเกิด: ${formatDate(child.dob)} | อายุ: ${calculateAge(child.dob)} | ห้อง: ${child.room}
-            </div>
-          </div>
-        </div>
-        
-        <div style="background: var(--light-bg); padding: 12px; border-radius: 6px; margin-bottom: 10px;">
-          <div style="font-weight: 600; color: var(--primary-dark); margin-bottom: 8px;">📊 สถิติวัคซีน:</div>
-          <div style="display: flex; gap: 20px; font-size: 0.9em;">
-            <div>
-              <span style="color: var(--text-light);">ทั้งหมด:</span>
-              <span style="font-weight: 700; color: var(--primary-color);">${childRecords.length} เข็ม</span>
-            </div>
-            <div>
-              <span style="color: var(--text-light);">ได้รับแล้ว:</span>
-              <span style="font-weight: 700; color: var(--success-color);">${givenRecords.length} เข็ม</span>
-            </div>
-          </div>
-        </div>
-        
-        ${givenRecords.length > 0 ? `
-        <div style="margin-top: 10px;">
-          <div style="font-weight: 600; color: var(--success-color); margin-bottom: 8px;">✅ วัคซีนที่ได้รับแล้ว (${givenRecords.length}):</div>
-          <div style="background: var(--white); padding: 12px; border-radius: 6px; border-left: 3px solid var(--success-color);">
-            <table class="vaccine-table" style="margin: 0;">
-              <thead>
-                <tr>
-                  <th>วัคซีน</th>
-                  <th>วันที่ให้</th>
-                  <th>ปี</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${givenRecords.map(v => `
-                  <tr>
-                    <td>${getVaccineName(v.name)}</td>
-                    <td>${formatDate(v.date)}</td>
-                    <td>${v.year}</td>
-                  </tr>
-                `).join('')}
-              </tbody>
-            </table>
-          </div>
-        </div>
-        ` : '<div style="color: var(--text-light); font-size: 0.9em; font-style: italic;">ยังไม่มีการบันทึกวัคซีน</div>'}
-      </div>
+      <tr>
+        <td><strong>${child.fullName}</strong></td>
+        <td>${formatDate(child.dob)}</td>
+        <td>${calculateAge(child.dob)}</td>
+        <td>${childRecords.length} เข็ม</td>
+      </tr>
     `;
   });
   
+  html += '</tbody></table>';
   container.innerHTML = html;
 }
 
@@ -2415,93 +2557,99 @@ function displayRoomsReport() {
   container.innerHTML = html;
 }
 
-function openEditChildModal(childId) {
-  const child = allChildren.find(c => c.id === childId);
+function displayChildrenDetail() {
+  const container = document.getElementById('childrenDetail');
   
-  if (!child) {
-    showAlert('❌ ไม่พบข้อมูลเด็ก', 'error');
+  if (allChildren.length === 0) {
+    container.innerHTML = '<p style="text-align: center; color: var(--text-light); padding: 40px;">ยังไม่มีข้อมูล</p>';
     return;
   }
   
-  document.getElementById('editChildId').value = child.id;
-  document.getElementById('editFullName').value = child.fullName;
-  document.getElementById('editNickname').value = child.nickname === '-' ? '' : child.nickname;
-  document.getElementById('editDob').value = child.dob;
-  document.getElementById('editGender').value = child.gender;
-  document.getElementById('editMotherName').value = child.motherName;
+  const completeChildren = allChildren.filter(child => isChildComplete(child.id));
+  const incompleteChildren = allChildren.filter(child => !isChildComplete(child.id));
   
-  const roomOptions = ['1/1', '1/2', '1/3', '2/1', '2/2', '2/3', '3/1', '3/2', '3/3', '4/1', '4/2', '4/3'];
-  if (roomOptions.includes(child.room)) {
-    document.getElementById('editRoom').value = child.room;
-  } else {
-    document.getElementById('editRoom').value = 'อื่นๆ';
-    document.getElementById('editCustomRoom').value = child.room;
-    document.getElementById('customRoomGroupEdit').classList.remove('hidden');
-  }
+  let html = '';
   
-  document.getElementById('editChildModal').style.display = 'block';
-}
-
-function closeEditChildModal() {
-  document.getElementById('editChildModal').style.display = 'none';
-  document.getElementById('editChildForm').reset();
-  document.getElementById('customRoomGroupEdit').classList.add('hidden');
-}
-
-document.getElementById('editChildForm').addEventListener('submit', function(e) {
-  e.preventDefault();
-  
-  const childId = document.getElementById('editChildId').value;
-  const roomValue = getRoomValueEdit();
-  
-  if (!roomValue) {
-    showAlert('❌ กรุณาระบุห้อง', 'error');
-    return;
-  }
-  
-  const childData = {
-    fullName: document.getElementById('editFullName').value,
-    nickname: document.getElementById('editNickname').value || '-',
-    dob: document.getElementById('editDob').value,
-    gender: document.getElementById('editGender').value,
-    motherName: document.getElementById('editMotherName').value || '',
-    room: roomValue,
-    updatedAt: new Date().toISOString()
-  };
-  
-  updateChild(childId, childData)
-    .then(() => {
-      showAlert('✅ แก้ไขข้อมูลเด็กสำเร็จ', 'success');
-      closeEditChildModal();
+  if (completeChildren.length > 0) {
+    html += '<h3 style="color: var(--success-color); margin-bottom: 15px;">✅ เด็กที่ได้วัคซีนครบแล้ว (' + completeChildren.length + ' คน)</h3>';
+    
+    completeChildren.forEach(child => {
+      const receivedVaccines = getChildVaccines(child.id);
       
-      if (currentChild && currentChild.id === childId) {
-        currentChild = { id: childId, ...childData };
-      }
-    })
-    .catch(error => {
-      console.error('Error updating child:', error);
-      showAlert('❌ เกิดข้อผิดพลาดในการแก้ไข', 'error');
+      html += `
+        <div class="child-detail-card complete">
+          <div class="child-detail-header">
+            <div>
+              <div class="child-detail-name">👶 ${child.fullName}</div>
+              <div style="font-size: 0.85em; color: var(--text-light); margin-top: 3px;">ห้อง: ${child.room} | อายุ: ${calculateAge(child.dob)}</div>
+            </div>
+            <div class="child-detail-progress complete">
+              ✅ ครบถ้วน ${receivedVaccines.length}/${allRequiredVaccines.length} เข็ม
+            </div>
+          </div>
+          <button class="collapse-btn" onclick="toggleCollapse('detail-${child.id}')">
+            ดูรายการวัคซีนทั้งหมด
+          </button>
+          <div id="detail-${child.id}" class="collapsible-content">
+            <div class="vaccine-list">
+              <div class="vaccine-list-title">💉 วัคซีนที่ได้รับ</div>
+              <div class="vaccine-list-items received">
+                ${receivedVaccines.map(v => getVaccineName(v.name) + ' (' + formatDate(v.date) + ')').join('<br>')}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
     });
-});
-
-function deleteChild(childId) {
-  if (!confirm('⚠️ คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูลเด็กนี้?\n\nการลบจะลบข้อมูลวัคซีนทั้งหมดของเด็กด้วย')) {
-    return;
   }
   
-  deleteChildFromDB(childId)
-    .then(() => {
-      showAlert('✅ ลบข้อมูลเด็กสำเร็จ', 'success');
+  if (incompleteChildren.length > 0) {
+    html += '<h3 style="color: var(--danger-color); margin-top: 30px; margin-bottom: 15px;">⚠️ เด็กที่ได้วัคซีนยังไม่ครบ (' + incompleteChildren.length + ' คน)</h3>';
+    
+    incompleteChildren.forEach(child => {
+      const receivedVaccines = getChildVaccines(child.id);
+      const missingVaccines = getMissingVaccines(child.id);
+      const progress = getCompletionPercentage(child.id);
       
-      if (currentChild && currentChild.id === childId) {
-        currentChild = null;
-        document.getElementById('vaccineFormContainer').style.display = 'none';
-      }
-    })
-    .catch(error => {
-      console.error('Error deleting child:', error);
-      showAlert('❌ เกิดข้อผิดพลาดในการลบ', 'error');
+      html += `
+        <div class="child-detail-card incomplete">
+          <div class="child-detail-header">
+            <div>
+              <div class="child-detail-name">👶 ${child.fullName}</div>
+              <div style="font-size: 0.85em; color: var(--text-light); margin-top: 3px;">ห้อง: ${child.room} | อายุ: ${calculateAge(child.dob)}</div>
+            </div>
+            <div class="child-detail-progress incomplete">
+              ${receivedVaccines.length}/${allRequiredVaccines.length} เข็ม (${progress}%)
+            </div>
+          </div>
+          <div class="progress-bar-container">
+            <div class="progress-bar-fill" style="width: ${progress}%"></div>
+          </div>
+          <button class="collapse-btn" onclick="toggleCollapse('detail-${child.id}')">
+            ดูรายละเอียด
+          </button>
+          <div id="detail-${child.id}" class="collapsible-content">
+            ${receivedVaccines.length > 0 ? `
+            <div class="vaccine-list">
+              <div class="vaccine-list-title" style="color: var(--success-color);">✅ วัคซีนที่ได้รับแล้ว (${receivedVaccines.length})</div>
+              <div class="vaccine-list-items received">
+                ${receivedVaccines.map(v => getVaccineName(v.name) + ' (' + formatDate(v.date) + ')').join('<br>')}
+              </div>
+            </div>
+            ` : ''}
+            <div class="vaccine-list">
+              <div class="vaccine-list-title" style="color: var(--danger-color);">❌ วัคซีนที่ยังขาด (${missingVaccines.length})</div>
+              <div class="vaccine-list-items missing">
+                ${missingVaccines.map(v => `${v.name} (${v.age})`).join('<br>')}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
     });
+  }
+  
+  container.innerHTML = html;
 }
 
 function toggleCollapse(id) {
@@ -2513,15 +2661,11 @@ function toggleCollapse(id) {
 
 // Initialization
 window.addEventListener('load', function() {
-  // Display Alerts tab first
-  displayAlertsTab();
-  displayVaccinePlan();
-  
-  // Load data in background if Firebase is ready
   if (isFirebaseInitialized) {
-    setTimeout(() => {
-      loadAllData();
-    }, 500);
+    loadAllData();
+    displayVaccinePlan();
+  } else {
+    showAlert('⚠️ กรุณาตั้งค่า Firebase Configuration ใน code', 'info', 'alertRegister');
   }
   
   const today = new Date().toISOString().split('T')[0];
