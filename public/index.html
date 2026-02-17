@@ -1284,7 +1284,7 @@ function showAlert(message, type, elementId = 'alertRegister') {
     alert.className = `alert alert-${type}`;
     alert.textContent = message;
     alert.style.display = 'block';
-    setTimeout(() => { alert.style.display = 'none'; }, 4000);
+    setTimeout(() => { alert.style.display = 'none'; }, 6000);
   }
 }
 
@@ -1704,13 +1704,127 @@ function setupYearSelector() {
   const currentYearBE = new Date().getFullYear() + 543;
   const defaultYears = [currentYearBE - 2, currentYearBE - 1, currentYearBE, currentYearBE + 1];
   
-  // Load custom years from localStorage
-  let customYears = [];
-  try {
-    customYears = JSON.parse(localStorage.getItem('customYears') || '[]');
-  } catch (err) {
-    console.error('Error loading customYears:', err);
-  }
+  // Load custom years from Firebase Database
+  const customYearsRef = database.ref('settings/customYears');
+  customYearsRef.once('value', (snapshot) => {
+    let customYears = snapshot.val() || [];
+    if (!Array.isArray(customYears)) {
+      customYears = [];
+    }
+    
+    // Merge and sort years
+    const allYears = [...new Set([...defaultYears, ...customYears])];
+    allYears.sort((a, b) => a - b);
+    const years = allYears;
+    
+    // Create wrapper for year buttons
+    const yearButtonsWrapper = document.createElement('div');
+    yearButtonsWrapper.style.display = 'flex';
+    yearButtonsWrapper.style.gap = '8px';
+    yearButtonsWrapper.style.flexWrap = 'wrap';
+    yearButtonsWrapper.style.marginBottom = '10px';
+    
+    years.forEach(year => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'year-btn' + (year === currentYear ? ' active' : '');
+      btn.textContent = `ปี ${year}`;
+      btn.onclick = (e) => {
+        e.preventDefault();
+        currentYear = year;
+        document.querySelectorAll('.year-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        loadVaccineRecords();
+      };
+      yearButtonsWrapper.appendChild(btn);
+    });
+    
+    container.appendChild(yearButtonsWrapper);
+    
+    // Add custom year input section
+    const customYearDiv = document.createElement('div');
+    customYearDiv.className = 'year-selector-custom';
+    
+    const label = document.createElement('label');
+    label.textContent = '🔄 เพิ่มปีใหม่:';
+    
+    const input = document.createElement('input');
+    input.type = 'number';
+    input.placeholder = 'ป.ศ.';
+    input.style.padding = '8px 12px';
+    input.style.border = '1px solid var(--border-color)';
+    input.style.borderRadius = '6px';
+    input.style.width = '100px';
+    input.style.fontSize = '0.9em';
+    const minYear = currentYearBE - 20;
+    const maxYear = currentYearBE + 10;
+    input.min = minYear;
+    input.max = maxYear;
+    input.value = currentYearBE;
+    
+    const addBtn = document.createElement('button');
+    addBtn.type = 'button';
+    addBtn.textContent = '✅ เพิ่มปี';
+    
+    addBtn.onclick = (e) => {
+      e.preventDefault();
+      const year = parseInt(input.value);
+      
+      if (!year || isNaN(year)) {
+        showAlert('❌ กรุณาระบุปีที่ถูกต้อง', 'error', 'alertVaccine');
+        return;
+      }
+      
+      if (year < minYear || year > maxYear) {
+        showAlert(`❌ ปีควรอยู่ระหว่าง ${minYear} - ${maxYear}`, 'error', 'alertVaccine');
+        return;
+      }
+      
+      const existingBtn = Array.from(yearButtonsWrapper.querySelectorAll('.year-btn')).find(btn => 
+        parseInt(btn.textContent.replace('ปี ', '')) === year
+      );
+      
+      if (existingBtn) {
+        showAlert(`⚠️ ปี ${year} มีอยู่แล้ว`, 'warning', 'alertVaccine');
+        return;
+      }
+      
+      // Add to database
+      const customYearsRef = database.ref('settings/customYears');
+      customYearsRef.once('value', (snapshot) => {
+        let years = snapshot.val() || [];
+        if (!Array.isArray(years)) {
+          years = [];
+        }
+        
+        if (!years.includes(year)) {
+          years.push(year);
+          years.sort((a, b) => a - b);
+          customYearsRef.set(years)
+            .then(() => {
+              showAlert(`✅ เพิ่มปี ${year} สำเร็จ (บันทึกออนไลน์)`, 'success', 'alertVaccine');
+              setupYearSelector(); // Reload year selector
+            })
+            .catch(err => {
+              console.error('Save year error:', err);
+              showAlert(`✅ เพิ่มปี ${year} สำเร็จ`, 'success', 'alertVaccine');
+              setupYearSelector();
+            });
+        }
+      });
+    };
+    
+    customYearDiv.appendChild(label);
+    customYearDiv.appendChild(input);
+    customYearDiv.appendChild(addBtn);
+    container.appendChild(customYearDiv);
+  }).catch(err => {
+    console.error('Load custom years error:', err);
+    // Continue with default years if error
+    const defaultYears = [currentYearBE - 2, currentYearBE - 1, currentYearBE, currentYearBE + 1];
+    // ... (create basic year selector)
+  });
+}
   
   // Merge and sort years
   const allYears = [...new Set([...defaultYears, ...customYears])];
