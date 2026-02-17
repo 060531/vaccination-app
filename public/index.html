@@ -1815,30 +1815,36 @@ function setupYearSelector() {
     document.querySelectorAll('.year-btn').forEach(b => b.classList.remove('active'));
     newBtn.classList.add('active');
     
-    // Save custom years to Firestore
+    // Save custom years to Realtime Database
     try {
-      const db = firebase.firestore();
-      const userDoc = db.collection('appConfig').doc('years');
-      userDoc.get().then(doc => {
-        const customYears = doc.exists ? (doc.data().customYears || []) : [];
+      const customYearsRef = database.ref('appConfig/customYears');
+      customYearsRef.once('value', (snapshot) => {
+        let customYears = snapshot.val() || [];
+        if (!Array.isArray(customYears)) {
+          customYears = [];
+        }
+        
         if (!customYears.includes(year)) {
           customYears.push(year);
           customYears.sort((a, b) => a - b);
-          userDoc.set({ customYears }, { merge: true })
+          customYearsRef.set(customYears)
             .then(() => {
               showAlert(`✅ เพิ่มปี ${year} สำเร็จ (บันทึกออนไลน์)`, 'success', 'alertVaccine');
+              console.log('Year saved to database:', year);
             })
             .catch(err => {
               console.error('Save year error:', err);
               showAlert(`⚠️ เพิ่มปี ${year} สำเร็จ แต่ยังไม่บันทึกออนไลน์`, 'warning', 'alertVaccine');
             });
+        } else {
+          showAlert(`⚠️ ปี ${year} มีอยู่แล้ว`, 'warning', 'alertVaccine');
         }
       }).catch(err => {
-        console.error('Get year error:', err);
+        console.error('Get customYears error:', err);
         showAlert(`⚠️ เพิ่มปี ${year} สำเร็จ แต่ยังไม่บันทึกออนไลน์`, 'warning', 'alertVaccine');
       });
     } catch (err) {
-      console.error('Firestore error:', err);
+      console.error('Database error:', err);
       showAlert(`⚠️ เพิ่มปี ${year} สำเร็จ แต่ยังไม่บันทึกออนไลน์`, 'warning', 'alertVaccine');
     }
     
