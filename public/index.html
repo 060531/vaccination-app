@@ -1702,7 +1702,20 @@ function setupYearSelector() {
   container.innerHTML = '';
   
   const currentYearBE = new Date().getFullYear() + 543;
-  const years = [currentYearBE - 2, currentYearBE - 1, currentYearBE, currentYearBE + 1];
+  const defaultYears = [currentYearBE - 2, currentYearBE - 1, currentYearBE, currentYearBE + 1];
+  
+  // Load custom years from localStorage
+  let customYears = [];
+  try {
+    customYears = JSON.parse(localStorage.getItem('customYears') || '[]');
+  } catch (err) {
+    console.error('Error loading customYears:', err);
+  }
+  
+  // Merge and sort years
+  const allYears = [...new Set([...defaultYears, ...customYears])];
+  allYears.sort((a, b) => a - b);
+  const years = allYears;
   
   // Create wrapper for year buttons
   const yearButtonsWrapper = document.createElement('div');
@@ -1815,37 +1828,21 @@ function setupYearSelector() {
     document.querySelectorAll('.year-btn').forEach(b => b.classList.remove('active'));
     newBtn.classList.add('active');
     
-    // Save custom years to Realtime Database
+    // Save custom years to localStorage (local storage + will load on refresh)
     try {
-      const customYearsRef = database.ref('appConfig/customYears');
-      customYearsRef.once('value', (snapshot) => {
-        let customYears = snapshot.val() || [];
-        if (!Array.isArray(customYears)) {
-          customYears = [];
-        }
-        
-        if (!customYears.includes(year)) {
-          customYears.push(year);
-          customYears.sort((a, b) => a - b);
-          customYearsRef.set(customYears)
-            .then(() => {
-              showAlert(`✅ เพิ่มปี ${year} สำเร็จ (บันทึกออนไลน์)`, 'success', 'alertVaccine');
-              console.log('Year saved to database:', year);
-            })
-            .catch(err => {
-              console.error('Save year error:', err);
-              showAlert(`⚠️ เพิ่มปี ${year} สำเร็จ แต่ยังไม่บันทึกออนไลน์`, 'warning', 'alertVaccine');
-            });
-        } else {
-          showAlert(`⚠️ ปี ${year} มีอยู่แล้ว`, 'warning', 'alertVaccine');
-        }
-      }).catch(err => {
-        console.error('Get customYears error:', err);
-        showAlert(`⚠️ เพิ่มปี ${year} สำเร็จ แต่ยังไม่บันทึกออนไลน์`, 'warning', 'alertVaccine');
-      });
+      let customYears = JSON.parse(localStorage.getItem('customYears') || '[]');
+      if (!customYears.includes(year)) {
+        customYears.push(year);
+        customYears.sort((a, b) => a - b);
+        localStorage.setItem('customYears', JSON.stringify(customYears));
+        showAlert(`✅ เพิ่มปี ${year} สำเร็จ`, 'success', 'alertVaccine');
+        console.log('Year saved to localStorage:', year, customYears);
+      } else {
+        showAlert(`⚠️ ปี ${year} มีอยู่แล้ว`, 'warning', 'alertVaccine');
+      }
     } catch (err) {
-      console.error('Database error:', err);
-      showAlert(`⚠️ เพิ่มปี ${year} สำเร็จ แต่ยังไม่บันทึกออนไลน์`, 'warning', 'alertVaccine');
+      console.error('localStorage error:', err);
+      showAlert(`⚠️ เพิ่มปี ${year} สำเร็จ`, 'warning', 'alertVaccine');
     }
     
     loadVaccineRecords();
