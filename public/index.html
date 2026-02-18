@@ -344,6 +344,7 @@
             <button class="tab-button active" onclick="switchTab('alerts')">🔔 แจ้งเตือน</button>
             <button class="tab-button" onclick="switchTab('dashboard')">📊 Dashboard</button>
             <button class="tab-button" onclick="switchTab('rooms')">🏫 รายงานตามห้อง</button>
+            <button class="tab-button" onclick="switchTab('children')">👶 รายงานรายบุคคล</button>
             <button class="tab-button" onclick="switchTab('register')">📝 ลงทะเบียนเด็ก</button>
             <button class="tab-button" onclick="switchTab('vaccine')">💉 บันทึกวัคซีน</button>
             <button class="tab-button" onclick="switchTab('plan')">📋 แผนวัคซีน</button>
@@ -392,7 +393,7 @@
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="motherName">ชื่อบิดา/มารดา</label>
+                                <label for="motherName">ชื่อแม่</label>
                                 <input type="text" id="motherName" />
                             </div>
                             <div class="form-group">
@@ -646,11 +647,69 @@
             </div>
 
             <!-- Rooms Report Tab -->
-            <div id="rooms" class="tab-content">
+<!-- Rooms Report Tab -->
+<div id="rooms" class="tab-content">
+    <div class="panel">
+        <h2>🏫 รายงานตามห้อง</h2>
+        
+        <!-- ===== GRAPHS SECTION ===== -->
+        <div style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 10px; padding: 20px; margin-bottom: 20px; border: 1px solid var(--border-color);">
+            <h3 style="color: var(--primary-dark); margin-bottom: 15px; font-size: 1.1em;">📊 สรุปรายงานตามห้อง</h3>
+            
+            <!-- Stats Cards -->
+            <div class="stats-grid" style="margin-bottom: 20px;">
+                <div class="stat-card">
+                    <h4>เด็กทั้งหมด</h4>
+                    <div class="number" id="roomsReportTotal">0</div>
+                    <div class="label">คน</div>
+                </div>
+                <div class="stat-card success">
+                    <h4>ครบตามเกณฑ์อายุ</h4>
+                    <div class="number" id="roomsReportComplete">0</div>
+                    <div class="label">คน</div>
+                </div>
+                <div class="stat-card danger">
+                    <h4>ยังไม่ครบ</h4>
+                    <div class="number" id="roomsReportIncomplete">0</div>
+                    <div class="label">คน</div>
+                </div>
+            </div>
+            
+            <!-- Charts -->
+            <div class="charts-grid">
+                <div class="chart-box">
+                    <h3>📊 สัดส่วนความครบถ้วน(ตามเกณฑ์อายุปัจจุบัน)</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="roomsCompletionChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-box">
+                    <h3>📊 จำนวนเด็กตามห้อง</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="roomsRoomChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ===== DETAILS ===== -->
+        <p style="color: var(--text-light); margin-bottom: 20px;">แสดงรายละเอียดการให้วัคซีนแยกตามห้องเรียน</p>
+        <div id="roomsDetail"></div>
+    </div>
+</div>
+
+            <!-- Children Report Tab (Individual Report) -->
+            <div id="children" class="tab-content">
                 <div class="panel">
-                    <h2>🏫 รายงานตามห้อง</h2>
-                    <p style="color: var(--text-light); margin-bottom: 20px;">แสดงรายละเอียดการให้วัคซีนแยกตามห้องเรียน</p>
-                    <div id="roomsDetail"></div>
+                    <h2>👶 รายงานรายบุคคล</h2>
+                    
+                    <div class="form-group">
+                        <input type="text" id="searchChildren" placeholder="🔍 ค้นหาชื่อเด็ก..." onkeyup="searchChildren()" />
+                    </div>
+
+                    <div id="childrenContent">
+                        <div class="loading">🔄 กำลังโหลดข้อมูล...</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -692,7 +751,7 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="editMotherName">ชื่อบิดา/มารดา</label>
+                        <label for="editMotherName">ชื่อแม่</label>
                         <input type="text" id="editMotherName" />
                     </div>
                     <div class="form-group">
@@ -922,6 +981,8 @@ let completionPieChartInstance = null;
 let roomBarChartInstance = null;
 let vaccineStatusChartInstance = null;
 let roomCompletionChartInstance = null;
+let roomsCompletionChartInstance = null;
+let roomsRoomChartInstance = null;
 
 // ===== Vaccine Schedule Mapping (age in months when each vaccine is due) =====
 const vaccineScheduleMonths = {
@@ -1242,7 +1303,7 @@ function renderVaccineStatusChart() {
             label: function(context) {
               const total = context.dataset.data.reduce((a, b) => a + b, 0);
               const pct = total > 0 ? Math.round((context.raw / total) * 100) : 0;
-              return context.label + ': ' + context.raw + ' คน (' + pct + '%)';
+              return context.label + ': ' + context.raw + ' เข็ม (' + pct + '%)';
             }
           }
         }
@@ -1426,6 +1487,8 @@ function switchTab(tabName) {
     displayHistory();
   } else if (tabName === 'rooms') {
     displayRoomsReport();
+  } else if (tabName === 'children') {  // ← เพิ่มบรรทัดนี้
+    displayChildrenDetail();              // ← เพิ่มบรรทัดนี้
   }
 }
 
@@ -2148,97 +2211,141 @@ function displayHistory() {
     return;
   }
   
-  let html = '';
+  let html = '<table class="vaccine-table" style="margin-top: 0; width: 100%;">';
+  html += `
+    <thead>
+      <tr>
+        <th>ชื่อเด็ก</th>
+        <th>วัน/เดือน/ปีเกิด</th>
+        <th>อายุ</th>
+        <th>จำนวนวัคซีน</th>
+      </tr>
+    </thead>
+    <tbody>
+  `;
   
   allChildren.forEach(child => {
     const childRecords = allVaccineRecords.filter(v => v.childId === child.id);
     const givenRecords = childRecords.filter(v => v.status === 'Given');
     
     html += `
-      <div class="child-detail-card" style="margin-bottom: 15px; border: 1px solid var(--border-color); padding: 15px; border-radius: 8px;">
-        <div class="child-detail-header" style="margin-bottom: 12px;">
-          <div>
-            <div class="child-detail-name">👶 ${child.fullName}</div>
-            <div style="font-size: 0.85em; color: var(--text-light); margin-top: 3px;">
-              วัน/เดือน/ปีเกิด: ${formatDate(child.dob)} | อายุ: ${calculateAge(child.dob)} | ห้อง: ${child.room}
-            </div>
-          </div>
-        </div>
-        
-        <div style="background: var(--light-bg); padding: 12px; border-radius: 6px; margin-bottom: 10px;">
-          <div style="font-weight: 600; color: var(--primary-dark); margin-bottom: 8px;">📊 สถิติวัคซีน:</div>
-          <div style="display: flex; gap: 20px; font-size: 0.9em;">
-            <div>
-              <span style="color: var(--text-light);">ทั้งหมด:</span>
-              <span style="font-weight: 700; color: var(--primary-color);">${childRecords.length} เข็ม</span>
-            </div>
-            <div>
-              <span style="color: var(--text-light);">ได้รับแล้ว:</span>
-              <span style="font-weight: 700; color: var(--success-color);">${givenRecords.length} เข็ม</span>
-            </div>
-          </div>
-        </div>
-        
-        <div style="background: #e3f2fd; padding: 12px; border-radius: 6px; margin-bottom: 10px; border-left: 4px solid #1976d2;">
-          <div style="font-weight: 600; color: #1976d2; margin-bottom: 8px;">✅ ครบตามเกณฑ์อายุ:</div>
-          <div style="display: flex; gap: 15px; align-items: center;">
-            <div>
-              <span style="font-weight: 700; font-size: 1.1em; color: #1976d2;">${getCompletionPercentage(child.id)}%</span>
-            </div>
-            <div style="flex: 1;">
-              <div class="progress-bar-container" style="height: 6px; margin-bottom: 4px;">
-                <div class="progress-bar-fill" style="width: ${getCompletionPercentage(child.id)}%; background: #1976d2;"></div>
-              </div>
-              <span style="font-size: 0.8em; color: var(--text-light);">${getCompletionByAge(child.id).completed}/${getCompletionByAge(child.id).total} วัคซีน</span>
-            </div>
-          </div>
-        </div>
-        
-        <div style="background: #f3e5f5; padding: 12px; border-radius: 6px; margin-bottom: 10px; border-left: 4px solid #7b1fa2;">
-          <div style="font-weight: 600; color: #7b1fa2; margin-bottom: 8px;">📊 ครบทั้งหมด (0-6 ปี):</div>
-          <div style="display: flex; gap: 15px; align-items: center;">
-            <div>
-              <span style="font-weight: 700; font-size: 1.1em; color: #7b1fa2;">${getTotalCompletionPercentage(child.id)}%</span>
-            </div>
-            <div style="flex: 1;">
-              <div class="progress-bar-container" style="height: 6px; margin-bottom: 4px;">
-                <div class="progress-bar-fill" style="width: ${getTotalCompletionPercentage(child.id)}%; background: #7b1fa2;"></div>
-              </div>
-              <span style="font-size: 0.8em; color: var(--text-light);">${getVaccinesReceivedByChild(child.id).length}/${allRequiredVaccines.length} วัคซีน</span>
-            </div>
-          </div>
-        </div>
-        
-        ${givenRecords.length > 0 ? `
-        <div style="margin-top: 10px;">
-          <div style="font-weight: 600; color: var(--success-color); margin-bottom: 8px;">✅ วัคซีนที่ได้รับแล้ว (${givenRecords.length}):</div>
-          <div style="background: var(--white); padding: 12px; border-radius: 6px; border-left: 3px solid var(--success-color);">
-            <table class="vaccine-table" style="margin: 0;">
-              <thead>
-                <tr>
-                  <th>วัคซีน</th>
-                  <th>วันที่ให้</th>
-                  <th>ปี</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${givenRecords.map(v => `
-                  <tr>
-                    <td>${getVaccineName(v.name)}</td>
-                    <td>${formatDate(v.date)}</td>
-                    <td>${v.year}</td>
-                  </tr>
-                `).join('')}
-              </tbody>
-            </table>
-          </div>
-        </div>
-        ` : '<div style="color: var(--text-light); font-size: 0.9em; font-style: italic;">ยังไม่มีการบันทึกวัคซีน</div>'}
-      </div>
+      <tr style="cursor: pointer;" onclick="openHistoryDetail('${child.id}')">
+        <td style="font-weight: 600; color: var(--primary-color);">👶 ${child.fullName}</td>
+        <td>${formatDate(child.dob)}</td>
+        <td>${calculateAge(child.dob)}</td>
+        <td><span style="background: #e3f2fd; color: #1976d2; padding: 4px 8px; border-radius: 4px; font-weight: 600;">${givenRecords.length} เข็ม</span></td>
+      </tr>
     `;
   });
   
+  html += `
+    </tbody>
+  </table>
+  `;
+  
   container.innerHTML = html;
+}
+
+function openHistoryDetail(childId) {
+  const child = allChildren.find(c => c.id === childId);
+  if (!child) return;
+  
+  const childRecords = allVaccineRecords.filter(v => v.childId === child.id);
+  const givenRecords = childRecords.filter(v => v.status === 'Given');
+  
+  // ได้รับตามเกณฑ์อายุ
+  const shouldHaveByAge = getVaccinesShouldHaveByAge(child.dob);
+  const receivedCodes = getVaccinesReceivedByChild(child.id);
+  const receivedByAge = shouldHaveByAge.filter(code => receivedCodes.includes(code));
+  
+  let html = `
+    <div style="margin-bottom: 20px;">
+      <button style="padding: 8px 15px; background: var(--primary-color); color: var(--white); border: none; border-radius: 6px; cursor: pointer; font-weight: 600;" onclick="displayHistory()">← กลับไปรายการทั้งหมด</button>
+    </div>
+    
+    <div class="child-detail-card" style="border: 1px solid var(--border-color); padding: 15px; border-radius: 8px;">
+      <div class="child-detail-header" style="margin-bottom: 12px;">
+        <div>
+          <div class="child-detail-name">👶 ${child.fullName}</div>
+          <div style="font-size: 0.85em; color: var(--text-light); margin-top: 3px;">
+            วัน/เดือน/ปีเกิด: ${formatDate(child.dob)} | อายุ: ${calculateAge(child.dob)} | ห้อง: ${child.room}
+          </div>
+        </div>
+      </div>
+      
+      <div style="background: var(--light-bg); padding: 12px; border-radius: 6px; margin-bottom: 10px;">
+        <div style="font-weight: 600; color: var(--primary-dark); margin-bottom: 8px;">📊 สถิติวัคซีน:</div>
+        <div style="display: flex; gap: 20px; font-size: 0.9em;">
+          <div>
+            <span style="color: var(--text-light);">ทั้งหมด:</span>
+            <span style="font-weight: 700; color: var(--primary-color);">${childRecords.length} เข็ม</span>
+          </div>
+          <div>
+            <span style="color: var(--text-light);">ได้รับแล้ว:</span>
+            <span style="font-weight: 700; color: var(--success-color);">${givenRecords.length} เข็ม</span>
+          </div>
+        </div>
+      </div>
+      
+      <div style="background: #e3f2fd; padding: 12px; border-radius: 6px; margin-bottom: 10px; border-left: 4px solid #1976d2;">
+        <div style="font-weight: 600; color: #1976d2; margin-bottom: 8px;">✅ ครบตามเกณฑ์อายุปัจจุบัน:</div>
+        <div style="display: flex; gap: 15px; align-items: center;">
+          <div>
+            <span style="font-weight: 700; font-size: 1.1em; color: #1976d2;">${getCompletionPercentage(child.id)}%</span>
+          </div>
+          <div style="flex: 1;">
+            <div class="progress-bar-container" style="height: 6px; margin-bottom: 4px;">
+              <div class="progress-bar-fill" style="width: ${getCompletionPercentage(child.id)}%; background: #1976d2;"></div>
+            </div>
+            <span style="font-size: 0.8em; color: var(--text-light);">${receivedByAge.length}/${shouldHaveByAge.length} วัคซีน</span>
+          </div>
+        </div>
+      </div>
+      
+      <div style="background: #f3e5f5; padding: 12px; border-radius: 6px; margin-bottom: 10px; border-left: 4px solid #7b1fa2;">
+        <div style="font-weight: 600; color: #7b1fa2; margin-bottom: 8px;">📊 ครบทั้งหมด (0-6 ปี):</div>
+        <div style="display: flex; gap: 15px; align-items: center;">
+          <div>
+            <span style="font-weight: 700; font-size: 1.1em; color: #7b1fa2;">${getTotalCompletionPercentage(child.id)}%</span>
+          </div>
+          <div style="flex: 1;">
+            <div class="progress-bar-container" style="height: 6px; margin-bottom: 4px;">
+              <div class="progress-bar-fill" style="width: ${getTotalCompletionPercentage(child.id)}%; background: #7b1fa2;"></div>
+            </div>
+            <span style="font-size: 0.8em; color: var(--text-light);">${receivedCodes.length}/${allRequiredVaccines.length} วัคซีน</span>
+          </div>
+        </div>
+      </div>
+      
+      ${givenRecords.length > 0 ? `
+      <div style="margin-top: 15px;">
+        <div style="font-weight: 600; color: var(--success-color); margin-bottom: 8px;">✅ วัคซีนที่ได้รับแล้ว (${givenRecords.length}):</div>
+        <div style="background: var(--white); padding: 12px; border-radius: 6px; border-left: 3px solid var(--success-color);">
+          <table class="vaccine-table" style="margin: 0;">
+            <thead>
+              <tr>
+                <th>วัคซีน</th>
+                <th>วันที่ให้</th>
+                <th>ปี</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${givenRecords.map(v => `
+                <tr>
+                  <td>${getVaccineName(v.name)}</td>
+                  <td>${formatDate(v.date)}</td>
+                  <td>${v.year}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      ` : '<div style="color: var(--text-light); font-size: 0.9em; font-style: italic;">ยังไม่มีการบันทึกวัคซีน</div>'}
+    </div>
+  `;
+  
+  document.getElementById('historyContent').innerHTML = html;
 }
 
 function searchHistory() {
@@ -2261,65 +2368,37 @@ function searchHistory() {
     return;
   }
   
-  let html = '';
+  let html = '<table class="vaccine-table" style="margin-top: 0; width: 100%;">';
+  html += `
+    <thead>
+      <tr>
+        <th>ชื่อเด็ก</th>
+        <th>วัน/เดือน/ปีเกิด</th>
+        <th>อายุ</th>
+        <th>จำนวนวัคซีน</th>
+      </tr>
+    </thead>
+    <tbody>
+  `;
   
   filtered.forEach(child => {
     const childRecords = allVaccineRecords.filter(v => v.childId === child.id);
     const givenRecords = childRecords.filter(v => v.status === 'Given');
     
     html += `
-      <div class="child-detail-card" style="margin-bottom: 15px; border: 1px solid var(--border-color); padding: 15px; border-radius: 8px;">
-        <div class="child-detail-header" style="margin-bottom: 12px;">
-          <div>
-            <div class="child-detail-name">👶 ${child.fullName}</div>
-            <div style="font-size: 0.85em; color: var(--text-light); margin-top: 3px;">
-              วัน/เดือน/ปีเกิด: ${formatDate(child.dob)} | อายุ: ${calculateAge(child.dob)} | ห้อง: ${child.room}
-            </div>
-          </div>
-        </div>
-        
-        <div style="background: var(--light-bg); padding: 12px; border-radius: 6px; margin-bottom: 10px;">
-          <div style="font-weight: 600; color: var(--primary-dark); margin-bottom: 8px;">📊 สถิติวัคซีน:</div>
-          <div style="display: flex; gap: 20px; font-size: 0.9em;">
-            <div>
-              <span style="color: var(--text-light);">ทั้งหมด:</span>
-              <span style="font-weight: 700; color: var(--primary-color);">${childRecords.length} เข็ม</span>
-            </div>
-            <div>
-              <span style="color: var(--text-light);">ได้รับแล้ว:</span>
-              <span style="font-weight: 700; color: var(--success-color);">${givenRecords.length} เข็ม</span>
-            </div>
-          </div>
-        </div>
-        
-        ${givenRecords.length > 0 ? `
-        <div style="margin-top: 10px;">
-          <div style="font-weight: 600; color: var(--success-color); margin-bottom: 8px;">✅ วัคซีนที่ได้รับแล้ว (${givenRecords.length}):</div>
-          <div style="background: var(--white); padding: 12px; border-radius: 6px; border-left: 3px solid var(--success-color);">
-            <table class="vaccine-table" style="margin: 0;">
-              <thead>
-                <tr>
-                  <th>วัคซีน</th>
-                  <th>วันที่ให้</th>
-                  <th>ปี</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${givenRecords.map(v => `
-                  <tr>
-                    <td>${getVaccineName(v.name)}</td>
-                    <td>${formatDate(v.date)}</td>
-                    <td>${v.year}</td>
-                  </tr>
-                `).join('')}
-              </tbody>
-            </table>
-          </div>
-        </div>
-        ` : '<div style="color: var(--text-light); font-size: 0.9em; font-style: italic;">ยังไม่มีการบันทึกวัคซีน</div>'}
-      </div>
+      <tr style="cursor: pointer;" onclick="openHistoryDetail('${child.id}')">
+        <td style="font-weight: 600; color: var(--primary-color);">👶 ${child.fullName}</td>
+        <td>${formatDate(child.dob)}</td>
+        <td>${calculateAge(child.dob)}</td>
+        <td><span style="background: #e3f2fd; color: #1976d2; padding: 4px 8px; border-radius: 4px; font-weight: 600;">${givenRecords.length} เข็ม</span></td>
+      </tr>
     `;
   });
+  
+  html += `
+    </tbody>
+  </table>
+  `;
   
   container.innerHTML = html;
 }
@@ -2535,7 +2614,99 @@ function displayRoomsSummary() {
   container.innerHTML = html;
 }
 
+// ===== Render Rooms Report Charts =====
+function renderRoomsReportCharts() {
+  renderRoomsCompletionChart();
+  renderRoomsRoomChart();
+}
+
+function renderRoomsCompletionChart() {
+  const canvas = document.getElementById('roomsCompletionChart');
+  if (!canvas) return;
+  
+  if (roomsCompletionChartInstance) {
+    roomsCompletionChartInstance.destroy();
+  }
+  
+  const completeCount = allChildren.filter(child => isChildCompleteByAge(child.id)).length;
+  const incompleteCount = allChildren.length - completeCount;
+  
+  roomsCompletionChartInstance = new Chart(canvas, {
+    type: 'doughnut',
+    data: {
+      labels: ['ครบตามเกณฑ์อายุ', 'ยังไม่ครบ'],
+      datasets: [{
+        data: [completeCount, incompleteCount],
+        backgroundColor: ['#28a745', '#dc3545'],
+        borderWidth: 2,
+        borderColor: '#ffffff'
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { size: 12 }, padding: 15 } },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              const total = allChildren.length;
+              const pct = total > 0 ? Math.round((context.raw / total) * 100) : 0;
+              return context.label + ': ' + context.raw + ' คน (' + pct + '%)';
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+function renderRoomsRoomChart() {
+  const canvas = document.getElementById('roomsRoomChart');
+  if (!canvas) return;
+  
+  if (roomsRoomChartInstance) {
+    roomsRoomChartInstance.destroy();
+  }
+  
+  const rooms = {};
+  allChildren.forEach(child => {
+    if (!rooms[child.room]) {
+      rooms[child.room] = 0;
+    }
+    rooms[child.room]++;
+  });
+  
+  const labels = Object.keys(rooms).sort();
+  const data = labels.map(r => rooms[r]);
+  
+  roomsRoomChartInstance = new Chart(canvas, {
+    type: 'bar',
+    data: {
+      labels: labels.map(l => 'ห้อง ' + l),
+      datasets: [{
+        label: 'จำนวนเด็ก',
+        data: data,
+        backgroundColor: '#0066cc',
+        borderRadius: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: { beginAtZero: true, ticks: { stepSize: 1 } }
+      },
+      plugins: {
+        legend: { display: false }
+      }
+    }
+  });
+}
+
 function displayRoomsReport() {
+  if (!isFirebaseInitialized) return;
+  
   const rooms = {};
   
   allChildren.forEach(child => {
@@ -2544,6 +2715,17 @@ function displayRoomsReport() {
     }
     rooms[child.room].push(child);
   });
+  
+  // Update stats
+  const completeCount = allChildren.filter(child => isChildCompleteByAge(child.id)).length;
+  const incompleteCount = allChildren.length - completeCount;
+  
+  document.getElementById('roomsReportTotal').textContent = allChildren.length;
+  document.getElementById('roomsReportComplete').textContent = completeCount;
+  document.getElementById('roomsReportIncomplete').textContent = incompleteCount;
+  
+  // Render charts
+  setTimeout(() => { renderRoomsReportCharts(); }, 100);
   
   const container = document.getElementById('roomsDetail');
   
@@ -2605,8 +2787,11 @@ function displayRoomsReport() {
             ${missingVaccines.length > 0 ? `
             <div class="vaccine-list">
               <div class="vaccine-list-title" style="color: var(--danger-color);">❌ วัคซีนที่ยังขาด (${missingVaccines.length})</div>
-              <div class="vaccine-list-items missing">
-                ${missingVaccines.map(v => v.name).join(', ')}
+              <div class="vaccine-list-items missing" style="line-height: 1.8;">
+              ${missingVaccines.map(v => {
+                const vaccine = allRequiredVaccines.find(vac => vac.code === v);
+                return vaccine ? `${vaccine.name} (${vaccine.age})` : getVaccineName(v);
+              }).join('<br>')}
               </div>
             </div>
             ` : ''}
@@ -2628,6 +2813,7 @@ function openEditChildModal(childId) {
     showAlert('❌ ไม่พบข้อมูลเด็ก', 'error');
     return;
   }
+  
   
   document.getElementById('editChildId').value = child.id;
   document.getElementById('editFullName').value = child.fullName;
@@ -2735,6 +2921,285 @@ window.addEventListener('load', function() {
   document.getElementById('editDob').max = today;
   document.getElementById('vaccineDate').valueAsDate = new Date();
 });
+
+// ===== STEP 3: displayChildrenDetail() - แสดงรายงานรายบุคคล =====
+function displayChildrenDetail() {
+  if (!isFirebaseInitialized) return;
+  
+  const container = document.getElementById('childrenContent');
+  if (allChildren.length === 0) {
+    container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">👶</div><p>ยังไม่มีข้อมูลเด็กในระบบ</p></div>';
+    return;
+  }
+  
+  let html = '';
+  
+  allChildren.forEach(child => {
+    const childRecords = allVaccineRecords.filter(v => v.childId === child.id);
+    const givenRecords = childRecords.filter(v => v.status === 'Given');
+    
+    // ได้รับตามเกณฑ์อายุ
+    const shouldHaveByAge = getVaccinesShouldHaveByAge(child.dob);
+    const receivedCodes = getVaccinesReceivedByChild(child.id);
+    const receivedByAge = shouldHaveByAge.filter(code => receivedCodes.includes(code));
+    const missingByAge = shouldHaveByAge.filter(code => !receivedCodes.includes(code));
+    
+    html += `
+      <div class="child-detail-card" style="margin-bottom: 15px; border: 1px solid var(--border-color); padding: 15px; border-radius: 8px;">
+        <div class="child-detail-header" style="margin-bottom: 12px;">
+          <div>
+            <div class="child-detail-name">👶 ${child.fullName}</div>
+            <div style="font-size: 0.85em; color: var(--text-light); margin-top: 3px;">
+              วัน/เดือน/ปีเกิด: ${formatDate(child.dob)} | อายุ: ${calculateAge(child.dob)} | ห้อง: ${child.room}
+            </div>
+          </div>
+        </div>
+        
+        <div style="background: var(--light-bg); padding: 12px; border-radius: 6px; margin-bottom: 10px;">
+          <div style="font-weight: 600; color: var(--primary-dark); margin-bottom: 8px;">📊 สถิติวัคซีน:</div>
+          <div style="display: flex; gap: 20px; font-size: 0.9em;">
+            <div>
+              <span style="color: var(--text-light);">ทั้งหมด:</span>
+              <span style="font-weight: 700; color: var(--primary-color);">${childRecords.length} เข็ม</span>
+            </div>
+            <div>
+              <span style="color: var(--text-light);">ได้รับแล้ว:</span>
+              <span style="font-weight: 700; color: var(--success-color);">${givenRecords.length} เข็ม</span>
+            </div>
+          </div>
+        </div>
+        
+        <div style="background: #e3f2fd; padding: 12px; border-radius: 6px; margin-bottom: 10px; border-left: 4px solid #1976d2;">
+          <div style="font-weight: 600; color: #1976d2; margin-bottom: 8px;">✅ ครบตามเกณฑ์อายุปัจจุบัน:</div>
+          <div style="display: flex; gap: 15px; align-items: center;">
+            <div>
+              <span style="font-weight: 700; font-size: 1.1em; color: #1976d2;">${getCompletionPercentage(child.id)}%</span>
+            </div>
+            <div style="flex: 1;">
+              <div class="progress-bar-container" style="height: 6px; margin-bottom: 4px;">
+                <div class="progress-bar-fill" style="width: ${getCompletionPercentage(child.id)}%; background: #1976d2;"></div>
+              </div>
+              <span style="font-size: 0.8em; color: var(--text-light);">${receivedByAge.length}/${shouldHaveByAge.length} วัคซีน</span>
+            </div>
+          </div>
+        </div>
+        
+        <div style="background: #f3e5f5; padding: 12px; border-radius: 6px; margin-bottom: 10px; border-left: 4px solid #7b1fa2;">
+          <div style="font-weight: 600; color: #7b1fa2; margin-bottom: 8px;">📊 ครบทั้งหมด (0-6 ปี):</div>
+          <div style="display: flex; gap: 15px; align-items: center;">
+            <div>
+              <span style="font-weight: 700; font-size: 1.1em; color: #7b1fa2;">${getTotalCompletionPercentage(child.id)}%</span>
+            </div>
+            <div style="flex: 1;">
+              <div class="progress-bar-container" style="height: 6px; margin-bottom: 4px;">
+                <div class="progress-bar-fill" style="width: ${getTotalCompletionPercentage(child.id)}%; background: #7b1fa2;"></div>
+              </div>
+              <span style="font-size: 0.8em; color: var(--text-light);">${receivedCodes.length}/${allRequiredVaccines.length} วัคซีน</span>
+            </div>
+          </div>
+        </div>
+        
+<button class="collapse-btn" onclick="toggleCollapse('vaccine-detail-${child.id}')">
+          ดูรายละเอียดวัคซีน
+        </button>
+        
+        <div id="vaccine-detail-${child.id}" class="collapsible-content">
+          <!-- ===== วัคซีนที่ควรได้รับตามอายุปัจจุบัน ===== -->
+          ${shouldHaveByAge.length > 0 ? `
+          <div style="margin-top: 15px; padding: 12px; background: #fff8f0; border-radius: 6px; border-left: 4px solid #fd7e14;">
+            <div style="font-weight: 600; color: #fd7e14; margin-bottom: 10px;">📋 วัคซีนที่ควรได้รับตามอายุปัจจุบัน (${shouldHaveByAge.length} เข็ม):</div>
+            <div style="display: flex; flex-direction: column; gap: 6px; font-size: 0.85em;">
+              ${shouldHaveByAge.map(code => {
+                const vaccine = allRequiredVaccines.find(v => v.code === code);
+                const hasReceived = receivedCodes.includes(code);
+                return `
+                  <div style="display: flex; align-items: center; gap: 8px; padding: 6px; background: ${hasReceived ? '#e8f5e9' : '#ffebee'}; border-radius: 4px;">
+                    <span style="font-weight: 700; font-size: 1em;">${hasReceived ? '✅' : '❌'}</span>
+                    <span style="flex: 1; color: ${hasReceived ? '#2e7d32' : '#c62828'};">${vaccine ? vaccine.name : code}</span>
+                    <span style="font-size: 0.75em; color: var(--text-light); background: ${hasReceived ? '#c8e6c9' : '#ffcdd2'}; padding: 2px 8px; border-radius: 3px;">${vaccine ? vaccine.age : ''}</span>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+          ` : ''}
+          
+          ${givenRecords.length > 0 ? `
+        <div style="margin-top: 15px;">
+          <div style="font-weight: 600; color: var(--success-color); margin-bottom: 8px;">✅ วัคซีนทั้งหมดที่ได้รับแล้ว (${givenRecords.length}):</div>
+          <div style="background: var(--white); padding: 12px; border-radius: 6px; border-left: 3px solid var(--success-color);">
+            <table class="vaccine-table" style="margin: 0;">
+              <thead>
+                <tr>
+                  <th>วัคซีน</th>
+                  <th>วันที่ให้</th>
+                  <th>ปี</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${givenRecords.map(v => `
+                  <tr>
+                    <td>${getVaccineName(v.name)}</td>
+                    <td>${formatDate(v.date)}</td>
+                    <td>${v.year}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        ` : '<div style="color: var(--text-light); font-size: 0.9em; font-style: italic;">ยังไม่มีการบันทึกวัคซีน</div>'}
+      </div>
+    `;
+  });
+  
+  container.innerHTML = html;
+}
+
+// ===== STEP 3: searchChildren() - ค้นหารายบุคคล =====
+function searchChildren() {
+  const searchTerm = document.getElementById('searchChildren').value.toLowerCase();
+  
+  if (!searchTerm) {
+    displayChildrenDetail();
+    return;
+  }
+  
+  if (!isFirebaseInitialized) return;
+  
+  const filtered = allChildren.filter(child => 
+    child.fullName.toLowerCase().includes(searchTerm)
+  );
+  
+  const container = document.getElementById('childrenContent');
+  if (filtered.length === 0) {
+    container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🔍</div><p>ไม่พบข้อมูลที่ค้นหา</p></div>';
+    return;
+  }
+  
+  let html = '';
+  
+  filtered.forEach(child => {
+    const childRecords = allVaccineRecords.filter(v => v.childId === child.id);
+    const givenRecords = childRecords.filter(v => v.status === 'Given');
+    
+    // ได้รับตามเกณฑ์อายุ
+    const shouldHaveByAge = getVaccinesShouldHaveByAge(child.dob);
+    const receivedCodes = getVaccinesReceivedByChild(child.id);
+    const receivedByAge = shouldHaveByAge.filter(code => receivedCodes.includes(code));
+    const missingByAge = shouldHaveByAge.filter(code => !receivedCodes.includes(code));
+    
+    html += `
+      <div class="child-detail-card" style="margin-bottom: 15px; border: 1px solid var(--border-color); padding: 15px; border-radius: 8px;">
+        <div class="child-detail-header" style="margin-bottom: 12px;">
+          <div>
+            <div class="child-detail-name">👶 ${child.fullName}</div>
+            <div style="font-size: 0.85em; color: var(--text-light); margin-top: 3px;">
+              วัน/เดือน/ปีเกิด: ${formatDate(child.dob)} | อายุ: ${calculateAge(child.dob)} | ห้อง: ${child.room}
+            </div>
+          </div>
+        </div>
+        
+        <div style="background: var(--light-bg); padding: 12px; border-radius: 6px; margin-bottom: 10px;">
+          <div style="font-weight: 600; color: var(--primary-dark); margin-bottom: 8px;">📊 สถิติวัคซีน:</div>
+          <div style="display: flex; gap: 20px; font-size: 0.9em;">
+            <div>
+              <span style="color: var(--text-light);">ทั้งหมด:</span>
+              <span style="font-weight: 700; color: var(--primary-color);">${childRecords.length} เข็ม</span>
+            </div>
+            <div>
+              <span style="color: var(--text-light);">ได้รับแล้ว:</span>
+              <span style="font-weight: 700; color: var(--success-color);">${givenRecords.length} เข็ม</span>
+            </div>
+          </div>
+        </div>
+        
+        <div style="background: #e3f2fd; padding: 12px; border-radius: 6px; margin-bottom: 10px; border-left: 4px solid #1976d2;">
+          <div style="font-weight: 600; color: #1976d2; margin-bottom: 8px;">✅ ครบตามเกณฑ์อายุปัจจุบัน:</div>
+          <div style="display: flex; gap: 15px; align-items: center;">
+            <div>
+              <span style="font-weight: 700; font-size: 1.1em; color: #1976d2;">${getCompletionPercentage(child.id)}%</span>
+            </div>
+            <div style="flex: 1;">
+              <div class="progress-bar-container" style="height: 6px; margin-bottom: 4px;">
+                <div class="progress-bar-fill" style="width: ${getCompletionPercentage(child.id)}%; background: #1976d2;"></div>
+              </div>
+              <span style="font-size: 0.8em; color: var(--text-light);">${receivedByAge.length}/${shouldHaveByAge.length} วัคซีน</span>
+            </div>
+          </div>
+        </div>
+        
+        <div style="background: #f3e5f5; padding: 12px; border-radius: 6px; margin-bottom: 10px; border-left: 4px solid #7b1fa2;">
+          <div style="font-weight: 600; color: #7b1fa2; margin-bottom: 8px;">📊 ครบทั้งหมด (0-6 ปี):</div>
+          <div style="display: flex; gap: 15px; align-items: center;">
+            <div>
+              <span style="font-weight: 700; font-size: 1.1em; color: #7b1fa2;">${getTotalCompletionPercentage(child.id)}%</span>
+            </div>
+            <div style="flex: 1;">
+              <div class="progress-bar-container" style="height: 6px; margin-bottom: 4px;">
+                <div class="progress-bar-fill" style="width: ${getTotalCompletionPercentage(child.id)}%; background: #7b1fa2;"></div>
+              </div>
+              <span style="font-size: 0.8em; color: var(--text-light);">${receivedCodes.length}/${allRequiredVaccines.length} วัคซีน</span>
+            </div>
+          </div>
+        </div>
+        
+        <button class="collapse-btn" onclick="toggleCollapse('vaccine-detail-search-${child.id}')">
+          ดูรายละเอียดวัคซีน
+        </button>
+        
+        <div id="vaccine-detail-search-${child.id}" class="collapsible-content">
+          <!-- ===== วัคซีนที่ควรได้รับตามอายุปัจจุบัน ===== -->
+          ${shouldHaveByAge.length > 0 ? `
+          <div style="margin-top: 15px; padding: 12px; background: #fff8f0; border-radius: 6px; border-left: 4px solid #fd7e14;">
+            <div style="font-weight: 600; color: #fd7e14; margin-bottom: 10px;">📋 วัคซีนที่ควรได้รับตามอายุปัจจุบัน (${shouldHaveByAge.length} เข็ม):</div>
+            <div style="display: flex; flex-direction: column; gap: 6px; font-size: 0.85em;">
+              ${shouldHaveByAge.map(code => {
+                const vaccine = allRequiredVaccines.find(v => v.code === code);
+                const hasReceived = receivedCodes.includes(code);
+                return `
+                  <div style="display: flex; align-items: center; gap: 8px; padding: 6px; background: ${hasReceived ? '#e8f5e9' : '#ffebee'}; border-radius: 4px;">
+                    <span style="font-weight: 700; font-size: 1em;">${hasReceived ? '✅' : '❌'}</span>
+                    <span style="flex: 1; color: ${hasReceived ? '#2e7d32' : '#c62828'};">${vaccine ? vaccine.name : code}</span>
+                    <span style="font-size: 0.75em; color: var(--text-light); background: ${hasReceived ? '#c8e6c9' : '#ffcdd2'}; padding: 2px 8px; border-radius: 3px;">${vaccine ? vaccine.age : ''}</span>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+          ` : ''}
+          
+          ${givenRecords.length > 0 ? `
+        <div style="margin-top: 15px;">
+          <div style="font-weight: 600; color: var(--success-color); margin-bottom: 8px;">✅ วัคซีนทั้งหมดที่ได้รับแล้ว (${givenRecords.length}):</div>
+          <div style="background: var(--white); padding: 12px; border-radius: 6px; border-left: 3px solid var(--success-color);">
+            <table class="vaccine-table" style="margin: 0;">
+              <thead>
+                <tr>
+                  <th>วัคซีน</th>
+                  <th>วันที่ให้</th>
+                  <th>ปี</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${givenRecords.map(v => `
+                  <tr>
+                    <td>${getVaccineName(v.name)}</td>
+                    <td>${formatDate(v.date)}</td>
+                    <td>${v.year}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        ` : '<div style="color: var(--text-light); font-size: 0.9em; font-style: italic;">ยังไม่มีการบันทึกวัคซีน</div>'}
+      </div>
+    `;
+  });
+  
+  container.innerHTML = html;
+}
 
 window.onclick = function(event) {
   const editChildModal = document.getElementById('editChildModal');
